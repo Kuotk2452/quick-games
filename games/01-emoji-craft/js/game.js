@@ -515,15 +515,20 @@ class GameApp {
   setupEventListeners() {
     if (this.btnMainPower) {
       this.btnMainPower.addEventListener('click', () => {
-        sounds.playBreakerSwitch();
-        document.body.classList.add('flicker-on');
+        const bootEmoji = document.getElementById('bootEmoji');
+        if (bootEmoji) {
+          bootEmoji.textContent = '🤩';
+          bootEmoji.classList.add('scale-125');
+        }
         
-        // Let it flicker, then hide and start music
+        sounds.playPop();
+        
+        // Wait briefly for the 'waking up' expression, then chime and fade
         setTimeout(() => {
-          sounds.playSteamWhistle();
+          sounds.playSuccess();
           this.factoryBootScreen.classList.add('hidden');
-          sounds.startBGM(); // Tycoon music (or our lo-fi loops depending on config, but it's playing)
-        }, 1200);
+          sounds.startBGM(); 
+        }, 500);
       });
     }
 

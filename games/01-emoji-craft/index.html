@@ -10,12 +10,14 @@
 </head>
 <body class="bg-slate-950 text-slate-100 min-h-screen flex flex-col overflow-hidden font-sans select-none transition-transform duration-100">
 
-  <!-- Factory Power Sequence -->
-  <div id="factoryBootScreen" class="fixed inset-0 bg-slate-950 z-[9999] flex flex-col items-center justify-center transition-opacity duration-500">
-    <button id="btnMainPower" class="w-48 h-48 rounded-full bg-red-600 hover:bg-red-500 active:bg-red-700 active:translate-y-2 border-8 border-red-900 shadow-[0_10px_0_#7f1d1d,0_20px_20px_rgba(0,0,0,0.8)] active:shadow-[0_0px_0_#7f1d1d,0_5px_10px_rgba(0,0,0,0.8)] flex items-center justify-center text-white font-bold text-2xl tracking-widest transition-all">
-      POWER
-    </button>
-    <div class="mt-12 text-red-500/50 font-mono text-sm tracking-widest animate-pulse">FACTORY STANDBY</div>
+  <!-- Cute Emoji Wake-up Sequence -->
+  <div id="factoryBootScreen" class="fixed inset-0 bg-slate-900/90 backdrop-blur-md z-[9999] flex flex-col items-center justify-center transition-opacity duration-1000">
+    <div id="btnMainPower" class="cursor-pointer group flex flex-col items-center transition-transform hover:scale-110 active:scale-95">
+      <div id="bootEmoji" class="text-8xl sm:text-9xl filter drop-shadow-[0_0_30px_rgba(251,191,36,0.4)] transition-all duration-300">😴</div>
+      <div class="mt-8 px-6 py-2 rounded-full bg-slate-800/80 border border-slate-700/50 text-amber-300/80 font-medium tracking-wider animate-pulse shadow-lg">
+        Tap to wake up factory...
+      </div>
+    </div>
   </div>
 
   <!-- 粒子特效画布（覆盖全屏） -->
