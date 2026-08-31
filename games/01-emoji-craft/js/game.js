@@ -526,7 +526,12 @@ class GameApp {
         // Wait briefly for the 'waking up' expression, then chime and fade
         setTimeout(() => {
           sounds.playSuccess();
-          this.factoryBootScreen.classList.add('hidden');
+          this.factoryBootScreen.classList.add('opacity-0', 'pointer-events-none');
+          
+          // Optionally fade out instructions slightly faster
+          const inst = document.getElementById('bootInstructions');
+          if (inst) inst.classList.add('opacity-0', 'scale-95');
+
           sounds.startBGM(); 
         }, 500);
       });
