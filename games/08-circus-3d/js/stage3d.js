@@ -142,12 +142,16 @@ export class CircusStage3D {
 
     // Infinite Environment Loop for Endless Mode
     if (this.floor) {
-      // Snap environment positions to chunks of 150m to prevent visual popping
+      // Snap floor/curbs to chunks of 150m to prevent visual popping
       const chunkOffset = Math.floor(playerX / 150) * 150;
       this.floor.position.x = chunkOffset + 100;
       this.leftCurb.position.x = chunkOffset + 100;
       this.rightCurb.position.x = chunkOffset + 100;
-      if (this.tent) this.tent.position.x = chunkOffset + 60;
+    }
+    // The tent is a solid color cylinder, we can move it smoothly with the player 
+    // so they never reach the boundary wall at x = 100
+    if (this.tent) {
+      this.tent.position.x = playerX + 20; 
     }
 
     // Spectator cheering bounce
