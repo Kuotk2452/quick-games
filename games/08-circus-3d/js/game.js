@@ -934,8 +934,18 @@ Play Free: https://quick-games-ez4.pages.dev/games/08-circus-3d/`;
 
       // Dynamic Speed with Direction Keys
       let targetVx = act.speed;
-      if (this.keys.left) targetVx *= 0.55;
-      if (this.keys.right) targetVx *= 1.45;
+        
+      if (this.boss && this.boss.alive && this.player.x >= this.boss.x - 7.5) {
+        // Boss Arena mode: Stop auto-scroll, allow manual movement
+        targetVx = 0;
+        if (this.keys.left) targetVx = -4.0;
+        if (this.keys.right) targetVx = 4.5;
+      } else {
+        // Normal auto-run mode
+        if (this.keys.left) targetVx *= 0.55;
+        if (this.keys.right) targetVx *= 1.45;
+      }
+        
       this.player.vx += (targetVx - this.player.vx) * 0.1;
 
       // Rocket Boots Air Glide
@@ -971,8 +981,17 @@ Play Free: https://quick-games-ez4.pages.dev/games/08-circus-3d/`;
       }
 
       // Forward Movement
+      let oldX = this.player.x;
       this.player.x += this.player.vx * dt;
-      this.score += Math.floor(this.player.vx * dt * 8 * this.multiplier);
+      
+      // Prevent running past the boss
+      if (this.boss && this.boss.alive) {
+        if (this.player.x > this.boss.x - 0.5) {
+          this.player.x = this.boss.x - 0.5;
+        }
+      }
+      
+      this.score += Math.floor(Math.max(0, this.player.x - oldX) * 8 * this.multiplier);
 
       // Endless Mode Continuous Spawner
       if (act.isEndless) {
