@@ -188,10 +188,12 @@ export class CircusGame {
     if (this.ui.touchLeftBtn) {
       this.ui.touchLeftBtn.addEventListener('touchstart', () => { this.keys.left = true; });
       this.ui.touchLeftBtn.addEventListener('touchend', () => { this.keys.left = false; });
+      this.ui.touchLeftBtn.addEventListener('touchcancel', () => { this.keys.left = false; });
     }
     if (this.ui.touchRightBtn) {
       this.ui.touchRightBtn.addEventListener('touchstart', () => { this.keys.right = true; });
       this.ui.touchRightBtn.addEventListener('touchend', () => { this.keys.right = false; });
+      this.ui.touchRightBtn.addEventListener('touchcancel', () => { this.keys.right = false; });
     }
 
     // Share Score
@@ -556,6 +558,16 @@ Play Free: https://quick-games-ez4.pages.dev/games/08-circus-3d/`;
             if (this.player.y > 0.8) {
               obs.cleared = true;
               this.score += 300 * this.multiplier;
+            } else {
+              this.handleObstacleHit(obs);
+            }
+          }
+        } else if (obs.type === 'BALL') {
+          obs.mesh.rotation.z -= dt * 4.0; // Rolling Ball rotation
+          if (!obs.cleared && Math.abs(this.player.x - obs.x) < 0.8) {
+            if (this.player.y > 0.9) {
+              obs.cleared = true;
+              this.score += 350 * this.multiplier;
             } else {
               this.handleObstacleHit(obs);
             }
