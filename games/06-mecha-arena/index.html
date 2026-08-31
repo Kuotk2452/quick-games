@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>Mecha Arena: Cyber BattleBots (赛博机甲工坊)</title>
+  <meta name="description" content="Modular Robot Crafting ✕ Real-Time Physics Arena Combat — Assemble weapons & chassis to conquer the BattleBots tournament!">
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+  <!-- Main Game Shell -->
+  <div id="gameContainer">
+
+    <!-- Top Navigation & Resource Bar -->
+    <header class="mecha-header">
+      <div class="header-left">
+        <a href="../../index.html" class="portal-back-btn" title="Back to Game Portal">
+          ← <span>Portal</span>
+        </a>
+        <div class="game-logo">
+          <span>🦾 MECHA ARENA</span>
+        </div>
+      </div>
+
+      <div class="hud-stats-group">
+        <div class="hud-pill">
+          <span class="hud-label" data-i18n="scrapLabel">Scrap Cash</span>
+          <span class="hud-val text-gold">💰 $<span id="scrapCashDisplay">100</span> SC</span>
+        </div>
+        <div class="hud-pill">
+          <span class="hud-label" data-i18n="leagueLabel">League</span>
+          <span id="leagueDisplay" class="hud-val text-cyan">Tier 1/4</span>
+        </div>
+      </div>
+
+      <div class="header-right">
+        <button id="audioToggleBtn" class="icon-btn" title="Toggle Sound">🔊</button>
+        <select id="langSelect" class="lang-dropdown">
+          <option value="en">English</option>
+          <option value="zh">中文</option>
+          <option value="es">Español</option>
+          <option value="ja">日本語</option>
+        </select>
+      </div>
+    </header>
+
+    <!-- VIEW 1: Workshop Customizer -->
+    <div id="workshopView" class="workshop-layout">
+      <!-- Left: 360 Live Preview & Deploy Button -->
+      <div class="preview-panel">
+        <div class="preview-box">
+          <canvas id="workshopPreviewCanvas"></canvas>
+          <div class="holo-scanline"></div>
+        </div>
+
+        <button id="btnDeploy" class="deploy-action-btn" data-i18n="deployBtn">
+          ⚔️ ENTER ARENA TOURNAMENT
+        </button>
+      </div>
+
+      <!-- Right: Modular Parts Store & Tabs -->
+      <div class="parts-customizer-panel">
+        <div class="category-tabs">
+          <button id="tabChassisBtn" class="tab-btn active" data-i18n="tabChassis">🦿 Chassis</button>
+          <button id="tabWeaponBtn" class="tab-btn" data-i18n="tabWeapon">🔫 Weapons</button>
+          <button id="tabModuleBtn" class="tab-btn" data-i18n="tabModule">🚀 Subsystems</button>
+        </div>
+
+        <div id="partsContainer" class="parts-grid-list">
+          <!-- Dynamic Parts Cards populated by workshop.js -->
+        </div>
+      </div>
+    </div>
+
+    <!-- VIEW 2: Real-Time Arena Combat View -->
+    <div id="arenaView" class="arena-layout" style="display: none;">
+      <!-- Combat Match Health Bars -->
+      <div class="match-hud-bar">
+        <div class="combatant-status player-status">
+          <div class="bot-label">YOU (CHALLENGER)</div>
+          <div class="hp-track"><div id="playerHpFill" class="hp-fill"></div></div>
+        </div>
+
+        <button id="btnReturnWorkshop" class="flee-btn" title="Return to Workshop" data-i18n="repairReturnBtn">
+          🛠️ Workshop
+        </button>
+
+        <div class="combatant-status enemy-status">
+          <div id="enemyNameDisplay" class="bot-label text-red">RIVAL BOT</div>
+          <div class="hp-track"><div id="enemyHpFill" class="hp-fill hp-fill-enemy"></div></div>
+        </div>
+      </div>
+
+      <!-- 2D Physics Combat Canvas -->
+      <div class="arena-canvas-box">
+        <canvas id="arenaCanvas"></canvas>
+
+        <!-- On-Screen Tactical Power Button -->
+        <button id="btnModuleAction" class="tactical-action-btn">
+          <span>⚡ MODULE [SPACE]</span>
+        </button>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- Game Over / Victory Modal -->
+  <div id="endModal" class="modal-overlay" style="display: none;">
+    <div class="modal-content">
+      <h2 id="endTitle" class="modal-title" data-i18n="victoryTitle">🏆 TOURNAMENT VICTORY!</h2>
+      <p id="endDesc" class="modal-subtitle" data-i18n="victoryDesc">Opponent mecha destroyed into scrap metal!</p>
+
+      <div class="modal-actions">
+        <button id="btnNextMatch" class="primary-start-btn" data-i18n="nextMatchBtn">⚔️ Next Match</button>
+        <button id="btnShareScore" class="secondary-btn" data-i18n="shareScore">📋 Share Build</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Main Game Script -->
+  <script type="module" src="js/game.js?v=1.0"></script>
+</body>
+</html>
