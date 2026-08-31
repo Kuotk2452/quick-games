@@ -72,7 +72,7 @@ export class MechaArenaGame {
     this.playerWeaponId = typeof localStorage !== 'undefined' ? (localStorage.getItem('ma_weapon') || 'GATLING') : 'GATLING';
     this.playerModuleId = typeof localStorage !== 'undefined' ? (localStorage.getItem('ma_module') || 'SHIELD') : 'SHIELD';
 
-    this.state = 'WORKSHOP'; // 'WORKSHOP' | 'ARENA'
+    this.state = 'BOOT_WAITING'; // 'BOOT_WAITING' | 'WORKSHOP' | 'ARENA'
     this.keys = {};
     this.mousePos = { x: this.width / 2, y: this.height / 2 };
     this.isMouseDown = false;
@@ -97,6 +97,9 @@ export class MechaArenaGame {
 
   initDOM() {
     this.ui = {
+      mechBootScreen: document.getElementById('mechBootScreen'),
+      mechBootTerminal: document.getElementById('mechBootTerminal'),
+      mechBootTap: document.getElementById('mechBootTap'),
       workshopView: document.getElementById('workshopView'),
       arenaView: document.getElementById('arenaView'),
       scrapCashDisplay: document.getElementById('scrapCashDisplay'),
@@ -123,6 +126,33 @@ export class MechaArenaGame {
   }
 
   initEvents() {
+    if (this.ui.mechBootScreen) {
+      this.ui.mechBootScreen.addEventListener('click', () => {
+        if (this.state === 'BOOTING') return;
+        this.state = 'BOOTING';
+        
+        this.ui.mechBootTap.classList.remove('pulse');
+        this.ui.mechBootTap.classList.add('hidden');
+        
+        mechaAudio.playHydraulicPowerUp();
+        
+        // Show terminal texts sequentially via CSS animation
+        this.ui.mechBootTerminal.classList.remove('hidden');
+        this.ui.mechBootTerminal.classList.add('running');
+        
+        setTimeout(() => {
+          mechaAudio.playMetallicClank();
+          this.ui.mechBootScreen.classList.add('glitch');
+          
+          setTimeout(() => {
+            this.state = 'WORKSHOP';
+            // Start background hum for workshop
+            mechaAudio.ensureContext();
+          }, 300);
+        }, 2500);
+      });
+    }
+
     if (this.ui.btnDeploy) {
       this.ui.btnDeploy.addEventListener('click', () => this.startArenaMatch());
     }

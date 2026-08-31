@@ -9,6 +9,19 @@
 </head>
 <body>
 
+  <!-- Mech OS Boot Sequence -->
+  <div id="mechBootScreen" class="mech-boot-screen active">
+    <div class="scanlines"></div>
+    <div id="mechBootTerminal" class="mech-boot-terminal hidden">
+      <div class="terminal-line">> INITIATING COLD START...</div>
+      <div class="terminal-line">> MAIN REACTOR... <span class="status-ok">ONLINE</span></div>
+      <div class="terminal-line">> ARMOR SYSTEMS... <span class="status-ok">100%</span></div>
+      <div class="terminal-line">> WEAPONS... <span class="status-warn">ENGAGED</span></div>
+      <div class="terminal-line blink">> ALL SYSTEMS NOMINAL.</div>
+    </div>
+    <div id="mechBootTap" class="mech-boot-tap pulse">TAP TO POWER UP MECH</div>
+  </div>
+
   <!-- Main Game Shell -->
   <div id="gameContainer">
 
@@ -119,6 +132,6 @@
   </div>
 
   <!-- Main Game Script -->
-  <script type="module" src="js/game.js?v=1.0"></script>
+  <script type="module" src="js/game.js?v=1.1"></script>
 </body>
 </html>
