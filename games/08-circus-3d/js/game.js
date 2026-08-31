@@ -1,7 +1,4 @@
-/**
- * Circus Rush 3D: Main Game Controller & 3D Physics Loop
- */
-
+import * as THREE from 'https://unpkg.com/three@0.160.0/build/three.module.js';
 import { circusAudio } from './audio.js';
 import { i18n } from './i18n.js';
 import { CharacterFactory3D } from './characters.js';
@@ -276,6 +273,11 @@ Play Free: https://quick-games-ez4.pages.dev/games/08-circus-3d/`;
     this.multiplier = 1;
     this.bulletTimeTimer = 0;
 
+    // Immediately hide act selection view and show HUD
+    if (this.ui.actSelectView) this.ui.actSelectView.style.display = 'none';
+    if (this.ui.gameplayHUD) this.ui.gameplayHUD.style.display = 'flex';
+    if (this.ui.endModal) this.ui.endModal.style.display = 'none';
+
     // Reset Player
     this.player.x = 0;
     this.player.y = 0;
@@ -286,12 +288,12 @@ Play Free: https://quick-games-ez4.pages.dev/games/08-circus-3d/`;
     this.player.jumpRotation = 0;
 
     // Clear and build obstacles for this act
-    this.clearObstacles();
-    this.generateActObstacles(act);
-
-    if (this.ui.actSelectView) this.ui.actSelectView.style.display = 'none';
-    if (this.ui.gameplayHUD) this.ui.gameplayHUD.style.display = 'flex';
-    if (this.ui.endModal) this.ui.endModal.style.display = 'none';
+    try {
+      this.clearObstacles();
+      this.generateActObstacles(act);
+    } catch (err) {
+      console.error('Error generating obstacles:', err);
+    }
 
     this.updateHUD();
     circusAudio.startMusic(act.id);
