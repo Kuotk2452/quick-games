@@ -54,6 +54,8 @@ class GameApp {
   }
 
   initDOM() {
+    this.factoryBootScreen = document.getElementById('factoryBootScreen');
+    this.btnMainPower = document.getElementById('btnMainPower');
     this.boardEl = document.getElementById('crafting-board');
     this.sidebarEl = document.getElementById('elements-grid');
     this.canvasEl = document.getElementById('particle-canvas');
@@ -511,6 +513,20 @@ class GameApp {
   }
 
   setupEventListeners() {
+    if (this.btnMainPower) {
+      this.btnMainPower.addEventListener('click', () => {
+        sounds.playBreakerSwitch();
+        document.body.classList.add('flicker-on');
+        
+        // Let it flicker, then hide and start music
+        setTimeout(() => {
+          sounds.playSteamWhistle();
+          this.factoryBootScreen.classList.add('hidden');
+          sounds.startBGM(); // Tycoon music (or our lo-fi loops depending on config, but it's playing)
+        }, 1200);
+      });
+    }
+
     this.boardEl.addEventListener('dragover', (e) => e.preventDefault());
     this.boardEl.addEventListener('drop', (e) => {
       e.preventDefault();

@@ -261,6 +261,51 @@ class SoundEngine {
     this.bgmInterval = setInterval(playNextChord, 4000);
   }
 
+  playBreakerSwitch() {
+    this.ensureContext();
+    if (this.muted || !this.ctx) return;
+    const now = this.ctx.currentTime;
+    
+    // Heavy chunk sound
+    const osc = this.ctx.createOscillator();
+    osc.type = 'square';
+    osc.frequency.setValueAtTime(100, now);
+    osc.frequency.exponentialRampToValueAtTime(20, now + 0.1);
+    
+    const gain = this.ctx.createGain();
+    gain.gain.setValueAtTime(1, now);
+    gain.gain.exponentialRampToValueAtTime(0.01, now + 0.1);
+    
+    osc.connect(gain);
+    gain.connect(this.ctx.destination);
+    osc.start(now);
+    osc.stop(now + 0.15);
+  }
+
+  playSteamWhistle() {
+    this.ensureContext();
+    if (this.muted || !this.ctx) return;
+    const now = this.ctx.currentTime;
+    
+    const osc = this.ctx.createOscillator();
+    osc.type = 'triangle';
+    osc.frequency.setValueAtTime(300, now);
+    osc.frequency.linearRampToValueAtTime(600, now + 0.2);
+    osc.frequency.setValueAtTime(600, now + 1.0);
+    osc.frequency.linearRampToValueAtTime(300, now + 1.5);
+    
+    const gain = this.ctx.createGain();
+    gain.gain.setValueAtTime(0.01, now);
+    gain.gain.linearRampToValueAtTime(0.3, now + 0.2);
+    gain.gain.setValueAtTime(0.3, now + 1.0);
+    gain.gain.linearRampToValueAtTime(0.01, now + 1.5);
+    
+    osc.connect(gain);
+    gain.connect(this.ctx.destination);
+    osc.start(now);
+    osc.stop(now + 1.6);
+  }
+
   stopBGM() {
     this.bgmPlaying = false;
     if (this.bgmInterval) {
