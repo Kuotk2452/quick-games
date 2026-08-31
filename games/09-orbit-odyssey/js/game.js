@@ -4,6 +4,10 @@ import { orbitAudio } from './audio.js';
 class OrbitGame {
   constructor() {
     this.ui = {
+      bootScreen: document.getElementById('bootScreen'),
+      terminalText: document.getElementById('terminalText'),
+      tutorialScreen: document.getElementById('tutorialScreen'),
+      btnAckTutorial: document.getElementById('btnAckTutorial'),
       mainMenu: document.getElementById('mainMenu'),
       gameOverMenu: document.getElementById('gameOverMenu'),
       hud: document.getElementById('hud'),
@@ -17,8 +21,11 @@ class OrbitGame {
       btnRestart: document.getElementById('btnRestart')
     };
 
-    this.state = 'MENU'; // MENU, PLAYING, GAMEOVER
+    this.state = 'BOOT'; // BOOT, TUTORIAL, MENU, PLAYING, GAMEOVER
     this.space = new SpaceScene(document.getElementById('gameContainer'));
+    
+    // Run boot sequence
+    this.runBootSequence();
     
     // Player State
     this.player = {
@@ -49,7 +56,38 @@ class OrbitGame {
     requestAnimationFrame(this.loop.bind(this));
   }
 
+  runBootSequence() {
+    const sequence = [
+      "INITIATING HYPER-DRIVE OS...",
+      "LOADING GRAVITY TETHER PROTOCOLS...",
+      "CALIBRATING NAVIGATION SENSORS...",
+      "SYSTEM ONLINE."
+    ];
+    let step = 0;
+    
+    const typeLine = () => {
+      if (step < sequence.length) {
+        this.ui.terminalText.textContent += sequence[step] + '\n';
+        step++;
+        setTimeout(typeLine, 300);
+      } else {
+        setTimeout(() => {
+          this.ui.bootScreen.classList.add('hidden');
+          this.ui.tutorialScreen.classList.remove('hidden');
+          this.state = 'TUTORIAL';
+        }, 600);
+      }
+    };
+    
+    setTimeout(typeLine, 200);
+  }
+
   bindEvents() {
+    this.ui.btnAckTutorial.addEventListener('click', () => {
+      this.ui.tutorialScreen.classList.add('hidden');
+      this.ui.mainMenu.classList.remove('hidden');
+      this.state = 'MENU';
+    });
     this.ui.btnStart.addEventListener('click', () => this.startGame());
     this.ui.btnRestart.addEventListener('click', () => this.startGame());
 

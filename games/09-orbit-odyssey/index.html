@@ -41,8 +41,38 @@
       <div id="closeCallBanner" class="close-call-banner hidden">PERFECT ORBIT! +500</div>
     </div>
 
+    <!-- Boot Sequence -->
+    <div id="bootScreen" class="modal active boot-screen">
+      <div class="terminal-text" id="terminalText"></div>
+    </div>
+
+    <!-- Animated Tutorial -->
+    <div id="tutorialScreen" class="modal hidden">
+      <div class="modal-content glass-panel tutorial-panel">
+        <h2 class="tutorial-title text-cyan">TETHER CALIBRATION</h2>
+        
+        <div class="anim-container">
+          <!-- SVG for smooth orbit animation -->
+          <svg viewBox="0 0 200 200" class="tether-svg">
+            <circle cx="100" cy="100" r="30" class="wire-planet"></circle>
+            <circle cx="100" cy="100" r="60" class="wire-orbit"></circle>
+            <!-- Ship -->
+            <polygon points="90,30 110,40 90,50" class="wire-ship"></polygon>
+            <!-- Tether Line -->
+            <line x1="100" y1="100" x2="100" y2="40" class="wire-tether"></line>
+            <!-- Slingshot Path -->
+            <line x1="100" y1="40" x2="200" y2="40" class="wire-slingshot"></line>
+          </svg>
+          <div class="touch-indicator"></div>
+        </div>
+
+        <p class="tutorial-desc"><span class="highlight">PRESS & HOLD</span> to grapple and orbit.<br><span class="highlight">RELEASE</span> to slingshot forward.</p>
+        <button id="btnAckTutorial" class="btn-primary">SYSTEM READY</button>
+      </div>
+    </div>
+
     <!-- Main Menu -->
-    <div id="mainMenu" class="modal active">
+    <div id="mainMenu" class="modal hidden">
       <div class="modal-content glass-panel">
         <h1 class="title-glitch" data-text="ORBIT ODYSSEY">ORBIT ODYSSEY</h1>
         <p class="subtitle">GRAVITATIONAL SLINGSHOT RUNNER</p>
@@ -85,6 +115,6 @@
   </div>
 
   <!-- Main Game Script -->
-  <script type="module" src="js/game.js?v=1.1"></script>
+  <script type="module" src="js/game.js?v=1.2"></script>
 </body>
 </html>
