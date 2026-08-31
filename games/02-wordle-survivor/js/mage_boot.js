@@ -9,8 +9,8 @@ class MageBootScreen {
     this.flash = document.getElementById('whiteFlash');
     
     if (!this.screen) return;
-    
-    window.isBooting = true;\n    this.initThreeJS();
+    window.isBooting = true;
+    this.initThreeJS();
     this.bindEvents();
     
     soundEngine.playMagicalHum();
@@ -163,7 +163,9 @@ class MageBootScreen {
     }
     this.renderer = null;
     this.scene = null;
-    this.camera = null;\n    window.isBooting = false;\n    if(window.gameInstance) window.gameInstance.startGame();
+    this.camera = null;
+    window.isBooting = false;
+    if(window.gameInstance) window.gameInstance.startGame();
   }
 }
 
