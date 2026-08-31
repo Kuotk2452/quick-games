@@ -25,6 +25,68 @@ class SlackerAudioEngine {
     }
   }
 
+  playTickTock() {
+    this.ensureContext();
+    if (this.muted || !this.ctx) return;
+    let isTick = true;
+    
+    this.tickTockInterval = setInterval(() => {
+      if (this.muted || !this.ctx) return;
+      const now = this.ctx.currentTime;
+      const osc = this.ctx.createOscillator();
+      osc.type = 'sine';
+      osc.frequency.setValueAtTime(isTick ? 800 : 600, now);
+      
+      const gain = this.ctx.createGain();
+      gain.gain.setValueAtTime(0, now);
+      gain.gain.linearRampToValueAtTime(0.5, now + 0.01);
+      gain.gain.exponentialRampToValueAtTime(0.01, now + 0.1);
+      
+      osc.connect(gain);
+      gain.connect(this.ctx.destination);
+      osc.start(now);
+      osc.stop(now + 0.1);
+      
+      isTick = !isTick;
+    }, 1000); // 1 tick per second
+  }
+
+  stopTickTock() {
+    if (this.tickTockInterval) {
+      clearInterval(this.tickTockInterval);
+      this.tickTockInterval = null;
+    }
+  }
+
+  playWin95Boot() {
+    this.ensureContext();
+    if (this.muted || !this.ctx) return;
+    const now = this.ctx.currentTime;
+    
+    // Classic majestic startup chord (C Major add 9)
+    const freqs = [261.63, 329.63, 392.00, 587.33, 1046.50];
+    
+    freqs.forEach((freq, idx) => {
+      const osc = this.ctx.createOscillator();
+      osc.type = (idx % 2 === 0) ? 'sine' : 'triangle';
+      osc.frequency.setValueAtTime(freq, now);
+      
+      const gain = this.ctx.createGain();
+      gain.gain.setValueAtTime(0, now);
+      
+      // Stagger the attack for that iconic glissando chord build up
+      const startOffset = idx * 0.1;
+      gain.gain.setValueAtTime(0, now + startOffset);
+      gain.gain.linearRampToValueAtTime(0.2, now + startOffset + 0.5);
+      gain.gain.exponentialRampToValueAtTime(0.01, now + startOffset + 3.0);
+      
+      osc.connect(gain);
+      gain.connect(this.ctx.destination);
+      osc.start(now + startOffset);
+      osc.stop(now + startOffset + 3.0);
+    });
+  }
+
   toggleMute() {
     this.muted = !this.muted;
     return this.muted;

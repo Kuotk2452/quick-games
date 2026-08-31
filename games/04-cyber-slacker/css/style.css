@@ -750,3 +750,40 @@ body, html {
   font-weight: 700;
   cursor: pointer;
 }
+
+/* Boss Boot Screen */
+.boss-boot-screen {
+  position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+  background: #000; z-index: 100000;
+  display: flex; flex-direction: column; justify-content: flex-end; align-items: center;
+  font-family: 'Courier New', Courier, monospace; overflow: hidden;
+  transition: opacity 0.5s;
+}
+.boss-boot-screen.hidden { opacity: 0; pointer-events: none; }
+
+#bossCanvasContainer {
+  position: absolute; top: 0; left: 0; width: 100%; height: 100%; z-index: 100001;
+}
+
+.crt-overlay {
+  position: absolute; top: 0; left: 0; width: 100%; height: 100%;
+  background: linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.25) 50%), linear-gradient(90deg, rgba(255, 0, 0, 0.06), rgba(0, 255, 0, 0.02), rgba(0, 0, 255, 0.06));
+  background-size: 100% 2px, 3px 100%;
+  pointer-events: none; z-index: 100002; opacity: 0.5;
+}
+
+#bossBootTap {
+  color: #ff3333; font-size: 20px; font-weight: bold; letter-spacing: 2px;
+  text-shadow: 0 0 10px rgba(255,51,51,0.8); z-index: 100003;
+  margin-bottom: 50px; text-align: center; background: rgba(0,0,0,0.7);
+  padding: 10px 20px; border: 1px solid #ff3333; border-radius: 4px;
+}
+#bossBootTap.pulse { animation: bossPulse 1s infinite alternate; cursor: pointer; }
+@keyframes bossPulse { from { opacity: 1; transform: scale(1); } to { opacity: 0.6; transform: scale(0.95); } }
+
+.white-flash {
+  position: absolute; top: 0; left: 0; width: 100%; height: 100%;
+  background: #fff; z-index: 100005; opacity: 0; pointer-events: none;
+  transition: opacity 0.3s ease-out;
+}
+.white-flash.active { opacity: 1; transition: none; }

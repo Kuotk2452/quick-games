@@ -99,6 +99,7 @@ export class CyberSlackerGame {
 
     let lastPanicTime = 0;
     const safeTogglePanic = () => {
+      if (window.isBossBooting) return;
       const now = performance.now();
       if (now - lastPanicTime < 150) return; // 150ms debounce
       lastPanicTime = now;
@@ -123,6 +124,7 @@ export class CyberSlackerGame {
 
     // Keyboard Hotkeys
     window.addEventListener('keydown', (e) => {
+      if (window.isBossBooting) return;
       if (e.code === 'Space') {
         e.preventDefault();
         safeTogglePanic();
@@ -142,6 +144,7 @@ export class CyberSlackerGame {
     // Runner Canvas Tap/Click to Jump
     if (this.ui.runnerCanvas) {
       this.ui.runnerCanvas.addEventListener('click', (e) => {
+        if (window.isBossBooting) return;
         e.preventDefault();
         if (this.runner.active && !this.isDisguised) {
           this.runner.jump();

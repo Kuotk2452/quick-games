@@ -8,6 +8,14 @@
   <link rel="stylesheet" href="css/style.css">
 </head>
 <body>
+  
+  <!-- 3D Boss Boot Screen -->
+  <div id="bossBootScreen" class="boss-boot-screen active">
+    <div id="bossCanvasContainer"></div>
+    <div class="crt-overlay"></div>
+    <div id="bossBootTap" class="boot-text pulse">BOSS IS WATCHING. CLOCK IN TO START</div>
+    <div id="whiteFlash" class="white-flash"></div>
+  </div>
 
   <!-- Retro Office OS Desktop Frame -->
   <div id="desktopContainer">
@@ -309,9 +317,12 @@
         <button id="btnShareScore" class="secondary-btn" data-i18n="shareScore">📋 Share Review</button>
       </div>
     </div>
-  </div>
+    </div>
 
-  <!-- Main Game Entry -->
-  <script type="module" src="js/game.js?v=1.0"></script>
+    <!-- Scripts -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <script type="module" src="js/boss_boot.js?v=1.1"></script>
+    <!-- Main Game Entry -->
+    <script type="module" src="js/game.js?v=1.1"></script>
 </body>
 </html>
