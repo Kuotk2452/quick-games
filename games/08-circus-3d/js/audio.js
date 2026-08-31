@@ -29,6 +29,61 @@ class CircusAudioEngine {
     }
   }
 
+  playDrumroll() {
+    this.ensureContext();
+    if (this.muted || !this.ctx) return;
+    const dur = 2.5;
+    const bufferSize = this.ctx.sampleRate * dur;
+    const buffer = this.ctx.createBuffer(1, bufferSize, this.ctx.sampleRate);
+    const data = buffer.getChannelData(0);
+    for (let i = 0; i < bufferSize; i++) {
+      // Fast snare hits (20 hits per second)
+      const envelope = Math.sin((i / this.ctx.sampleRate) * Math.PI * 40); 
+      data[i] = (Math.random() * 2 - 1) * (envelope > 0 ? envelope : 0);
+    }
+    const noise = this.ctx.createBufferSource();
+    noise.buffer = buffer;
+    
+    const filter = this.ctx.createBiquadFilter();
+    filter.type = 'lowpass';
+    filter.frequency.setValueAtTime(400, this.ctx.currentTime);
+    filter.frequency.linearRampToValueAtTime(3000, this.ctx.currentTime + dur);
+    
+    const gain = this.ctx.createGain();
+    gain.gain.setValueAtTime(0.01, this.ctx.currentTime);
+    gain.gain.exponentialRampToValueAtTime(1.2, this.ctx.currentTime + dur);
+    
+    noise.connect(filter);
+    filter.connect(gain);
+    gain.connect(this.ctx.destination);
+    noise.start();
+  }
+
+  playCymbalCrash() {
+    this.ensureContext();
+    if (this.muted || !this.ctx) return;
+    const dur = 2.0;
+    const bufferSize = this.ctx.sampleRate * dur;
+    const buffer = this.ctx.createBuffer(1, bufferSize, this.ctx.sampleRate);
+    const data = buffer.getChannelData(0);
+    for (let i = 0; i < bufferSize; i++) data[i] = Math.random() * 2 - 1;
+    const noise = this.ctx.createBufferSource();
+    noise.buffer = buffer;
+    
+    const filter = this.ctx.createBiquadFilter();
+    filter.type = 'highpass';
+    filter.frequency.value = 5000;
+    
+    const gain = this.ctx.createGain();
+    gain.gain.setValueAtTime(1.0, this.ctx.currentTime);
+    gain.gain.exponentialRampToValueAtTime(0.01, this.ctx.currentTime + dur);
+    
+    noise.connect(filter);
+    filter.connect(gain);
+    gain.connect(this.ctx.destination);
+    noise.start();
+  }
+
   toggleMute() {
     this.muted = !this.muted;
     return this.muted;

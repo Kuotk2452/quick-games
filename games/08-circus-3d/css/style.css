@@ -709,3 +709,48 @@ body, html {
     padding-bottom: 4px;
   }
 }
+
+
+/* Curtain Intro Animation */
+.curtain-intro {
+  position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+  z-index: 9999; display: flex; justify-content: center; align-items: center;
+  overflow: hidden; background: #000;
+  transition: visibility 1s 1s; /* delay visibility hiding */
+}
+.curtain-intro.hidden {
+  visibility: hidden; pointer-events: none;
+}
+.curtain {
+  position: absolute; top: 0; width: 50%; height: 100%;
+  background: repeating-linear-gradient(to right, #8b0000, #b22222 5%, #8b0000 10%);
+  box-shadow: inset 0 0 50px rgba(0,0,0,0.8);
+  transition: transform 1.2s cubic-bezier(0.5, 0, 0.1, 1);
+  z-index: 10;
+}
+.curtain-left { left: 0; transform-origin: left; border-right: 15px solid #ffd700; border-right-style: ridge; }
+.curtain-right { right: 0; transform-origin: right; border-left: 15px solid #ffd700; border-left-style: ridge; }
+
+.curtain-intro.open .curtain-left { transform: translateX(-100%); }
+.curtain-intro.open .curtain-right { transform: translateX(100%); }
+
+.spotlight {
+  position: absolute; top: -30%; left: 50%; width: 800px; height: 160%;
+  transform: translateX(-50%);
+  background: radial-gradient(ellipse at top, rgba(255, 255, 200, 0.45) 0%, transparent 60%);
+  z-index: 11; opacity: 0; transition: opacity 0.5s;
+}
+.curtain-intro.active-spotlight .spotlight { opacity: 1; }
+.curtain-intro.open .spotlight { opacity: 0; }
+
+.intro-text {
+  position: relative; z-index: 12; font-family: 'Rye', cursive;
+  font-size: 42px; color: #ffeb3b; text-align: center;
+  text-shadow: 2px 2px 0 #000, 4px 4px 0 #d84315;
+  padding: 20px; transition: opacity 0.3s;
+}
+.intro-text.pulse { animation: introPulse 1.5s infinite; cursor: pointer; }
+@keyframes introPulse { 
+  0%, 100% { opacity: 1; transform: scale(1); } 
+  50% { opacity: 0.5; transform: scale(0.95); } 
+}

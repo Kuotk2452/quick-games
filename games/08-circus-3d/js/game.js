@@ -71,7 +71,7 @@ export class CircusGame {
     this.container = document.getElementById('webglContainer');
     this.stage = new CircusStage3D(this.container);
 
-    this.state = 'ACT_SELECT'; // 'ACT_SELECT' | 'PLAYING' | 'STAGE_CLEAR' | 'GAME_OVER'
+    this.state = 'CURTAIN_WAITING'; // 'CURTAIN_WAITING' | 'ACT_SELECT' | 'PLAYING' | 'STAGE_CLEAR' | 'GAME_OVER'
     this.currentActIdx = 0;
 
     this.score = 0;
@@ -137,6 +137,8 @@ export class CircusGame {
 
   initDOM() {
     this.ui = {
+      curtainIntro: document.getElementById('curtainIntro'),
+      introText: document.getElementById('introText'),
       actSelectView: document.getElementById('actSelectView'),
       gameplayHUD: document.getElementById('gameplayHUD'),
       actCardsContainer: document.getElementById('actCardsContainer'),
@@ -177,6 +179,35 @@ export class CircusGame {
   }
 
   initEvents() {
+    // Curtain Intro Logic
+    if (this.ui.curtainIntro) {
+      this.ui.curtainIntro.addEventListener('click', () => {
+        if (this.state === 'CURTAIN_OPENING') return;
+        this.state = 'CURTAIN_OPENING';
+        
+        this.ui.introText.classList.remove('pulse');
+        this.ui.curtainIntro.classList.add('active-spotlight');
+        circusAudio.playDrumroll();
+        
+        this.ui.introText.textContent = "LADIES AND GENTLEMEN...";
+        
+        setTimeout(() => {
+          this.ui.introText.textContent = "THE GREATEST SHOW!";
+        }, 1500);
+        
+        setTimeout(() => {
+          circusAudio.playCymbalCrash();
+          this.ui.curtainIntro.classList.add('open');
+          this.ui.introText.style.opacity = '0';
+          
+          setTimeout(() => {
+            this.ui.curtainIntro.classList.add('hidden');
+            this.showActSelect();
+          }, 1000);
+        }, 2500);
+      });
+    }
+
     window.addEventListener('resize', () => this.stage.handleResize());
 
     // Audio & Language
