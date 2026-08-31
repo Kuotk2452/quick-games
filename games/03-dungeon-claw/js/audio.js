@@ -83,34 +83,42 @@ class ClawSoundEngine {
     if (this.muted || !this.ctx || this.bgmPlaying) return;
     this.bgmPlaying = true;
     
-    // Dungeon Dark Ambient Drone
+    // Play a continuous dark ambient drone (audible on laptop speakers)
     const playDrone = () => {
       if (!this.bgmPlaying || !this.ctx) return;
       const now = this.ctx.currentTime;
       
-      const osc = this.ctx.createOscillator();
-      osc.type = 'square';
-      osc.frequency.setValueAtTime(40, now);
-      osc.frequency.linearRampToValueAtTime(45, now + 4);
-      osc.frequency.linearRampToValueAtTime(40, now + 8);
+      // Base note (A2 = ~110Hz, A3 = 220Hz, E3 = 164.8Hz)
+      const freqs = [110, 164.81, 220];
       
-      const filter = this.ctx.createBiquadFilter();
-      filter.type = 'lowpass';
-      filter.frequency.setValueAtTime(200, now);
-      filter.frequency.linearRampToValueAtTime(400, now + 4);
-      filter.frequency.linearRampToValueAtTime(200, now + 8);
-      
-      const gain = this.ctx.createGain();
-      gain.gain.setValueAtTime(0, now);
-      gain.gain.linearRampToValueAtTime(0.05, now + 2);
-      gain.gain.linearRampToValueAtTime(0, now + 8);
-      
-      osc.connect(filter);
-      filter.connect(gain);
-      gain.connect(this.ctx.destination);
-      
-      osc.start(now);
-      osc.stop(now + 8);
+      freqs.forEach(freq => {
+        const osc = this.ctx.createOscillator();
+        osc.type = 'sawtooth';
+        osc.frequency.setValueAtTime(freq, now);
+        // Slight detune wobble
+        osc.frequency.linearRampToValueAtTime(freq + 1, now + 4);
+        osc.frequency.linearRampToValueAtTime(freq, now + 8);
+        
+        const filter = this.ctx.createBiquadFilter();
+        filter.type = 'lowpass';
+        filter.frequency.setValueAtTime(400, now);
+        filter.frequency.linearRampToValueAtTime(800, now + 4);
+        filter.frequency.linearRampToValueAtTime(400, now + 8);
+        
+        const gain = this.ctx.createGain();
+        gain.gain.setValueAtTime(0, now);
+        // Fade in and out per cycle
+        gain.gain.linearRampToValueAtTime(0.08, now + 2);
+        gain.gain.linearRampToValueAtTime(0.04, now + 6);
+        gain.gain.linearRampToValueAtTime(0, now + 8.1); // Slightly overlap to prevent clicks
+        
+        osc.connect(filter);
+        filter.connect(gain);
+        gain.connect(this.ctx.destination);
+        
+        osc.start(now);
+        osc.stop(now + 8.1);
+      });
     };
     
     playDrone();

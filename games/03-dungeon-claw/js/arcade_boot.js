@@ -1,5 +1,5 @@
 
-import { soundEngine } from './audio.js';
+import { soundEngine } from './audio.js?v=8.2';
 
 class ArcadeBootScreen {
   constructor() {
