@@ -301,14 +301,56 @@ export class CircusGame {
       this.ui.touchRightBtn.addEventListener('touchcancel', () => { this.keys.right = false; });
     }
 
-    // Pointer/Tap screen to jump
-    window.addEventListener('pointerdown', (e) => {
-      if (this.state === 'PLAYING') {
-        if (!e.target.closest('button, select, a, .touch-btn, .portal-back-btn, .modal-content')) {
+      // Swipe & Tap screen Detection
+      let touchStartY = 0;
+      let touchStartX = 0;
+      let swipeProcessed = false;
+
+      window.addEventListener('touchstart', (e) => {
+        if (this.state !== 'PLAYING') return;
+        if (e.target.closest('button, select, a, .touch-btn, .portal-back-btn, .modal-content')) return;
+        touchStartY = e.changedTouches[0].screenY;
+        touchStartX = e.changedTouches[0].screenX;
+        swipeProcessed = false;
+      }, { passive: true });
+
+      window.addEventListener('touchmove', (e) => {
+        if (this.state !== 'PLAYING' || swipeProcessed || touchStartY === 0) return;
+        const dy = e.changedTouches[0].screenY - touchStartY;
+        
+        if (dy > 30) {
+          // Swiped down -> Slide
+          this.triggerSlide();
+          swipeProcessed = true;
+        } else if (dy < -30) {
+          // Swiped up -> Jump
+          this.keys.jumpHeld = true;
           this.triggerJump();
+          swipeProcessed = true;
         }
-      }
-    });
+      }, { passive: true });
+
+      window.addEventListener('touchend', (e) => {
+        if (this.state !== 'PLAYING') return;
+        this.keys.jumpHeld = false;
+        if (!swipeProcessed && touchStartY !== 0 && !e.target.closest('button, select, a, .touch-btn, .portal-back-btn, .modal-content')) {
+          // It was a tap
+          this.keys.jumpHeld = true;
+          this.triggerJump();
+          setTimeout(() => { this.keys.jumpHeld = false; }, 100);
+        }
+        touchStartY = 0;
+      });
+
+      // Mouse support for desktop testing
+      window.addEventListener('pointerdown', (e) => {
+        if (e.pointerType === 'touch') return; // Handled by touch events
+        if (this.state === 'PLAYING') {
+          if (!e.target.closest('button, select, a, .touch-btn, .portal-back-btn, .modal-content')) {
+            this.triggerJump();
+          }
+        }
+      });
 
     // Share Score
     if (this.ui.btnShareScore) {
@@ -755,7 +797,12 @@ Play Free: https://quick-games-ez4.pages.dev/games/08-circus-3d/`;
   }
 
   triggerSlide() {
-    if (this.state !== 'PLAYING' || !this.player.isGrounded || this.isSliding) return;
+    if (this.state !== 'PLAYING' || this.isSliding) return;
+    if (!this.player.isGrounded) {
+      // Fast fall
+      this.player.vy = -30.0;
+      return;
+    }
     this.isSliding = true;
     this.slideTimer = 0.7; // 0.7s slide duration
     circusAudio.playSlide();
