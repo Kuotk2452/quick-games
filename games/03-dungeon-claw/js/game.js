@@ -4,12 +4,12 @@
  */
 
 import * as THREE from 'https://unpkg.com/three@0.160.0/build/three.module.js';
-import { PhysicsWorld3D } from './physics3d.js?v=2.2';
-import { ITEM_DEFS, createItem3DMesh, calculateCombos } from './items.js?v=2.2';
-import { MONSTER_ROSTER, Monster } from './monsters.js?v=2.2';
-import { CLAW_UPGRADES, ITEM_SHOP_OFFERS } from './shop.js?v=2.2';
-import { soundEngine } from './audio.js?v=2.2';
-import { i18n } from './i18n.js?v=2.2';
+import { PhysicsWorld3D } from './physics3d.js?v=3.0';
+import { ITEM_DEFS, createItem3DMesh, calculateCombos } from './items.js?v=3.0';
+import { MONSTER_ROSTER, Monster } from './monsters.js?v=3.0';
+import { CLAW_UPGRADES, ITEM_SHOP_OFFERS } from './shop.js?v=3.0';
+import { soundEngine } from './audio.js?v=3.0';
+import { i18n } from './i18n.js?v=3.0';
 
 export class DungeonClawGame {
   constructor() {
@@ -90,13 +90,12 @@ export class DungeonClawGame {
     this.cabinetGroup.add(floor);
 
     // Transparent Glass Cabinet
-    const glassMat = new THREE.MeshPhysicalMaterial({
-      color: 0xffffff,
-      transmission: 0.92,
-      opacity: 0.3,
+    const glassMat = new THREE.MeshStandardMaterial({
+      color: 0x38bdf8,
+      opacity: 0.25,
       transparent: true,
       roughness: 0.1,
-      metalness: 0.1
+      metalness: 0.3
     });
 
     // Glass Walls
@@ -660,34 +659,42 @@ Play free on web:
   }
 
   animate(time) {
-    const dt = 0.016; // Stable 60fps delta
+    try {
+      const dt = 0.016; // Stable 60fps delta
 
-    this.handleKeyboard(dt);
-    this.physics.update(dt);
+      this.handleKeyboard(dt);
+      this.physics.update(dt);
 
-    // Sync 3D Crane transforms
-    const claw = this.physics.claw;
-    this.trolleyMesh.position.set(claw.x, 2.4, claw.z);
+      // Sync 3D Crane transforms
+      const claw = this.physics.claw;
+      if (this.trolleyMesh) this.trolleyMesh.position.set(claw.x, 2.4, claw.z);
 
-    // Sync vertical cable scale & position
-    const cableHeight = 2.4 - claw.y;
-    this.cableMesh.scale.set(1, cableHeight, 1);
-    this.cableMesh.position.set(claw.x, 2.4 - cableHeight / 2, claw.z);
+      // Sync vertical cable scale & position
+      const cableHeight = Math.max(0.1, 2.4 - claw.y);
+      if (this.cableMesh) {
+        this.cableMesh.scale.set(1, cableHeight, 1);
+        this.cableMesh.position.set(claw.x, 2.4 - cableHeight / 2, claw.z);
+      }
 
-    this.clawHub.position.set(claw.x, claw.y, claw.z);
+      if (this.clawHub) this.clawHub.position.set(claw.x, claw.y, claw.z);
 
-    // Articulate 3 Claw prongs
-    this.prongs.forEach((prong) => {
-      prong.rotation.z = claw.currentAngle;
-    });
+      // Articulate 3 Claw prongs
+      if (this.prongs) {
+        this.prongs.forEach((prong) => {
+          prong.rotation.z = claw.currentAngle;
+        });
+      }
 
-    // Gentle float animation for monster
-    if (this.currentMonster && this.currentMonster.mesh) {
-      this.currentMonster.mesh.rotation.y = Math.sin(time * 0.002) * 0.25;
-      this.currentMonster.mesh.position.y = 4.2 + Math.sin(time * 0.004) * 0.15;
+      // Gentle float animation for monster
+      if (this.currentMonster && this.currentMonster.mesh) {
+        this.currentMonster.mesh.rotation.y = Math.sin(time * 0.002) * 0.25;
+        this.currentMonster.mesh.position.y = 4.2 + Math.sin(time * 0.004) * 0.15;
+      }
+
+      this.renderer.render(this.scene, this.camera);
+    } catch (err) {
+      console.warn('Render frame:', err);
     }
-
-    this.renderer.render(this.scene, this.camera);
     requestAnimationFrame(this.animate);
   }
 }

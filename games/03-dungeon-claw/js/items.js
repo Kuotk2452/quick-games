@@ -156,12 +156,11 @@ export function createItem3DMesh(itemDef) {
   } else if (itemDef.id === 'POTION') {
     // 3D Flask Bottle
     const bodyGeo = new THREE.SphereGeometry(0.28, 16, 16);
-    const bodyMat = new THREE.MeshPhysicalMaterial({
+    const bodyMat = new THREE.MeshStandardMaterial({
       color: 0xef4444,
-      transmission: 0.6,
-      opacity: 0.9,
       transparent: true,
-      roughness: 0.1,
+      opacity: 0.85,
+      roughness: 0.2,
       emissive: 0xef4444,
       emissiveIntensity: 0.4
     });
