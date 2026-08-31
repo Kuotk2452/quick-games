@@ -68,19 +68,25 @@
         </div>
       </div>
 
-      <!-- Action Buttons -->
+      <!-- Action Buttons with On-Screen Steering -->
       <div class="action-buttons-group">
+        <button id="btnMoveLeft" class="dpad-btn" title="Move Claw Left">
+          ◀️ LEFT
+        </button>
         <button id="btnDropClaw" class="drop-claw-btn" data-i18n="dropClaw">
           👇 DROP CLAW (SPACE)
         </button>
+        <button id="btnMoveRight" class="dpad-btn" title="Move Claw Right">
+          RIGHT ▶️
+        </button>
         <button id="btnToggleView" class="view-btn" data-i18n="viewToggleFront">
-          🎥 Front View
+          🎥 View
         </button>
       </div>
 
       <!-- Turn Hint Text -->
       <div id="turnHintText" style="font-size: 13px; font-weight: 700; color: #38bdf8; text-align: center; margin-top: 4px;">
-        🟢 YOUR TURN: Drag or [A/D] to aim, then press [DROP CLAW]!
+        🟢 YOUR TURN: Tap [◀️ LEFT / RIGHT ▶️] or [A/D] to aim, then [DROP CLAW]!
       </div>
     </div>
 
@@ -147,6 +153,6 @@
   </div>
 
   <!-- Main Game Entry with Cache Buster -->
-  <script type="module" src="js/game.js?v=3.0"></script>
+  <script type="module" src="js/game.js?v=3.5"></script>
 </body>
 </html>

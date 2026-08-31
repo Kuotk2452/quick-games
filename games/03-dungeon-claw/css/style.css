@@ -208,14 +208,50 @@ body, html {
   gap: 12px;
 }
 
+.dpad-btn {
+  background: rgba(30, 41, 59, 0.95);
+  color: #38bdf8;
+  border: 1px solid rgba(56, 189, 248, 0.5);
+  padding: 14px 16px;
+  border-radius: 18px;
+  font-size: 14px;
+  font-weight: 900;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+  transition: all 0.15s ease;
+  user-select: none;
+  touch-action: none;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+}
+
+.dpad-btn:hover:not(:disabled) {
+  background: rgba(56, 189, 248, 0.25);
+  border-color: #38bdf8;
+  transform: translateY(-2px);
+  box-shadow: 0 0 16px rgba(56, 189, 248, 0.5);
+}
+
+.dpad-btn:active:not(:disabled) {
+  transform: scale(0.94);
+  background: rgba(56, 189, 248, 0.45);
+}
+
+.dpad-btn:disabled {
+  opacity: 0.3;
+  cursor: not-allowed;
+}
+
 .drop-claw-btn {
   flex: 2;
   background: linear-gradient(135deg, #0284c7, #6366f1);
   color: #ffffff;
   border: none;
-  padding: 16px 24px;
+  padding: 16px 20px;
   border-radius: 18px;
-  font-size: 18px;
+  font-size: 16px;
   font-weight: 900;
   cursor: pointer;
   letter-spacing: 0.5px;
@@ -235,13 +271,12 @@ body, html {
 }
 
 .view-btn {
-  flex: 1;
   background: rgba(255, 255, 255, 0.1);
   border: 1px solid rgba(255, 255, 255, 0.2);
   color: #ffffff;
-  padding: 16px;
+  padding: 14px 16px;
   border-radius: 18px;
-  font-size: 14px;
+  font-size: 13px;
   font-weight: 800;
   cursor: pointer;
 }

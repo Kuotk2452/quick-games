@@ -4,12 +4,12 @@
  */
 
 import * as THREE from 'https://unpkg.com/three@0.160.0/build/three.module.js';
-import { PhysicsWorld3D } from './physics3d.js?v=3.0';
-import { ITEM_DEFS, createItem3DMesh, calculateCombos } from './items.js?v=3.0';
-import { MONSTER_ROSTER, Monster } from './monsters.js?v=3.0';
-import { CLAW_UPGRADES, ITEM_SHOP_OFFERS } from './shop.js?v=3.0';
-import { soundEngine } from './audio.js?v=3.0';
-import { i18n } from './i18n.js?v=3.0';
+import { PhysicsWorld3D } from './physics3d.js?v=3.5';
+import { ITEM_DEFS, createItem3DMesh, calculateCombos } from './items.js?v=3.5';
+import { MONSTER_ROSTER, Monster } from './monsters.js?v=3.5';
+import { CLAW_UPGRADES, ITEM_SHOP_OFFERS } from './shop.js?v=3.5';
+import { soundEngine } from './audio.js?v=3.5';
+import { i18n } from './i18n.js?v=3.5';
 
 export class DungeonClawGame {
   constructor() {
@@ -193,6 +193,8 @@ export class DungeonClawGame {
     this.ui = {
       startScreen: document.getElementById('startScreen'),
       btnStart: document.getElementById('btnStart'),
+      btnMoveLeft: document.getElementById('btnMoveLeft'),
+      btnMoveRight: document.getElementById('btnMoveRight'),
       btnDropClaw: document.getElementById('btnDropClaw'),
       btnEndTurn: document.getElementById('btnEndTurn'),
       btnToggleView: document.getElementById('btnToggleView'),
@@ -226,7 +228,7 @@ export class DungeonClawGame {
       this.renderer.setSize(window.innerWidth, window.innerHeight);
     });
 
-    // Keyboard
+    // Keyboard controls
     window.addEventListener('keydown', (e) => {
       this.keys[e.key.toLowerCase()] = true;
       if (e.code === 'Space') {
@@ -240,27 +242,35 @@ export class DungeonClawGame {
       soundEngine.stopMotorSound();
     });
 
-    // Touch & Mouse Dragging for Crane
-    let isDragging = false;
-    let lastX = 0;
-    let lastY = 0;
+    // Raycast Click-to-Aim & Direct Dragging for Crane
+    const raycaster = new THREE.Raycaster();
+    const mouse = new THREE.Vector2();
+    const targetPlane = new THREE.Plane(new THREE.Vector3(0, 1, 0), 0);
 
+    const aimAtScreenPos = (clientX, clientY) => {
+      if (this.gameState !== 'PLAYER_TURN' || this.physics.claw.state !== 'IDLE') return;
+      mouse.x = (clientX / window.innerWidth) * 2 - 1;
+      mouse.y = -(clientY / window.innerHeight) * 2 + 1;
+      raycaster.setFromCamera(mouse, this.camera);
+      const hit = new THREE.Vector3();
+      if (raycaster.ray.intersectPlane(targetPlane, hit)) {
+        this.physics.claw.x = THREE.MathUtils.clamp(hit.x, this.physics.bounds.minX + 0.3, this.physics.bounds.maxX - 0.3);
+        this.physics.claw.z = THREE.MathUtils.clamp(hit.z, this.physics.bounds.minZ + 0.3, this.physics.bounds.maxZ - 0.3);
+        soundEngine.startMotorSound();
+      }
+    };
+
+    let isDragging = false;
     const onPointerDown = (clientX, clientY) => {
       if (this.gameState === 'PLAYER_TURN') {
         isDragging = true;
-        lastX = clientX;
-        lastY = clientY;
+        aimAtScreenPos(clientX, clientY);
       }
     };
 
     const onPointerMove = (clientX, clientY) => {
       if (!isDragging) return;
-      const dx = (clientX - lastX) * 0.015;
-      const dz = (clientY - lastY) * 0.015;
-      lastX = clientX;
-      lastY = clientY;
-      this.physics.moveClaw(dx, dz, 0.16);
-      soundEngine.startMotorSound();
+      aimAtScreenPos(clientX, clientY);
     };
 
     const onPointerUp = () => {
@@ -281,6 +291,44 @@ export class DungeonClawGame {
     }, { passive: true });
 
     window.addEventListener('touchend', onPointerUp);
+
+    // On-Screen Arcade Steering Buttons (Hold or Click)
+    let steerInterval = null;
+    const startSteer = (dx, dz) => {
+      if (this.gameState !== 'PLAYER_TURN') return;
+      this.physics.moveClaw(dx, dz, 0.05);
+      soundEngine.startMotorSound();
+      if (steerInterval) clearInterval(steerInterval);
+      steerInterval = setInterval(() => {
+        if (this.gameState === 'PLAYER_TURN') {
+          this.physics.moveClaw(dx, dz, 0.03);
+        } else {
+          stopSteer();
+        }
+      }, 30);
+    };
+
+    const stopSteer = () => {
+      if (steerInterval) {
+        clearInterval(steerInterval);
+        steerInterval = null;
+      }
+      soundEngine.stopMotorSound();
+    };
+
+    if (this.ui.btnMoveLeft) {
+      this.ui.btnMoveLeft.addEventListener('pointerdown', (e) => { e.preventDefault(); startSteer(-1, 0); });
+      this.ui.btnMoveLeft.addEventListener('pointerup', stopSteer);
+      this.ui.btnMoveLeft.addEventListener('pointerleave', stopSteer);
+      this.ui.btnMoveLeft.addEventListener('click', (e) => { e.preventDefault(); this.physics.moveClaw(-0.8, 0, 0.1); });
+    }
+
+    if (this.ui.btnMoveRight) {
+      this.ui.btnMoveRight.addEventListener('pointerdown', (e) => { e.preventDefault(); startSteer(1, 0); });
+      this.ui.btnMoveRight.addEventListener('pointerup', stopSteer);
+      this.ui.btnMoveRight.addEventListener('pointerleave', stopSteer);
+      this.ui.btnMoveRight.addEventListener('click', (e) => { e.preventDefault(); this.physics.moveClaw(0.8, 0, 0.1); });
+    }
 
     // UI Buttons
     if (this.ui.btnStart) this.ui.btnStart.addEventListener('click', () => this.startGame());
@@ -625,7 +673,7 @@ Play free on web:
 
     if (this.ui.turnHintText) {
       if (this.gameState === 'PLAYER_TURN') {
-        this.ui.turnHintText.innerText = `🟢 YOUR TURN: Drag or [A/D] to aim, then press [DROP CLAW]! (Energy: ${this.energy}/${this.maxEnergy})`;
+        this.ui.turnHintText.innerText = `🟢 YOUR TURN: Tap [◀️ LEFT / RIGHT ▶️] or [A/D] / Click to aim, then [DROP CLAW]! (Energy: ${this.energy}/${this.maxEnergy})`;
         this.ui.turnHintText.style.color = '#38bdf8';
       } else if (this.gameState === 'CLAW_ACTIVE') {
         this.ui.turnHintText.innerText = '🤖 Crane lowering & lifting loot...';
@@ -636,10 +684,13 @@ Play free on web:
       }
     }
 
+    const canControl = (this.gameState === 'PLAYER_TURN' && this.energy > 0);
+    if (this.ui.btnMoveLeft) this.ui.btnMoveLeft.disabled = !canControl;
+    if (this.ui.btnMoveRight) this.ui.btnMoveRight.disabled = !canControl;
+
     if (this.ui.btnDropClaw) {
-      const canDrop = (this.gameState === 'PLAYER_TURN' && this.energy > 0);
-      this.ui.btnDropClaw.disabled = !canDrop;
-      this.ui.btnDropClaw.innerText = canDrop ? '👇 DROP CLAW (SPACE)' : (this.gameState === 'CLAW_ACTIVE' ? '⏳ Grabbing...' : '⌛ Waiting...');
+      this.ui.btnDropClaw.disabled = !canControl;
+      this.ui.btnDropClaw.innerText = canControl ? '👇 DROP CLAW (SPACE)' : (this.gameState === 'CLAW_ACTIVE' ? '⏳ Grabbing...' : '⌛ Waiting...');
     }
   }
 

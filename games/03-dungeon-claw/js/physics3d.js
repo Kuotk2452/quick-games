@@ -23,14 +23,14 @@ export class PhysicsWorld3D {
       y: 2.2, // Cable height
       targetY: 2.2,
       baseY: 2.2,
-      minY: -1.75, // Lowest drop reach
-      speed: 3.5,
-      dropSpeed: 4.5,
-      liftSpeed: 3.5,
+      minY: -1.90, // Lowest drop reach directly onto floor
+      speed: 5.5,
+      dropSpeed: 5.5,
+      liftSpeed: 4.5,
       state: 'IDLE', // 'IDLE' | 'MOVING' | 'DROPPING' | 'GRABBING' | 'LIFTING' | 'DELIVERING'
-      openAngle: 0.65, // Prongs open
-      currentAngle: 0.65,
-      targetAngle: 0.65,
+      openAngle: 0.70, // Prongs open wide
+      currentAngle: 0.70,
+      targetAngle: 0.70,
       gripStrength: 1.0,
       grabbedItems: [],
       meshGroup: null
@@ -159,18 +159,18 @@ export class PhysicsWorld3D {
 
   performGraspDetection() {
     this.claw.grabbedItems = [];
-    const grabRadius = 0.95 * this.claw.gripStrength;
+    const grabRadius = 1.35 * this.claw.gripStrength;
 
     for (const item of this.items) {
       const distXZ = Math.hypot(item.pos.x - this.claw.x, item.pos.z - this.claw.z);
-      const distY = Math.abs(item.pos.y - (this.claw.y - 0.3));
+      const distY = Math.abs(item.pos.y - (this.claw.y - 0.2));
 
-      if (distXZ < grabRadius && distY < 0.85) {
+      if (distXZ < grabRadius && distY < 1.2) {
         item.isGrabbed = true;
         item.grabOffset = {
-          x: (item.pos.x - this.claw.x) * 0.5,
+          x: (item.pos.x - this.claw.x) * 0.4,
           y: (item.pos.y - (this.claw.y - 0.35)),
-          z: (item.pos.z - this.claw.z) * 0.5
+          z: (item.pos.z - this.claw.z) * 0.4
         };
         this.claw.grabbedItems.push(item);
       }
