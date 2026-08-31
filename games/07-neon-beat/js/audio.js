@@ -230,11 +230,11 @@ class NeonAudioEngine {
     });
   }
 
-  // 10. Start Dynamic Music Sequencer
+  // 10. Start Dynamic Music Sequencer with 4 Unique Compositions
   startSong(songId, bpm) {
     this.stopSong();
     this.ensureContext();
-    this.currentSongId = songId;
+    this.currentSongId = songId || 'cyber_highway';
     this.bpm = bpm || 120;
     this.step = 0;
     this.isPlayingMusic = true;
@@ -242,40 +242,101 @@ class NeonAudioEngine {
     // 16th note interval
     const stepDurationMs = (60 / this.bpm / 4) * 1000;
 
-    const bassNotes = [110, 110, 130.81, 146.83, 110, 110, 98, 110];
-    const leadNotes = [440, 523.25, 659.25, 587.33, 783.99, 659.25, 523.25, 493.88];
+    // 4 Distinct Track Profiles (Melody, Bass, Drum Pattern, Synth Timbre)
+    const PROFILES = {
+      // 1. Cyber Highway (Chill Synthwave / Outrun - A Minor)
+      cyber_highway: {
+        bass: [110, 110, 87.31, 87.31, 130.81, 130.81, 98.00, 110],
+        lead: [440, 523.25, 659.25, 587.33, 523.25, 493.88, 392.00, 440, 659.25, 783.99, 880, 783.99, 659.25, 587.33, 523.25, 440],
+        leadType: 'sine',
+        leadGain: 0.16,
+        isDnB: false,
+        isHardcore: false
+      },
+      // 2. Neon Tokyo 2099 (Japanese Future Cyberpunk - D Minor Pentatonic)
+      neon_tokyo: {
+        bass: [73.42, 98.00, 87.31, 110.00, 73.42, 130.81, 110.00, 73.42],
+        lead: [587.33, 698.46, 880.00, 783.99, 587.33, 523.25, 587.33, 698.46, 783.99, 880.00, 1046.50, 880.00, 698.46, 587.33, 523.25, 587.33],
+        leadType: 'square',
+        leadGain: 0.12,
+        isDnB: false,
+        isHardcore: false
+      },
+      // 3. Overdrive Rush (Fast Drum & Bass - F# Minor)
+      overdrive_rush: {
+        bass: [46.25, 46.25, 73.42, 73.42, 82.41, 82.41, 69.30, 92.50],
+        lead: [739.99, 880.00, 1108.73, 987.77, 880.00, 830.61, 739.99, 659.25, 739.99, 987.77, 1108.73, 1318.51, 1108.73, 987.77, 880.00, 739.99],
+        leadType: 'sawtooth',
+        leadGain: 0.14,
+        isDnB: true,
+        isHardcore: false
+      },
+      // 4. Apex Singularity (Dark Hardcore Trance - C Minor Phrygian)
+      apex_singularity: {
+        bass: [65.41, 65.41, 51.91, 51.91, 58.27, 58.27, 77.78, 65.41],
+        lead: [523.25, 622.25, 783.99, 932.33, 1046.50, 932.33, 830.61, 783.99, 698.46, 622.25, 587.33, 523.25, 783.99, 1046.50, 1244.51, 1046.50],
+        leadType: 'sawtooth',
+        leadGain: 0.18,
+        isDnB: false,
+        isHardcore: true
+      }
+    };
+
+    const trackProfile = PROFILES[this.currentSongId] || PROFILES.cyber_highway;
 
     this.currentTrackInterval = setInterval(() => {
       if (!this.isPlayingMusic || !this.ctx) return;
 
       const beat16 = this.step % 16;
-      const beat4 = Math.floor(this.step / 4) % 4;
+      const beat32 = this.step % 32;
 
-      // 4/4 Kick on every quarter beat (0, 4, 8, 12)
-      if (beat16 % 4 === 0) {
-        this.playKick();
+      // 1. Dynamic Drum Patterns
+      if (trackProfile.isDnB) {
+        // Drum & Bass Beat: Kick on 0 & 10, Snare on 4 & 12
+        if (beat16 === 0 || beat16 === 10) this.playKick();
+        if (beat16 === 4 || beat16 === 12) this.playSnare();
+        if (beat16 % 2 === 0) this.playHiHat();
+      } else if (trackProfile.isHardcore) {
+        // Hardcore 4-on-the-floor relentless kicks on every quarter beat with double claps
+        if (beat16 % 4 === 0) this.playKick();
+        if (beat16 === 4 || beat16 === 12) this.playSnare();
+        this.playHiHat(); // 16th note galloping hi-hats
+      } else {
+        // Standard EDM / Synthwave 4/4
+        if (beat16 % 4 === 0) this.playKick();
+        if (beat16 === 4 || beat16 === 12) this.playSnare();
+        if (beat16 % 2 === 0) this.playHiHat();
       }
 
-      // Snare on 4 and 12 (Beats 2 and 4)
-      if (beat16 === 4 || beat16 === 12) {
-        this.playSnare();
-      }
-
-      // Hi-Hats on every 8th note
+      // 2. Unique Bassline Progression
       if (beat16 % 2 === 0) {
-        this.playHiHat();
+        const bassIdx = Math.floor(this.step / 2) % trackProfile.bass.length;
+        this.playBass(trackProfile.bass[bassIdx], null, stepDurationMs / 1000 * 1.8);
       }
 
-      // Synth Bassline on 16th notes
-      if (beat16 % 2 === 0) {
-        const noteIdx = Math.floor(this.step / 2) % bassNotes.length;
-        this.playBass(bassNotes[noteIdx], null, stepDurationMs / 1000 * 1.5);
-      }
+      // 3. Unique Melodic Synth Lead Progression
+      if (beat16 % 2 === 0 || trackProfile.isHardcore) {
+        const leadIdx = Math.floor(this.step / 2) % trackProfile.lead.length;
+        const noteFreq = trackProfile.lead[leadIdx];
 
-      // Arpeggio Lead
-      if (beat16 % 4 === 2) {
-        const leadIdx = Math.floor(this.step / 4) % leadNotes.length;
-        this.playLead(leadNotes[leadIdx], null, stepDurationMs / 1000 * 2.0);
+        // Synthesize Lead with distinct timbre
+        if (!this.muted && this.ctx) {
+          const now = this.ctx.currentTime;
+          const osc = this.ctx.createOscillator();
+          const gain = this.ctx.createGain();
+
+          osc.type = trackProfile.leadType;
+          osc.frequency.setValueAtTime(noteFreq, now);
+
+          gain.gain.setValueAtTime(trackProfile.leadGain, now);
+          gain.gain.exponentialRampToValueAtTime(0.001, now + (stepDurationMs / 1000 * 1.6));
+
+          osc.connect(gain);
+          gain.connect(this.ctx.destination);
+
+          osc.start(now);
+          osc.stop(now + (stepDurationMs / 1000 * 1.6));
+        }
       }
 
       this.step++;
