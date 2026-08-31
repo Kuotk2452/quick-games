@@ -4,12 +4,12 @@
  */
 
 import * as THREE from 'https://unpkg.com/three@0.160.0/build/three.module.js';
-import { PhysicsWorld3D } from './physics3d.js';
-import { ITEM_DEFS, createItem3DMesh, calculateCombos } from './items.js';
-import { MONSTER_ROSTER, Monster } from './monsters.js';
-import { CLAW_UPGRADES, ITEM_SHOP_OFFERS } from './shop.js';
-import { soundEngine } from './audio.js';
-import { i18n } from './i18n.js';
+import { PhysicsWorld3D } from './physics3d.js?v=2.2';
+import { ITEM_DEFS, createItem3DMesh, calculateCombos } from './items.js?v=2.2';
+import { MONSTER_ROSTER, Monster } from './monsters.js?v=2.2';
+import { CLAW_UPGRADES, ITEM_SHOP_OFFERS } from './shop.js?v=2.2';
+import { soundEngine } from './audio.js?v=2.2';
+import { i18n } from './i18n.js?v=2.2';
 
 export class DungeonClawGame {
   constructor() {
@@ -215,7 +215,8 @@ export class DungeonClawGame {
       btnPlayAgain: document.getElementById('btnPlayAgain'),
       btnShareScore: document.getElementById('btnShareScore'),
       audioToggleBtn: document.getElementById('audioToggleBtn'),
-      langSelect: document.getElementById('langSelect')
+      langSelect: document.getElementById('langSelect'),
+      turnHintText: document.getElementById('turnHintText')
     };
   }
 
@@ -402,6 +403,19 @@ Play free on web:
       this.energy--;
       this.gameState = 'CLAW_ACTIVE';
       this.updateHUD();
+
+      // Watchdog safety timer: force recover after 3.2s if claw gets stuck
+      if (this.clawSafetyTimer) clearTimeout(this.clawSafetyTimer);
+      this.clawSafetyTimer = setTimeout(() => {
+        if (this.gameState === 'CLAW_ACTIVE') {
+          console.warn('Safety watchdog: recovering claw state');
+          const delivered = [...this.physics.claw.grabbedItems];
+          this.physics.claw.grabbedItems = [];
+          this.physics.claw.state = 'IDLE';
+          this.physics.claw.targetAngle = this.physics.claw.openAngle;
+          this.handleDeliveredLoot(delivered);
+        }
+      }, 3200);
     }
   }
 
@@ -610,8 +624,23 @@ Play free on web:
       this.ui.monsterIntentDisplay.innerText = intent.icon;
     }
 
+    if (this.ui.turnHintText) {
+      if (this.gameState === 'PLAYER_TURN') {
+        this.ui.turnHintText.innerText = `🟢 YOUR TURN: Drag or [A/D] to aim, then press [DROP CLAW]! (Energy: ${this.energy}/${this.maxEnergy})`;
+        this.ui.turnHintText.style.color = '#38bdf8';
+      } else if (this.gameState === 'CLAW_ACTIVE') {
+        this.ui.turnHintText.innerText = '🤖 Crane lowering & lifting loot...';
+        this.ui.turnHintText.style.color = '#facc15';
+      } else if (this.gameState === 'ENEMY_TURN') {
+        this.ui.turnHintText.innerText = '👾 Monster is attacking...';
+        this.ui.turnHintText.style.color = '#f87171';
+      }
+    }
+
     if (this.ui.btnDropClaw) {
-      this.ui.btnDropClaw.disabled = (this.gameState !== 'PLAYER_TURN' || this.energy <= 0);
+      const canDrop = (this.gameState === 'PLAYER_TURN' && this.energy > 0);
+      this.ui.btnDropClaw.disabled = !canDrop;
+      this.ui.btnDropClaw.innerText = canDrop ? '👇 DROP CLAW (SPACE)' : (this.gameState === 'CLAW_ACTIVE' ? '⏳ Grabbing...' : '⌛ Waiting...');
     }
   }
 
