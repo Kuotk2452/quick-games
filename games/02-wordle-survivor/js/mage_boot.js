@@ -46,12 +46,36 @@ class MageBootScreen {
     robe.position.y = -0.5;
     this.mageGroup.add(robe);
     
-    // Head (Sphere)
-    const headGeo = new THREE.SphereGeometry(0.5, 16, 16);
-    const headMat = new THREE.MeshStandardMaterial({ color: 0x000000 });
+    // Head (Sphere) - Skin tone
+    const headGeo = new THREE.SphereGeometry(0.45, 16, 16);
+    const headMat = new THREE.MeshStandardMaterial({ color: 0xffddbb, roughness: 0.6 });
     const head = new THREE.Mesh(headGeo, headMat);
     head.position.y = 1.2;
     this.mageGroup.add(head);
+
+    // White Hair (Back of head)
+    const hairGeo = new THREE.SphereGeometry(0.5, 8, 8);
+    const hairMat = new THREE.MeshStandardMaterial({ color: 0xffffff, roughness: 0.9 });
+    const hair = new THREE.Mesh(hairGeo, hairMat);
+    hair.position.set(0, 1.2, -0.15);
+    this.mageGroup.add(hair);
+
+    // White Beard (Cone)
+    const beardGeo = new THREE.ConeGeometry(0.35, 1.0, 4);
+    const beard = new THREE.Mesh(beardGeo, hairMat);
+    beard.position.set(0, 0.8, 0.35);
+    beard.rotation.x = 0.2;
+    this.mageGroup.add(beard);
+
+    // Eyes
+    const eyeGeo = new THREE.SphereGeometry(0.06, 4, 4);
+    const eyeMat = new THREE.MeshBasicMaterial({ color: 0x000000 });
+    const leftEye = new THREE.Mesh(eyeGeo, eyeMat);
+    leftEye.position.set(-0.15, 1.3, 0.4);
+    const rightEye = new THREE.Mesh(eyeGeo, eyeMat);
+    rightEye.position.set(0.15, 1.3, 0.4);
+    this.mageGroup.add(leftEye);
+    this.mageGroup.add(rightEye);
     
     // Hat (Cone)
     const hatGeo = new THREE.ConeGeometry(0.8, 1.5, 8);
