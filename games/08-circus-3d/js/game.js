@@ -196,6 +196,15 @@ export class CircusGame {
       this.ui.touchRightBtn.addEventListener('touchcancel', () => { this.keys.right = false; });
     }
 
+    // Pointer/Tap screen to jump
+    window.addEventListener('pointerdown', (e) => {
+      if (this.state === 'PLAYING') {
+        if (!e.target.closest('button, select, a, .touch-btn, .portal-back-btn')) {
+          this.triggerJump();
+        }
+      }
+    });
+
     // Share Score
     if (this.ui.btnShareScore) {
       this.ui.btnShareScore.addEventListener('click', () => {

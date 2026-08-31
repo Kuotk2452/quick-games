@@ -60,6 +60,10 @@ body, html {
   pointer-events: none;
 }
 
+#gameContainer > * {
+  pointer-events: auto;
+}
+
 /* ==========================================
    TOP HEADER
    ========================================== */
