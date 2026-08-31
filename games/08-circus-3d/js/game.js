@@ -1157,12 +1157,12 @@ Play Free: https://quick-games-ez4.pages.dev/games/08-circus-3d/`;
             }
           }
         } else if (obs.type === 'ELEVATED_ARCH') {
-          // Check Slide Clearance
+          // Check Slide Clearance or Super Jump Clearance
           if (!obs.cleared && Math.abs(this.player.x - obs.x) < 0.8) {
-            if (this.isSliding) {
+            if (this.isSliding || this.player.y >= 2.8) {
               obs.cleared = true;
               this.score += 300 * this.multiplier;
-              if (this.ui.closeCallBanner) {
+              if (this.isSliding && this.ui.closeCallBanner) {
                 this.ui.closeCallBanner.style.display = 'block';
                 setTimeout(() => {
                   if (this.ui.closeCallBanner) this.ui.closeCallBanner.style.display = 'none';
