@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>Dungeon Claw 3D: Roguelike (3D抓娃娃地牢)</title>
+  <meta name="description" content="A 3D Physics Crane Claw Machine meets Dungeon Deckbuilder Roguelike. Grab swords, chain combos, defeat dungeon bosses and upgrade your crane!">
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+  <!-- Three.js 3D WebGL Canvas Container -->
+  <div id="webglContainer"></div>
+
+  <!-- Interactive HUD Layer -->
+  <div id="hudLayer">
+
+    <!-- Top Monster Status Card -->
+    <div class="top-monster-card">
+      <div class="monster-header">
+        <span id="monsterName" class="monster-name">Slime King</span>
+        <span id="monsterIntentDisplay" class="monster-intent">⚔️ 10</span>
+      </div>
+      <div class="bar-container">
+        <div id="monsterHpBarFill" class="hp-fill" style="width: 100%;"></div>
+      </div>
+      <div id="monsterHpDisplay" class="monster-hp-text">65/65 HP (0 Armor)</div>
+    </div>
+
+    <!-- Floating Combo Banner -->
+    <div id="comboBanner" class="combo-banner">
+      ✨ Grabbed: 🗡️ 🗡️ 💣 [Dual Wield +50%] (+45 DMG)
+    </div>
+
+    <!-- Top Utilities Header -->
+    <div class="top-nav">
+      <button id="audioToggleBtn" class="icon-btn" title="Toggle Sound">🔊</button>
+      <select id="langSelect" class="lang-select" title="Switch Language">
+        <option value="en">🇺🇸 EN</option>
+        <option value="zh">🇨🇳 中文</option>
+        <option value="es">🇪🇸 ES</option>
+        <option value="ja">🇯🇵 日本語</option>
+      </select>
+    </div>
+
+    <!-- Bottom Player Dashboard -->
+    <div class="bottom-dock">
+      <div class="player-stats-row">
+        <div class="stat-pill">
+          <span>❤️ <span data-i18n="hpLabel">HP</span>:</span>
+          <span id="hpDisplay" class="val">80/80</span>
+        </div>
+        <div class="stat-pill">
+          <span>🛡️ <span data-i18n="armorLabel">Armor</span>:</span>
+          <span id="armorDisplay" class="val">0</span>
+        </div>
+        <div class="stat-pill">
+          <span>⚡ <span data-i18n="energyLabel">Claws</span>:</span>
+          <span id="energyDisplay" class="val">3/3</span>
+        </div>
+        <div class="stat-pill">
+          <span>💰:</span>
+          <span id="goldDisplay" class="val">0</span>
+        </div>
+        <div class="stat-pill">
+          <span>🏰 <span data-i18n="floorLabel">Floor</span>:</span>
+          <span id="floorDisplay" class="val">1</span>
+        </div>
+      </div>
+
+      <!-- Action Buttons -->
+      <div class="action-buttons-group">
+        <button id="btnDropClaw" class="drop-claw-btn" data-i18n="dropClaw">
+          👇 DROP CLAW (SPACE)
+        </button>
+        <button id="btnToggleView" class="view-btn" data-i18n="viewToggleFront">
+          🎥 Front View
+        </button>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- Start Screen Modal -->
+  <div id="startScreen" class="modal-overlay">
+    <div class="modal-content">
+      <h1 class="modal-title" data-i18n="gameTitle">Dungeon Claw 3D: 抓娃娃地牢</h1>
+      <p class="modal-subtitle" data-i18n="tagline">3D Physics Claw Machine ✕ Dungeon Deckbuilder — Grab Swords, Trigger Combos & Slay Bosses!</p>
+
+      <div style="background: rgba(30, 41, 59, 0.6); padding: 16px; border-radius: 16px; margin-bottom: 24px; text-align: left; font-size: 14px; line-height: 1.6; color: #cbd5e1;">
+        <p>🕹️ <strong>How to Play:</strong></p>
+        <p>1. Move the 3D Crane Claw with <strong>[A/D / Arrows]</strong> or drag across the screen.</p>
+        <p>2. Press <strong>[SPACE]</strong> or tap <strong>[DROP CLAW]</strong> to lower into the physics loot pit.</p>
+        <p>3. Grabbed 🗡️ <strong>Swords attack</strong>, 🛡️ <strong>Shields add armor</strong>, 🧪 <strong>Potions heal</strong>, and 💣 <strong>Bombs detonate</strong>!</p>
+        <p>4. Defeat bosses to unlock the Black Market, upgrade claw grip strength, and conquer the dungeon!</p>
+      </div>
+
+      <button id="btnStart" class="primary-btn" data-i18n="startPrompt">
+        ▶ ENTER 3D DUNGEON
+      </button>
+    </div>
+  </div>
+
+  <!-- Black Market Shop Modal -->
+  <div id="shopModal" class="modal-overlay" style="display: none;">
+    <div class="modal-content">
+      <h2 class="modal-title" data-i18n="shopTitle">🛒 BLACK MARKET & FORGE</h2>
+      <p class="modal-subtitle">Spend your hard-earned gold to upgrade your crane machinery!</p>
+
+      <div id="shopItemsContainer" class="shop-cards-grid">
+        <!-- Upgrades injected dynamically -->
+      </div>
+
+      <button id="btnLeaveShop" class="primary-btn" data-i18n="continueDungeon">
+        ⚔️ Descend to Next Floor
+      </button>
+    </div>
+  </div>
+
+  <!-- Game Over / Victory Modal -->
+  <div id="gameOverModal" class="modal-overlay" style="display: none;">
+    <div class="modal-content">
+      <h2 id="endgameTitle" class="modal-title" data-i18n="defeatTitle">💀 YOU DIED IN THE DUNGEON</h2>
+      <p class="modal-subtitle">Your heroic climb has concluded.</p>
+
+      <div style="display: flex; justify-content: space-around; background: rgba(30, 41, 59, 0.6); padding: 16px; border-radius: 16px; margin: 20px 0;">
+        <div>
+          <div style="font-size: 12px; color: #94a3b8;">Reached Floor</div>
+          <div id="finalFloor" style="font-size: 20px; font-weight: 800; color: #00f0ff;">Floor 1</div>
+        </div>
+        <div>
+          <div style="font-size: 12px; color: #94a3b8;">Total Gold</div>
+          <div id="finalGold" style="font-size: 20px; font-weight: 800; color: #facc15;">0 Gold</div>
+        </div>
+      </div>
+
+      <div style="display: flex; gap: 12px;">
+        <button id="btnPlayAgain" class="primary-btn" data-i18n="playAgain">🔄 Play Again</button>
+        <button id="btnShareScore" class="secondary-btn" data-i18n="shareScore">📋 Share Score Card</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Main Game Entry -->
+  <script type="module" src="js/game.js"></script>
+</body>
+</html>
