@@ -25,6 +25,85 @@ class CosmicAudioEngine {
     }
   }
 
+  playTelemetryBeeps() {
+    this.ensureContext();
+    if (this.muted || !this.ctx) return;
+    
+    const playBeep = (timeOffset, freq) => {
+      const osc = this.ctx.createOscillator();
+      const gain = this.ctx.createGain();
+      osc.type = 'sine';
+      osc.frequency.value = freq;
+      
+      gain.gain.setValueAtTime(0, this.ctx.currentTime + timeOffset);
+      gain.gain.linearRampToValueAtTime(0.1, this.ctx.currentTime + timeOffset + 0.05);
+      gain.gain.exponentialRampToValueAtTime(0.01, this.ctx.currentTime + timeOffset + 0.15);
+      
+      osc.connect(gain);
+      gain.connect(this.ctx.destination);
+      osc.start(this.ctx.currentTime + timeOffset);
+      osc.stop(this.ctx.currentTime + timeOffset + 0.2);
+    };
+
+    // Sequential data beeps
+    playBeep(0.0, 1800);
+    playBeep(0.2, 1900);
+    playBeep(0.5, 1750);
+    playBeep(0.8, 2000);
+    playBeep(0.95, 2000);
+    
+    // Background low rumble
+    const rumble = this.ctx.createOscillator();
+    const rumbleGain = this.ctx.createGain();
+    rumble.type = 'sawtooth';
+    rumble.frequency.value = 60;
+    
+    rumbleGain.gain.setValueAtTime(0, this.ctx.currentTime);
+    rumbleGain.gain.linearRampToValueAtTime(0.05, this.ctx.currentTime + 0.5);
+    rumbleGain.gain.exponentialRampToValueAtTime(0.01, this.ctx.currentTime + 1.5);
+    
+    const filter = this.ctx.createBiquadFilter();
+    filter.type = 'lowpass';
+    filter.frequency.value = 100;
+    
+    rumble.connect(filter);
+    filter.connect(rumbleGain);
+    rumbleGain.connect(this.ctx.destination);
+    
+    rumble.start();
+    rumble.stop(this.ctx.currentTime + 1.5);
+  }
+
+  playAirlockSwoosh() {
+    this.ensureContext();
+    if (this.muted || !this.ctx) return;
+    
+    const dur = 1.0;
+    const bufferSize = this.ctx.sampleRate * dur;
+    const buffer = this.ctx.createBuffer(1, bufferSize, this.ctx.sampleRate);
+    const data = buffer.getChannelData(0);
+    for (let i = 0; i < bufferSize; i++) data[i] = Math.random() * 2 - 1;
+    const noise = this.ctx.createBufferSource();
+    noise.buffer = buffer;
+    
+    const filter = this.ctx.createBiquadFilter();
+    filter.type = 'lowpass';
+    filter.frequency.setValueAtTime(200, this.ctx.currentTime);
+    filter.frequency.exponentialRampToValueAtTime(5000, this.ctx.currentTime + 0.3);
+    filter.frequency.exponentialRampToValueAtTime(100, this.ctx.currentTime + dur);
+    
+    const gain = this.ctx.createGain();
+    gain.gain.setValueAtTime(0.01, this.ctx.currentTime);
+    gain.gain.exponentialRampToValueAtTime(0.3, this.ctx.currentTime + 0.2);
+    gain.gain.exponentialRampToValueAtTime(0.01, this.ctx.currentTime + dur);
+    
+    noise.connect(filter);
+    filter.connect(gain);
+    gain.connect(this.ctx.destination);
+    
+    noise.start();
+  }
+
   toggleMute() {
     this.muted = !this.muted;
     return this.muted;

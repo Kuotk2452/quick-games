@@ -9,6 +9,18 @@
 </head>
 <body>
 
+  <!-- Telemetry Boot Sequence -->
+  <div id="telemetryBootScreen" class="telemetry-boot-screen active">
+    <div class="radar-container" id="bootRadar">
+      <div class="crosshair-h"></div>
+      <div class="crosshair-v"></div>
+      <div class="radar-circle"></div>
+      <div class="radar-sweep"></div>
+    </div>
+    <div id="bootTextStatus" class="boot-text-status">INITIATING DEEP SPACE UPLINK...</div>
+    <div id="bootTextTap" class="boot-text-tap pulse">TAP TO CALIBRATE GRAV-SENSORS</div>
+  </div>
+
   <!-- Main Game Frame -->
   <div id="gameContainer">
 
@@ -130,6 +142,6 @@
   </div>
 
   <!-- Main Game Script -->
-  <script type="module" src="js/game.js?v=1.0"></script>
+  <script type="module" src="js/game.js?v=1.1"></script>
 </body>
 </html>
