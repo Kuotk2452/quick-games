@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>Circus Rush 3D: Carnival Acrobat (3D狂欢大马戏)</title>
+  <meta name="description" content="3D Circus Acrobatics ✕ Retro Homage — Leap through blazing fire rings, walk tightropes & vault over giant circus balls!">
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+  <!-- Three.js 3D WebGL Canvas Container -->
+  <div id="webglContainer"></div>
+
+  <!-- Main Game GUI Overlay -->
+  <div id="gameContainer">
+
+    <!-- Top Navigation & Resource Bar -->
+    <header class="circus-header">
+      <div class="header-left">
+        <a href="../../index.html" class="portal-back-btn" title="Back to Game Portal">
+          ← <span>Portal</span>
+        </a>
+        <div class="game-logo">
+          <span>🎪 CIRCUS RUSH 3D</span>
+        </div>
+      </div>
+
+      <div class="header-right">
+        <button id="audioToggleBtn" class="icon-btn" title="Toggle Sound">🔊</button>
+        <select id="langSelect" class="lang-dropdown">
+          <option value="en">English</option>
+          <option value="zh">中文</option>
+          <option value="es">Español</option>
+          <option value="ja">日本語</option>
+        </select>
+      </div>
+    </header>
+
+    <!-- Bullet Time Slow-Motion Alert Banner -->
+    <div id="bulletTimeBanner" class="bullet-time-badge" style="display: none;">
+      <span data-i18n="bulletTimeLabel">⏱️ BULLET TIME AIR FLIP!</span>
+    </div>
+
+    <!-- VIEW 1: Act Program Selection -->
+    <div id="actSelectView" class="act-select-layout">
+      <div class="act-select-header">
+        <h2 class="act-select-title" data-i18n="selectActTitle">🎪 SELECT CIRCUS ACT</h2>
+        <p class="act-select-desc">Step into the 3D Big-Top arena and perform breathtaking acrobatic stunts!</p>
+      </div>
+
+      <div id="actCardsContainer" class="act-cards-list">
+        <!-- Dynamically generated Act cards -->
+      </div>
+    </div>
+
+    <!-- VIEW 2: Gameplay HUD overlay -->
+    <div id="gameplayHUD" class="gameplay-hud-overlay" style="display: none;">
+      <div class="hud-top-bar">
+        <div class="hud-card">
+          <span class="hud-label" data-i18n="scoreLabel">SCORE</span>
+          <span id="scoreDisplay" class="hud-value text-gold">0</span>
+        </div>
+        <div class="hud-card">
+          <span class="hud-label" data-i18n="coinsLabel">COINS</span>
+          <span class="hud-value text-yellow">🏺 <span id="coinsDisplay">0</span></span>
+        </div>
+        <div class="hud-card">
+          <span class="hud-label" data-i18n="distLabel">GOAL</span>
+          <span id="distDisplay" class="hud-value text-cyan">100m</span>
+        </div>
+        <div class="hud-card">
+          <span class="hud-label">LIVES</span>
+          <span id="livesDisplay" class="hud-value">❤️❤️❤️</span>
+        </div>
+        <div class="hud-card">
+          <span class="hud-label" data-i18n="multiplierLabel">TRICK</span>
+          <span id="multiplierDisplay" class="hud-value text-magenta">x1</span>
+        </div>
+      </div>
+
+      <!-- Mobile Touch Controls Layer -->
+      <div class="touch-controls-bar">
+        <div class="touch-direction-group">
+          <button id="touchLeftBtn" class="touch-btn touch-dir">◀ Slow</button>
+          <button id="touchRightBtn" class="touch-btn touch-dir">Fast ▶</button>
+        </div>
+        <button id="touchJumpBtn" class="touch-btn touch-jump">🦘 JUMP / FLIP</button>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- End Game / Act Victory Modal -->
+  <div id="endModal" class="modal-overlay" style="display: none;">
+    <div class="modal-content">
+      <h2 id="modalTitle" class="modal-title" data-i18n="stageClearTitle">🎉 GRAND APPLAUSE! STAGE CLEAR!</h2>
+      <p id="modalDesc" class="modal-subtitle" data-i18n="stageClearDesc">The circus crowd erupts in standing ovation!</p>
+
+      <div class="stats-box">
+        <div class="stat-item">
+          <span class="stat-name" data-i18n="scoreLabel">Score</span>
+          <span id="resultScore" class="stat-num text-gold">0</span>
+        </div>
+        <div class="stat-item">
+          <span class="stat-name" data-i18n="coinsLabel">Coins</span>
+          <span id="resultCoins" class="stat-num text-yellow">0</span>
+        </div>
+      </div>
+
+      <div class="modal-buttons">
+        <button id="btnNextAct" class="primary-btn" data-i18n="nextActBtn" style="display: none;">🎪 Next Act</button>
+        <button id="btnRetry" class="primary-btn" data-i18n="retryBtn">🔄 Retry</button>
+        <button id="btnSelectAct" class="secondary-btn" data-i18n="selectActBtn">🎪 Act Select</button>
+        <button id="btnShareScore" class="secondary-btn" data-i18n="shareScore">📋 Share</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Main Game Script -->
+  <script type="module" src="js/game.js?v=1.0"></script>
+</body>
+</html>
