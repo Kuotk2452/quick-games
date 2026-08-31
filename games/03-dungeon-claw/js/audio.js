@@ -25,6 +25,106 @@ class ClawSoundEngine {
     }
   }
 
+  playCoinDrop() {
+    this.ensureContext();
+    if (this.muted || !this.ctx) return;
+    const now = this.ctx.currentTime;
+    
+    // Quick metallic pings
+    const freqs = [1200, 1600, 800];
+    freqs.forEach((freq, idx) => {
+      const osc = this.ctx.createOscillator();
+      osc.type = 'triangle';
+      osc.frequency.setValueAtTime(freq, now + idx * 0.1);
+      
+      const gain = this.ctx.createGain();
+      gain.gain.setValueAtTime(0, now);
+      gain.gain.setValueAtTime(0.8, now + idx * 0.1);
+      gain.gain.exponentialRampToValueAtTime(0.01, now + idx * 0.1 + 0.3);
+      
+      osc.connect(gain);
+      gain.connect(this.ctx.destination);
+      osc.start(now + idx * 0.1);
+      osc.stop(now + idx * 0.1 + 0.4);
+    });
+  }
+
+  playPowerUp() {
+    this.ensureContext();
+    if (this.muted || !this.ctx) return;
+    const now = this.ctx.currentTime;
+    
+    // Low mechanical generator spooling up
+    const osc = this.ctx.createOscillator();
+    osc.type = 'sawtooth';
+    osc.frequency.setValueAtTime(10, now);
+    osc.frequency.exponentialRampToValueAtTime(80, now + 1.5);
+    
+    const filter = this.ctx.createBiquadFilter();
+    filter.type = 'lowpass';
+    filter.frequency.setValueAtTime(100, now);
+    filter.frequency.exponentialRampToValueAtTime(1000, now + 1.5);
+    
+    const gain = this.ctx.createGain();
+    gain.gain.setValueAtTime(0.1, now);
+    gain.gain.linearRampToValueAtTime(0.8, now + 1.0);
+    gain.gain.exponentialRampToValueAtTime(0.01, now + 1.6);
+    
+    osc.connect(filter);
+    filter.connect(gain);
+    gain.connect(this.ctx.destination);
+    
+    osc.start(now);
+    osc.stop(now + 1.7);
+  }
+
+  startBGM() {
+    this.ensureContext();
+    if (this.muted || !this.ctx || this.bgmPlaying) return;
+    this.bgmPlaying = true;
+    
+    // Dungeon Dark Ambient Drone
+    const playDrone = () => {
+      if (!this.bgmPlaying || !this.ctx) return;
+      const now = this.ctx.currentTime;
+      
+      const osc = this.ctx.createOscillator();
+      osc.type = 'square';
+      osc.frequency.setValueAtTime(40, now);
+      osc.frequency.linearRampToValueAtTime(45, now + 4);
+      osc.frequency.linearRampToValueAtTime(40, now + 8);
+      
+      const filter = this.ctx.createBiquadFilter();
+      filter.type = 'lowpass';
+      filter.frequency.setValueAtTime(200, now);
+      filter.frequency.linearRampToValueAtTime(400, now + 4);
+      filter.frequency.linearRampToValueAtTime(200, now + 8);
+      
+      const gain = this.ctx.createGain();
+      gain.gain.setValueAtTime(0, now);
+      gain.gain.linearRampToValueAtTime(0.05, now + 2);
+      gain.gain.linearRampToValueAtTime(0, now + 8);
+      
+      osc.connect(filter);
+      filter.connect(gain);
+      gain.connect(this.ctx.destination);
+      
+      osc.start(now);
+      osc.stop(now + 8);
+    };
+    
+    playDrone();
+    this.bgmInterval = setInterval(playDrone, 8000);
+  }
+
+  stopBGM() {
+    this.bgmPlaying = false;
+    if (this.bgmInterval) {
+      clearInterval(this.bgmInterval);
+      this.bgmInterval = null;
+    }
+  }
+
   toggleMute() {
     this.muted = !this.muted;
     return this.muted;

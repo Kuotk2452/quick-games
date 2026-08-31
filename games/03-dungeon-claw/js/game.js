@@ -4,12 +4,12 @@
  */
 
 import * as THREE from 'https://unpkg.com/three@0.160.0/build/three.module.js';
-import { PhysicsWorld3D } from './physics3d.js?v=8.0';
-import { ITEM_DEFS, createItem3DMesh, calculateCombos } from './items.js?v=8.0';
-import { MONSTER_ROSTER, Monster } from './monsters.js?v=8.0';
-import { CLAW_UPGRADES, ITEM_SHOP_OFFERS } from './shop.js?v=8.0';
-import { soundEngine } from './audio.js?v=8.0';
-import { i18n } from './i18n.js?v=8.0';
+import { PhysicsWorld3D } from './physics3d.js?v=8.1';
+import { ITEM_DEFS, createItem3DMesh, calculateCombos } from './items.js?v=8.1';
+import { MONSTER_ROSTER, Monster } from './monsters.js?v=8.1';
+import { CLAW_UPGRADES, ITEM_SHOP_OFFERS } from './shop.js?v=8.1';
+import { soundEngine } from './audio.js?v=8.1';
+import { i18n } from './i18n.js?v=8.1';
 
 export class DungeonClawGame {
   constructor() {
@@ -230,13 +230,11 @@ export class DungeonClawGame {
 
     // Keyboard controls
     window.addEventListener('keydown', (e) => {
+      if (window.isArcadeBooting) return;
       this.keys[e.key.toLowerCase()] = true;
       if (
-        e.code === 'Space' ||
-        e.code === 'Enter' ||
-        e.code === 'ArrowDown' ||
-        e.code === 'KeyS' ||
-        e.key.toLowerCase() === 's'
+        (e.code === 'Space' || e.code === 'Enter' || e.key === 's' || e.key === 'ArrowDown')
+        && this.gameState === 'PLAYER_TURN'
       ) {
         e.preventDefault();
         this.triggerDrop();

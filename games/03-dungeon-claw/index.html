@@ -5,9 +5,19 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
   <title>Dungeon Claw 3D: Roguelike (3D抓娃娃地牢)</title>
   <meta name="description" content="A 3D Physics Crane Claw Machine meets Dungeon Deckbuilder Roguelike. Grab swords, chain combos, defeat dungeon bosses and upgrade your crane!">
-  <link rel="stylesheet" href="css/style.css">
+  <link rel="stylesheet" href="css/style.css?v=8.0">
 </head>
 <body>
+
+  <!-- Arcade Boot Sequence -->
+  <div id="arcadeBootScreen" class="arcade-boot-screen active">
+    <div class="crt-overlay"></div>
+    <div class="boot-text pulse">INSERT COIN TO DESCEND</div>
+    <div class="boot-subtext">[ TAP TO START ]</div>
+    <!-- Gates for transition -->
+    <div class="iron-gate top-gate"></div>
+    <div class="iron-gate bottom-gate"></div>
+  </div>
 
   <!-- Three.js 3D WebGL Canvas Container -->
   <div id="webglContainer"></div>
@@ -153,7 +163,8 @@
     </div>
   </div>
 
-  <!-- Main Game Entry with Cache Buster -->
-  <script type="module" src="js/game.js?v=8.0"></script>
+  <script type="module" src="js/arcade_boot.js?v=1.1"></script>
+  <!-- Main Game Entry -->
+  <script type="module" src="js/game.js?v=8.1"></script>
 </body>
 </html>
