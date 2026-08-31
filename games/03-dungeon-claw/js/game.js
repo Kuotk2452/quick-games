@@ -4,12 +4,12 @@
  */
 
 import * as THREE from 'https://unpkg.com/three@0.160.0/build/three.module.js';
-import { PhysicsWorld3D } from './physics3d.js?v=7.0';
-import { ITEM_DEFS, createItem3DMesh, calculateCombos } from './items.js?v=7.0';
-import { MONSTER_ROSTER, Monster } from './monsters.js?v=7.0';
-import { CLAW_UPGRADES, ITEM_SHOP_OFFERS } from './shop.js?v=7.0';
-import { soundEngine } from './audio.js?v=7.0';
-import { i18n } from './i18n.js?v=7.0';
+import { PhysicsWorld3D } from './physics3d.js?v=8.0';
+import { ITEM_DEFS, createItem3DMesh, calculateCombos } from './items.js?v=8.0';
+import { MONSTER_ROSTER, Monster } from './monsters.js?v=8.0';
+import { CLAW_UPGRADES, ITEM_SHOP_OFFERS } from './shop.js?v=8.0';
+import { soundEngine } from './audio.js?v=8.0';
+import { i18n } from './i18n.js?v=8.0';
 
 export class DungeonClawGame {
   constructor() {
@@ -726,34 +726,42 @@ Play free on web:
   showGameOver() {
     this.gameState = 'GAME_OVER';
     soundEngine.playGameOver();
-    document.getElementById('finalFloor').innerText = `Floor ${this.floorIndex + 1}`;
-    document.getElementById('finalGold').innerText = `${this.gold} Gold`;
-    this.ui.gameOverModal.style.display = 'flex';
+    const titleEl = document.getElementById('endgameTitle');
+    if (titleEl) titleEl.innerText = i18n.t('defeatTitle');
+    const fFloor = document.getElementById('finalFloor');
+    if (fFloor) fFloor.innerText = `Floor ${this.floorIndex + 1}`;
+    const fGold = document.getElementById('finalGold');
+    if (fGold) fGold.innerText = `${this.gold} Gold`;
+    if (this.ui.gameOverModal) this.ui.gameOverModal.style.display = 'flex';
   }
 
   showVictory() {
     this.gameState = 'VICTORY';
     soundEngine.playVictory();
-    document.getElementById('finalFloor').innerText = `Floor ${this.floorIndex + 1} (ALL CLEARED!)`;
-    document.getElementById('finalGold').innerText = `${this.gold} Gold`;
-    this.ui.gameOverModal.style.display = 'flex';
+    const titleEl = document.getElementById('endgameTitle');
+    if (titleEl) titleEl.innerText = i18n.t('victoryTitle');
+    const fFloor = document.getElementById('finalFloor');
+    if (fFloor) fFloor.innerText = `Floor ${this.floorIndex + 1} (ALL CLEARED!)`;
+    const fGold = document.getElementById('finalGold');
+    if (fGold) fGold.innerText = `${this.gold} Gold`;
+    if (this.ui.gameOverModal) this.ui.gameOverModal.style.display = 'flex';
   }
 
   updateHUD() {
-    this.ui.hpDisplay.innerText = `${this.hp}/${this.maxHp}`;
-    this.ui.hpBarFill.style.width = `${Math.max(0, (this.hp / this.maxHp) * 100)}%`;
-    this.ui.armorDisplay.innerText = this.armor;
-    this.ui.energyDisplay.innerText = `${this.energy}/${this.maxEnergy}`;
-    this.ui.goldDisplay.innerText = this.gold;
-    this.ui.floorDisplay.innerText = this.floorIndex + 1;
+    if (this.ui.hpDisplay) this.ui.hpDisplay.innerText = `${this.hp}/${this.maxHp}`;
+    if (this.ui.hpBarFill) this.ui.hpBarFill.style.width = `${Math.max(0, (this.hp / this.maxHp) * 100)}%`;
+    if (this.ui.armorDisplay) this.ui.armorDisplay.innerText = this.armor;
+    if (this.ui.energyDisplay) this.ui.energyDisplay.innerText = `${this.energy}/${this.maxEnergy}`;
+    if (this.ui.goldDisplay) this.ui.goldDisplay.innerText = this.gold;
+    if (this.ui.floorDisplay) this.ui.floorDisplay.innerText = this.floorIndex + 1;
 
     if (this.currentMonster) {
       const lang = i18n.currentLang;
-      this.ui.monsterName.innerText = this.currentMonster.def.name[lang] || this.currentMonster.def.name.en;
-      this.ui.monsterHpDisplay.innerText = `${this.currentMonster.hp}/${this.currentMonster.maxHp} HP (${this.currentMonster.armor} Armor)`;
-      this.ui.monsterHpBarFill.style.width = `${Math.max(0, (this.currentMonster.hp / this.currentMonster.maxHp) * 100)}%`;
+      if (this.ui.monsterName) this.ui.monsterName.innerText = this.currentMonster.def.name[lang] || this.currentMonster.def.name.en;
+      if (this.ui.monsterHpDisplay) this.ui.monsterHpDisplay.innerText = `${this.currentMonster.hp}/${this.currentMonster.maxHp} HP (${this.currentMonster.armor} Armor)`;
+      if (this.ui.monsterHpBarFill) this.ui.monsterHpBarFill.style.width = `${Math.max(0, (this.currentMonster.hp / this.currentMonster.maxHp) * 100)}%`;
       const intent = this.currentMonster.getCurrentIntent();
-      this.ui.monsterIntentDisplay.innerText = intent.icon;
+      if (this.ui.monsterIntentDisplay) this.ui.monsterIntentDisplay.innerText = intent.icon;
     }
 
     if (this.ui.turnHintText) {
