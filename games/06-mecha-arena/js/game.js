@@ -351,8 +351,9 @@ Play Free in Browser:
     // Turret aiming towards mouse
     this.player.turretAngle = Math.atan2(this.mousePos.y - this.player.pos.y, this.mousePos.x - this.player.pos.x);
 
-    // Player firing
-    if (this.isMouseDown && this.player.fireCooldown <= 0 && !this.player.isDead) {
+    // Player firing (Mouse Click/Hold OR Keyboard [J] / [F] / [Enter])
+    const isShooting = this.isMouseDown || this.keys['KeyJ'] || this.keys['KeyF'] || this.keys['Enter'];
+    if (isShooting && this.player.fireCooldown <= 0 && !this.player.isDead) {
       this.player.fireWeapon(this.bullets, this.particles, this.enemy);
     }
 
