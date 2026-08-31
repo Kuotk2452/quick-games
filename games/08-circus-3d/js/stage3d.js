@@ -74,11 +74,11 @@ export class CircusStage3D {
 
     // 2. Circus Runway Curbs / Velvet Ropes
     const curbMat = new THREE.MeshStandardMaterial({ color: 0xef4444, roughness: 0.5 });
-    const leftCurb = new THREE.Mesh(new THREE.BoxGeometry(300, 0.3, 0.4), curbMat);
-    leftCurb.position.set(100, 0.15, -4.5);
-    const rightCurb = new THREE.Mesh(new THREE.BoxGeometry(300, 0.3, 0.4), curbMat);
-    rightCurb.position.set(100, 0.15, 4.5);
-    this.scene.add(leftCurb, rightCurb);
+    this.leftCurb = new THREE.Mesh(new THREE.BoxGeometry(300, 0.3, 0.4), curbMat);
+    this.leftCurb.position.set(100, 0.15, -4.5);
+    this.rightCurb = new THREE.Mesh(new THREE.BoxGeometry(300, 0.3, 0.4), curbMat);
+    this.rightCurb.position.set(100, 0.15, 4.5);
+    this.scene.add(this.leftCurb, this.rightCurb);
 
     // 3. Cheering Spectator Billboards along the back
     this.spectatorGroup = new THREE.Group();
@@ -100,9 +100,9 @@ export class CircusStage3D {
       color: 0x831843,
       side: THREE.BackSide
     });
-    const tent = new THREE.Mesh(tentGeo, tentMat);
-    tent.position.set(60, 10, 0);
-    this.scene.add(tent);
+    this.tent = new THREE.Mesh(tentGeo, tentMat);
+    this.tent.position.set(60, 10, 0);
+    this.scene.add(this.tent);
   }
 
   // Trigger Victory Confetti Cannon
@@ -140,11 +140,25 @@ export class CircusStage3D {
     this.spotLight.target.position.set(playerX + 2.0, 0.5, 0);
     this.spotLight.target.updateMatrixWorld();
 
+    // Infinite Environment Loop for Endless Mode
+    if (this.floor) {
+      // Snap environment positions to chunks of 150m to prevent visual popping
+      const chunkOffset = Math.floor(playerX / 150) * 150;
+      this.floor.position.x = chunkOffset + 100;
+      this.leftCurb.position.x = chunkOffset + 100;
+      this.rightCurb.position.x = chunkOffset + 100;
+      if (this.tent) this.tent.position.x = chunkOffset + 60;
+    }
+
     // Spectator cheering bounce
     if (this.spectatorGroup) {
       const time = performance.now() * 0.005;
       this.spectatorGroup.children.forEach((s, idx) => {
         s.position.y = 1.2 + Math.sin(time + idx * 0.8) * 0.2;
+        // Loop spectators infinitely
+        if (s.position.x < playerX - 30) {
+          s.position.x += 170;
+        }
       });
     }
 
