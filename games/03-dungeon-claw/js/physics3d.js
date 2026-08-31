@@ -141,6 +141,7 @@ export class PhysicsWorld3D {
         this.claw.targetAngle = this.claw.openAngle; // Release
         this.claw.grabbedItems = [];
         this.claw.state = 'IDLE';
+        this.claw.y = this.claw.baseY;
 
         if (this.onDeliveryCallback) {
           this.onDeliveryCallback(delivered);

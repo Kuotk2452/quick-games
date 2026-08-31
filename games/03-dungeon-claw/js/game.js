@@ -4,12 +4,12 @@
  */
 
 import * as THREE from 'https://unpkg.com/three@0.160.0/build/three.module.js';
-import { PhysicsWorld3D } from './physics3d.js?v=4.0';
-import { ITEM_DEFS, createItem3DMesh, calculateCombos } from './items.js?v=4.0';
-import { MONSTER_ROSTER, Monster } from './monsters.js?v=4.0';
-import { CLAW_UPGRADES, ITEM_SHOP_OFFERS } from './shop.js?v=4.0';
-import { soundEngine } from './audio.js?v=4.0';
-import { i18n } from './i18n.js?v=4.0';
+import { PhysicsWorld3D } from './physics3d.js?v=5.0';
+import { ITEM_DEFS, createItem3DMesh, calculateCombos } from './items.js?v=5.0';
+import { MONSTER_ROSTER, Monster } from './monsters.js?v=5.0';
+import { CLAW_UPGRADES, ITEM_SHOP_OFFERS } from './shop.js?v=5.0';
+import { soundEngine } from './audio.js?v=5.0';
+import { i18n } from './i18n.js?v=5.0';
 
 export class DungeonClawGame {
   constructor() {
@@ -421,6 +421,30 @@ Play free on web:
     this.gold = 0;
     this.floorIndex = 0;
 
+    if (this.clawSafetyTimer) {
+      clearTimeout(this.clawSafetyTimer);
+      this.clawSafetyTimer = null;
+    }
+
+    // Clean up old items from scene
+    if (this.physics && this.physics.items) {
+      this.physics.items.forEach(item => {
+        if (item.mesh) this.scene.remove(item.mesh);
+      });
+      this.physics.reset();
+    }
+
+    // Reset Claw
+    this.physics.claw.state = 'IDLE';
+    this.physics.claw.x = 0;
+    this.physics.claw.z = 0;
+    this.physics.claw.y = this.physics.claw.baseY;
+    this.physics.claw.grabbedItems = [];
+    this.physics.claw.targetAngle = this.physics.claw.openAngle;
+
+    // Repopulate fresh items into pit
+    this.populateInitialPit();
+
     if (this.ui.startScreen) this.ui.startScreen.style.display = 'none';
     if (this.ui.gameOverModal) this.ui.gameOverModal.style.display = 'none';
     if (this.ui.shopModal) this.ui.shopModal.style.display = 'none';
@@ -445,13 +469,21 @@ Play free on web:
 
   triggerDrop() {
     if (this.gameState !== 'PLAYER_TURN' || this.energy <= 0) return;
+
+    // Ensure claw is ready for drop
+    if (this.physics.claw.state !== 'IDLE') {
+      this.physics.claw.state = 'IDLE';
+      this.physics.claw.y = this.physics.claw.baseY;
+      this.physics.claw.grabbedItems = [];
+    }
+
     const dropped = this.physics.triggerDrop();
     if (dropped) {
       this.energy--;
       this.gameState = 'CLAW_ACTIVE';
       this.updateHUD();
 
-      // Watchdog safety timer: force recover after 3.2s if claw gets stuck
+      // Watchdog safety timer: force recover after 3.2s if claw ever gets stuck
       if (this.clawSafetyTimer) clearTimeout(this.clawSafetyTimer);
       this.clawSafetyTimer = setTimeout(() => {
         if (this.gameState === 'CLAW_ACTIVE') {
@@ -459,6 +491,7 @@ Play free on web:
           const delivered = [...this.physics.claw.grabbedItems];
           this.physics.claw.grabbedItems = [];
           this.physics.claw.state = 'IDLE';
+          this.physics.claw.y = this.physics.claw.baseY;
           this.physics.claw.targetAngle = this.physics.claw.openAngle;
           this.handleDeliveredLoot(delivered);
         }
@@ -467,6 +500,13 @@ Play free on web:
   }
 
   handleDeliveredLoot(deliveredItems) {
+    if (this.clawSafetyTimer) {
+      clearTimeout(this.clawSafetyTimer);
+      this.clawSafetyTimer = null;
+    }
+    this.physics.claw.state = 'IDLE';
+    this.physics.claw.y = this.physics.claw.baseY;
+
     if (deliveredItems.length === 0) {
       this.showComboBanner('💨 Missed! No items grabbed');
       this.checkTurnEnd();
@@ -523,6 +563,13 @@ Play free on web:
   }
 
   checkTurnEnd() {
+    if (this.clawSafetyTimer) {
+      clearTimeout(this.clawSafetyTimer);
+      this.clawSafetyTimer = null;
+    }
+    this.physics.claw.state = 'IDLE';
+    this.physics.claw.y = this.physics.claw.baseY;
+
     if (this.energy > 0) {
       this.gameState = 'PLAYER_TURN';
       this.updateHUD();
@@ -579,6 +626,8 @@ Play free on web:
       this.energy = this.maxEnergy;
       this.armor = 0;
       this.gameState = 'PLAYER_TURN';
+      this.physics.claw.state = 'IDLE';
+      this.physics.claw.y = this.physics.claw.baseY;
     }
     this.updateHUD();
   }
@@ -624,7 +673,13 @@ Play free on web:
       this.showVictory();
     } else {
       this.spawnFloorMonster();
+      this.energy = this.maxEnergy;
+      this.armor = 0;
       this.gameState = 'PLAYER_TURN';
+      this.physics.claw.state = 'IDLE';
+      this.physics.claw.y = this.physics.claw.baseY;
+      this.physics.claw.grabbedItems = [];
+      this.physics.claw.targetAngle = this.physics.claw.openAngle;
       this.updateHUD();
     }
   }
