@@ -29,6 +29,85 @@ class NeonAudioEngine {
     }
   }
 
+  playBootRiser() {
+    this.ensureContext();
+    const dur = 2.0;
+    
+    // Sawtooth riser
+    const osc = this.ctx.createOscillator();
+    osc.type = 'sawtooth';
+    osc.frequency.setValueAtTime(50, this.ctx.currentTime);
+    osc.frequency.exponentialRampToValueAtTime(800, this.ctx.currentTime + dur);
+    
+    // LFO for stutter/wobble effect
+    const lfo = this.ctx.createOscillator();
+    lfo.type = 'square';
+    lfo.frequency.setValueAtTime(10, this.ctx.currentTime);
+    lfo.frequency.linearRampToValueAtTime(30, this.ctx.currentTime + dur);
+    
+    const lfoGain = this.ctx.createGain();
+    lfoGain.gain.value = 0.5;
+    lfo.connect(lfoGain);
+    
+    const gain = this.ctx.createGain();
+    gain.gain.setValueAtTime(0, this.ctx.currentTime);
+    gain.gain.linearRampToValueAtTime(0.5, this.ctx.currentTime + dur * 0.8);
+    gain.gain.exponentialRampToValueAtTime(0.01, this.ctx.currentTime + dur);
+    
+    // Modulate main oscillator amplitude with LFO
+    lfoGain.connect(gain.gain);
+    osc.connect(gain);
+    gain.connect(this.ctx.destination);
+    
+    osc.start();
+    lfo.start();
+    osc.stop(this.ctx.currentTime + dur);
+    lfo.stop(this.ctx.currentTime + dur);
+  }
+
+  playBassDrop() {
+    this.ensureContext();
+    const dur = 3.0;
+    
+    // Massive kick/sub drop
+    const osc = this.ctx.createOscillator();
+    osc.type = 'sine';
+    osc.frequency.setValueAtTime(150, this.ctx.currentTime);
+    osc.frequency.exponentialRampToValueAtTime(20, this.ctx.currentTime + 0.5);
+    
+    const gain = this.ctx.createGain();
+    gain.gain.setValueAtTime(1.0, this.ctx.currentTime);
+    gain.gain.exponentialRampToValueAtTime(0.01, this.ctx.currentTime + dur);
+    
+    // Noise impact
+    const bufferSize = this.ctx.sampleRate * 1.0;
+    const buffer = this.ctx.createBuffer(1, bufferSize, this.ctx.sampleRate);
+    const data = buffer.getChannelData(0);
+    for (let i = 0; i < bufferSize; i++) data[i] = Math.random() * 2 - 1;
+    const noise = this.ctx.createBufferSource();
+    noise.buffer = buffer;
+    
+    const noiseFilter = this.ctx.createBiquadFilter();
+    noiseFilter.type = 'lowpass';
+    noiseFilter.frequency.setValueAtTime(2000, this.ctx.currentTime);
+    noiseFilter.frequency.exponentialRampToValueAtTime(100, this.ctx.currentTime + 1.0);
+    
+    const noiseGain = this.ctx.createGain();
+    noiseGain.gain.setValueAtTime(0.5, this.ctx.currentTime);
+    noiseGain.gain.exponentialRampToValueAtTime(0.01, this.ctx.currentTime + 1.0);
+    
+    noise.connect(noiseFilter);
+    noiseFilter.connect(noiseGain);
+    noiseGain.connect(this.ctx.destination);
+    
+    osc.connect(gain);
+    gain.connect(this.ctx.destination);
+    
+    osc.start();
+    noise.start();
+    osc.stop(this.ctx.currentTime + dur);
+  }
+
   toggleMute() {
     this.muted = !this.muted;
     return this.muted;

@@ -9,6 +9,21 @@
 </head>
 <body>
 
+  <!-- White Flash Overlay -->
+  <div id="whiteFlash" class="white-flash"></div>
+
+  <!-- Neon Audio Boot Sequence -->
+  <div id="neonBootScreen" class="neon-boot-screen active">
+    <div class="eq-container hidden" id="bootEq">
+      <div class="eq-bar"></div>
+      <div class="eq-bar"></div>
+      <div class="eq-bar"></div>
+      <div class="eq-bar"></div>
+      <div class="eq-bar"></div>
+    </div>
+    <div id="bootText" class="boot-text pulse">TAP TO CALIBRATE AUDIO</div>
+  </div>
+
   <!-- Main Game Shell -->
   <div id="gameContainer">
 
@@ -120,6 +135,6 @@
   </div>
 
   <!-- Main Game Script -->
-  <script type="module" src="js/game.js?v=1.0"></script>
+  <script type="module" src="js/game.js?v=1.1"></script>
 </body>
 </html>

@@ -20,7 +20,7 @@ export class NeonBeatGame {
       this.canvas.height = this.height;
     }
 
-    this.state = 'TRACK_SELECT'; // 'TRACK_SELECT' | 'PLAYING' | 'RESULTS'
+    this.state = 'BOOT_WAITING'; // 'BOOT_WAITING' | 'TRACK_SELECT' | 'PLAYING' | 'RESULTS'
     this.selectedTrackIndex = 0;
 
     this.score = 0;
@@ -57,6 +57,10 @@ export class NeonBeatGame {
 
   initDOM() {
     this.ui = {
+      neonBootScreen: document.getElementById('neonBootScreen'),
+      bootText: document.getElementById('bootText'),
+      bootEq: document.getElementById('bootEq'),
+      whiteFlash: document.getElementById('whiteFlash'),
       trackSelectView: document.getElementById('trackSelectView'),
       gameplayView: document.getElementById('gameplayView'),
       trackListContainer: document.getElementById('trackListContainer'),
@@ -81,6 +85,30 @@ export class NeonBeatGame {
   }
 
   initEvents() {
+    if (this.ui.neonBootScreen) {
+      this.ui.neonBootScreen.addEventListener('click', () => {
+        if (this.state === 'BOOTING') return;
+        this.state = 'BOOTING';
+        
+        this.ui.bootText.classList.remove('pulse');
+        this.ui.bootText.classList.add('syncing');
+        this.ui.bootText.textContent = "SYNCING AUDIO ENGINE...";
+        this.ui.bootEq.classList.remove('hidden');
+        
+        neonAudio.playBootRiser();
+        
+        setTimeout(() => {
+          this.ui.whiteFlash.classList.add('flash-active');
+          neonAudio.playBassDrop();
+          
+          setTimeout(() => {
+            this.ui.neonBootScreen.classList.add('hidden');
+            this.showTrackSelect();
+          }, 200);
+        }, 2000);
+      });
+    }
+
     if (this.ui.btnRetry) {
       this.ui.btnRetry.addEventListener('click', () => {
         if (this.ui.endModal) this.ui.endModal.style.display = 'none';
