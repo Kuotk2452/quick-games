@@ -101,17 +101,9 @@ export class PhysicsWorld3D {
 
     if (this.claw.state === 'DROPPING') {
       this.claw.y -= this.claw.dropSpeed * dt;
-      // Check reached bottom or hit dense item pile
-      let hitDenseItem = false;
-      for (const item of this.items) {
-        const d = Math.hypot(item.pos.x - this.claw.x, item.pos.z - this.claw.z);
-        if (d < 0.6 && this.claw.y - item.pos.y < 0.3 && this.claw.y > item.pos.y) {
-          hitDenseItem = true;
-          break;
-        }
-      }
 
-      if (this.claw.y <= this.claw.minY || hitDenseItem) {
+      if (this.claw.y <= this.claw.minY) {
+        this.claw.y = this.claw.minY;
         this.claw.state = 'GRABBING';
         this.claw.targetAngle = 0.05; // Close prongs tightly
         soundEngine.playClawGrab();

@@ -4,12 +4,12 @@
  */
 
 import * as THREE from 'https://unpkg.com/three@0.160.0/build/three.module.js';
-import { PhysicsWorld3D } from './physics3d.js?v=3.5';
-import { ITEM_DEFS, createItem3DMesh, calculateCombos } from './items.js?v=3.5';
-import { MONSTER_ROSTER, Monster } from './monsters.js?v=3.5';
-import { CLAW_UPGRADES, ITEM_SHOP_OFFERS } from './shop.js?v=3.5';
-import { soundEngine } from './audio.js?v=3.5';
-import { i18n } from './i18n.js?v=3.5';
+import { PhysicsWorld3D } from './physics3d.js?v=4.0';
+import { ITEM_DEFS, createItem3DMesh, calculateCombos } from './items.js?v=4.0';
+import { MONSTER_ROSTER, Monster } from './monsters.js?v=4.0';
+import { CLAW_UPGRADES, ITEM_SHOP_OFFERS } from './shop.js?v=4.0';
+import { soundEngine } from './audio.js?v=4.0';
+import { i18n } from './i18n.js?v=4.0';
 
 export class DungeonClawGame {
   constructor() {
@@ -500,11 +500,11 @@ Play free on web:
         this.scene.remove(item.mesh);
         this.physics.removeItem(item);
 
-        // Respawn replacement item at top of pit
+        // Respawn replacement item into pit
         const randomDef = Object.values(ITEM_DEFS)[Math.floor(Math.random() * (Object.values(ITEM_DEFS).length - 1))];
         const newMesh = createItem3DMesh(randomDef);
         this.scene.add(newMesh);
-        this.physics.addItem(newMesh, randomDef, (Math.random() - 0.5) * 3, 1.5, (Math.random() - 0.5) * 2);
+        this.physics.addItem(newMesh, randomDef, (Math.random() - 0.5) * 3, 0.5, (Math.random() - 0.5) * 2);
       });
     } catch (err) {
       console.error('Error handling loot:', err);
