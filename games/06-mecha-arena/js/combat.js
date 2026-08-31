@@ -27,6 +27,7 @@ export class RobotEntity {
     this.fireCooldown = 0;
     this.shieldActive = false;
     this.shieldTimer = 0;
+    this.overclockTimer = 0;
     this.moduleCooldown = 0;
     this.isDead = false;
 
@@ -54,7 +55,7 @@ export class RobotEntity {
     this.hp = Math.min(this.maxHp, this.hp + amount);
   }
 
-  activateModule(mines = []) {
+  activateModule(mines = [], drones = []) {
     if (this.moduleCooldown > 0) return false;
 
     if (this.moduleId === 'SHIELD') {
@@ -84,6 +85,23 @@ export class RobotEntity {
       this.moduleCooldown = 7.0;
       mechaAudio.playTeslaZap();
       return true;
+    } else if (this.moduleId === 'OVERCLOCK') {
+      this.overclockTimer = 4.0;
+      this.moduleCooldown = 8.5;
+      mechaAudio.playOverclock();
+      return true;
+    } else if (this.moduleId === 'DRONE') {
+      drones.push({
+        owner: this,
+        isPlayer: this.isPlayer,
+        orbitAngle: 0,
+        orbitDist: 55,
+        life: 6.0,
+        fireCooldown: 0.4
+      });
+      this.moduleCooldown = 9.0;
+      mechaAudio.playOverclock();
+      return true;
     }
     return false;
   }
@@ -96,6 +114,12 @@ export class RobotEntity {
       this.shieldTimer -= dt;
       if (this.shieldTimer <= 0) {
         this.shieldActive = false;
+      }
+    }
+    if (this.overclockTimer > 0) {
+      this.overclockTimer -= dt;
+      if (Math.random() < 0.3) {
+        particles.spawnSparks(this.pos.x, this.pos.y, 2, '#facc15');
       }
     }
     if (this.moduleCooldown > 0) {
@@ -111,9 +135,14 @@ export class RobotEntity {
     this.vel.x *= 0.92;
     this.vel.y *= 0.92;
 
-    // Update body rotation to movement direction if moving
-    if (Math.hypot(this.vel.x, this.vel.y) > 20) {
-      this.angle = Math.atan2(this.vel.y, this.vel.x);
+    // Align robot body with movement direction if moving
+    const speedSq = this.vel.x * this.vel.x + this.vel.y * this.vel.y;
+    if (speedSq > 50) {
+      const targetAngle = Math.atan2(this.vel.y, this.vel.x);
+      let angleDiff = targetAngle - this.angle;
+      while (angleDiff > Math.PI) angleDiff -= Math.PI * 2;
+      while (angleDiff < -Math.PI) angleDiff += Math.PI * 2;
+      this.angle += angleDiff * 0.15;
     }
 
     // 3. AI Behavior (If not player)
@@ -124,17 +153,19 @@ export class RobotEntity {
 
       this.turretAngle = Math.atan2(dy, dx);
 
-      // AI Movement Logic based on weapon
-      if (this.weaponId === 'SAW') {
-        // Charge directly at target
+      // AI Steering based on weapon range
+      const weapon = WEAPON_PARTS.find(w => w.id === this.weaponId) || WEAPON_PARTS[0];
+
+      if (weapon.id === 'SAW') {
+        // Direct aggressive ramming
         this.vel.x += (dx / dist) * this.speed * dt * 2.5;
         this.vel.y += (dy / dist) * this.speed * dt * 2.5;
-      } else if (this.weaponId === 'LASER') {
-        // Keep distance (Kite)
-        if (dist < 180) {
+      } else if (weapon.id === 'LASER' || weapon.id === 'MISSILE') {
+        // Kite and maintain distance (~260px)
+        if (dist < 200) {
           this.vel.x -= (dx / dist) * this.speed * dt * 2;
           this.vel.y -= (dy / dist) * this.speed * dt * 2;
-        } else if (dist > 280) {
+        } else if (dist > 300) {
           this.vel.x += (dx / dist) * this.speed * dt * 2;
           this.vel.y += (dy / dist) * this.speed * dt * 2;
         }
@@ -160,7 +191,8 @@ export class RobotEntity {
 
   fireWeapon(bullets, particles, target) {
     const weapon = WEAPON_PARTS.find(w => w.id === this.weaponId) || WEAPON_PARTS[0];
-    this.fireCooldown = weapon.fireRate;
+    const rateMultiplier = this.overclockTimer > 0 ? 0.5 : 1.0;
+    this.fireCooldown = weapon.fireRate * rateMultiplier;
 
     const muzzleX = this.pos.x + Math.cos(this.turretAngle) * 30;
     const muzzleY = this.pos.y + Math.sin(this.turretAngle) * 30;
@@ -209,6 +241,52 @@ export class RobotEntity {
           particles.spawnSparks(target.pos.x, target.pos.y, 8, '#ef4444');
         }
       }
+    } else if (weapon.id === 'FLAMETHROWER') {
+      mechaAudio.playFlameStream();
+      particles.spawnFlames(muzzleX, muzzleY, this.turretAngle, 4);
+      if (target && !target.isDead) {
+        const dist = Math.hypot(target.pos.x - this.pos.x, target.pos.y - this.pos.y);
+        const angleToTarget = Math.atan2(target.pos.y - this.pos.y, target.pos.x - this.pos.x);
+        let angleDiff = Math.abs(angleToTarget - this.turretAngle);
+        while (angleDiff > Math.PI) angleDiff = Math.PI * 2 - angleDiff;
+
+        if (dist < weapon.range && angleDiff < 0.4) {
+          target.takeDamage(weapon.damage);
+          particles.spawnSparks(target.pos.x, target.pos.y, 4, '#ea580c');
+        }
+      }
+    } else if (weapon.id === 'HARPOON') {
+      mechaAudio.playHarpoonShoot();
+      if (target && !target.isDead) {
+        const dist = Math.hypot(target.pos.x - this.pos.x, target.pos.y - this.pos.y);
+        if (dist < weapon.range) {
+          particles.addLaser(muzzleX, muzzleY, target.pos.x, target.pos.y, '#06b6d4');
+          target.takeDamage(weapon.damage);
+          // Pull target towards player violently
+          const yankAngle = Math.atan2(this.pos.y - target.pos.y, this.pos.x - target.pos.x);
+          target.vel.x += Math.cos(yankAngle) * 450;
+          target.vel.y += Math.sin(yankAngle) * 450;
+          particles.spawnSparks(target.pos.x, target.pos.y, 10, '#06b6d4');
+        }
+      }
+    } else if (weapon.id === 'MISSILE') {
+      mechaAudio.playMissileLaunch();
+      [-12, 12].forEach(sideOffset => {
+        const radOffset = (sideOffset * Math.PI) / 180;
+        bullets.push({
+          x: muzzleX,
+          y: muzzleY,
+          vx: Math.cos(this.turretAngle + radOffset) * 380,
+          vy: Math.sin(this.turretAngle + radOffset) * 380,
+          damage: weapon.damage,
+          isPlayer: this.isPlayer,
+          isHoming: true,
+          homingTarget: target,
+          color: weapon.color,
+          radius: 5,
+          life: 1.4
+        });
+      });
     } else if (weapon.id === 'TESLA') {
       mechaAudio.playTeslaZap();
       if (target && !target.isDead) {

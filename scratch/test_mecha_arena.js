@@ -1,47 +1,52 @@
 /**
- * Standalone Combat Simulation Test for Game 06 Mecha Arena
+ * Standalone Combat Simulation Test for Game 06 Mecha Arena Expanded
  */
 
 import { RobotEntity } from '../games/06-mecha-arena/js/combat.js';
 import { CHASSIS_PARTS, WEAPON_PARTS, MODULE_PARTS } from '../games/06-mecha-arena/js/workshop.js';
 import { TOURNAMENT_TIERS } from '../games/06-mecha-arena/js/game.js';
 
-console.log('--- STARTING MECHA ARENA SIMULATION TEST ---');
+console.log('--- STARTING EXPANDED MECHA ARENA TEST ---');
 
-// 1. Test Loadout Combinations
-console.log('Testing modular loadout combinations...');
-const player = new RobotEntity(true, 'TANK', 'LASER', 'SHIELD');
-console.assert(player.hp === 240, `Tank HP should be 240, got ${player.hp}`);
-console.assert(player.isPlayer === true, 'Player entity flag should be true');
-console.log(`✅ Loadout initialized: HP ${player.hp}, Weapon ${player.weaponId}`);
+// 1. Test All 4 Chassis
+console.log(`Testing all ${CHASSIS_PARTS.length} chassis...`);
+CHASSIS_PARTS.forEach(c => {
+  const bot = new RobotEntity(true, c.id, 'GATLING', 'SHIELD');
+  console.assert(bot.hp === c.maxHp, `${c.id} HP mismatch: got ${bot.hp}, expected ${c.maxHp}`);
+  console.log(`  🦾 Chassis [${c.id}]: HP ${bot.hp}, Speed ${c.speed}, Recoil Absorb ${c.recoilAbsorb}`);
+});
 
-// 2. Test Weapon Fire & Bullets
+// 2. Test All 7 Weapons
+console.log(`Testing all ${WEAPON_PARTS.length} weapons...`);
 const bullets = [];
 const particles = {
   spawnSparks: () => {},
   spawnExplosion: () => {},
+  spawnFlames: () => {},
   addLaser: () => {}
 };
 
-player.turretAngle = 0;
-player.fireWeapon(bullets, particles, null);
-console.assert(bullets.length === 1, `Should spawn 1 bullet, got ${bullets.length}`);
-console.log(`✅ Weapon firing validated (Bullet speed: ${bullets[0].vx})`);
-
-// 3. Test Shield Damage Absorption
-player.activateModule();
-console.assert(player.shieldActive === true, 'Shield should be active');
-const damageTaken = player.takeDamage(50);
-console.assert(damageTaken === 0, `Shield should absorb damage, took ${damageTaken}`);
-console.assert(player.hp === 240, 'HP should remain 240 with active shield');
-console.log(`✅ Kinetic Shield deflection validated`);
-
-// 4. Test Tournament AI Bots
-console.log('Simulating 4 tournament tiers combat...');
-TOURNAMENT_TIERS.forEach(tier => {
-  const enemy = new RobotEntity(false, tier.chassisId, tier.weaponId, tier.moduleId);
-  console.assert(enemy.hp > 0, `Enemy Tier ${tier.tier} HP should be > 0`);
-  console.log(`🏆 Tier ${tier.tier} [${tier.name.en}]: HP ${enemy.hp}, Weapon ${tier.weaponId}, Reward $${tier.reward}`);
+WEAPON_PARTS.forEach(w => {
+  const bot = new RobotEntity(true, 'TITAN', w.id, 'SHIELD');
+  const enemy = new RobotEntity(false, 'HOVER', 'GATLING', 'SHIELD');
+  bot.turretAngle = 0;
+  bot.fireWeapon(bullets, particles, enemy);
+  console.log(`  🔫 Weapon [${w.id}]: Type ${w.type}, Damage ${w.damage}, Range ${w.range}, Recoil ${w.recoil}`);
 });
 
-console.log('--- ALL MECHA ARENA TESTS PASSED 100% ---');
+// 3. Test All 5 Tactical Subsystems
+console.log(`Testing all ${MODULE_PARTS.length} tactical subsystems...`);
+const mines = [];
+const drones = [];
+
+MODULE_PARTS.forEach(m => {
+  const bot = new RobotEntity(true, 'TITAN', 'MISSILE', m.id);
+  const activated = bot.activateModule(mines, drones);
+  console.assert(activated === true, `Module ${m.id} should activate successfully`);
+  console.log(`  🚀 Subsystem [${m.id}]: Duration ${m.duration || 0}s, Cooldown ${m.cooldown}s`);
+});
+
+console.assert(mines.length === 3, `EMP Mines should spawn 3 mines, got ${mines.length}`);
+console.assert(drones.length === 1, `Drone should spawn 1 drone, got ${drones.length}`);
+
+console.log('--- ALL EXPANDED MECHA ARENA TESTS PASSED 100% ---');

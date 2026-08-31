@@ -79,6 +79,7 @@ export class MechaArenaGame {
 
     this.bullets = [];
     this.mines = [];
+    this.drones = [];
     this.particles = new MechaParticleEngine(this.canvas);
     this.arena = new ArenaStage(this.width, this.height);
 
@@ -147,7 +148,7 @@ export class MechaArenaGame {
       this.keys[e.code] = true;
       if (e.code === 'Space' && this.state === 'ARENA') {
         e.preventDefault();
-        if (this.player) this.player.activateModule(this.mines);
+        if (this.player) this.player.activateModule(this.mines, this.drones);
       }
     });
 
@@ -185,7 +186,7 @@ export class MechaArenaGame {
 
     if (this.ui.btnModuleAction) {
       this.ui.btnModuleAction.addEventListener('click', () => {
-        if (this.player) this.player.activateModule(this.mines);
+        if (this.player) this.player.activateModule(this.mines, this.drones);
       });
     }
 
@@ -385,6 +386,23 @@ Play Free in Browser:
     // 4. Update Bullets & Projectile Collisions
     for (let i = this.bullets.length - 1; i >= 0; i--) {
       const b = this.bullets[i];
+
+      // Homing missile steering
+      if (b.isHoming && b.homingTarget && !b.homingTarget.isDead) {
+        const targetAngle = Math.atan2(b.homingTarget.pos.y - b.y, b.homingTarget.pos.x - b.x);
+        const currentAngle = Math.atan2(b.vy, b.vx);
+        let diff = targetAngle - currentAngle;
+        while (diff > Math.PI) diff -= Math.PI * 2;
+        while (diff < -Math.PI) diff += Math.PI * 2;
+        const newAngle = currentAngle + diff * 0.12;
+        const speed = 420;
+        b.vx = Math.cos(newAngle) * speed;
+        b.vy = Math.sin(newAngle) * speed;
+        if (Math.random() < 0.4) {
+          this.particles.spawnSparks(b.x, b.y, 1, '#cbd5e1');
+        }
+      }
+
       b.x += b.vx * dt;
       b.y += b.vy * dt;
       b.life -= dt;
@@ -396,6 +414,9 @@ Play Free in Browser:
         if (hitDist < target.radius + b.radius) {
           target.takeDamage(b.damage);
           this.particles.spawnSparks(b.x, b.y, 8, b.color);
+          if (b.isHoming) {
+            this.particles.spawnExplosion(b.x, b.y, 15);
+          }
           this.bullets.splice(i, 1);
           continue;
         }
@@ -403,6 +424,40 @@ Play Free in Browser:
 
       if (b.life <= 0) {
         this.bullets.splice(i, 1);
+      }
+    }
+
+    // 4.5. Update Orbital Combat Drones
+    for (let i = this.drones.length - 1; i >= 0; i--) {
+      const drone = this.drones[i];
+      drone.life -= dt;
+      drone.orbitAngle += dt * 3.5;
+      drone.x = drone.owner.pos.x + Math.cos(drone.orbitAngle) * drone.orbitDist;
+      drone.y = drone.owner.pos.y + Math.sin(drone.orbitAngle) * drone.orbitDist;
+      drone.fireCooldown -= dt;
+
+      const target = drone.isPlayer ? this.enemy : this.player;
+      if (drone.fireCooldown <= 0 && target && !target.isDead) {
+        drone.fireCooldown = 0.5;
+        const aimAngle = Math.atan2(target.pos.y - drone.y, target.pos.x - drone.x);
+        this.bullets.push({
+          x: drone.x,
+          y: drone.y,
+          vx: Math.cos(aimAngle) * 650,
+          vy: Math.sin(aimAngle) * 650,
+          damage: 10,
+          isPlayer: drone.isPlayer,
+          color: '#38bdf8',
+          radius: 3,
+          life: 0.5
+        });
+        this.particles.addLaser(drone.x, drone.y, drone.x + Math.cos(aimAngle) * 80, drone.y + Math.sin(aimAngle) * 80, '#38bdf8');
+        mechaAudio.playDroneLaser();
+      }
+
+      if (drone.life <= 0 || drone.owner.isDead) {
+        this.particles.spawnSparks(drone.x, drone.y, 6, '#38bdf8');
+        this.drones.splice(i, 1);
       }
     }
 
@@ -538,6 +593,23 @@ Play Free in Browser:
           this.ctx.fillStyle = b.color;
           this.ctx.beginPath();
           this.ctx.arc(b.x, b.y, b.radius, 0, Math.PI * 2);
+          this.ctx.fill();
+        });
+
+        // Draw Orbital Drones
+        this.drones.forEach(d => {
+          this.ctx.fillStyle = '#0f172a';
+          this.ctx.strokeStyle = '#38bdf8';
+          this.ctx.lineWidth = 2;
+          this.ctx.beginPath();
+          this.ctx.arc(d.x, d.y, 8, 0, Math.PI * 2);
+          this.ctx.fill();
+          this.ctx.stroke();
+
+          // Mini Drone Core
+          this.ctx.fillStyle = '#38bdf8';
+          this.ctx.beginPath();
+          this.ctx.arc(d.x, d.y, 3, 0, Math.PI * 2);
           this.ctx.fill();
         });
 

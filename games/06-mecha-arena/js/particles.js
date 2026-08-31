@@ -55,6 +55,24 @@ export class MechaParticleEngine {
     });
   }
 
+  // Spawn flamethrower cone stream
+  spawnFlames(x, y, angle, count = 4) {
+    for (let i = 0; i < count; i++) {
+      const spread = (Math.random() - 0.5) * 0.45;
+      const speed = 280 + Math.random() * 120;
+      this.particles.push({
+        x,
+        y,
+        vx: Math.cos(angle + spread) * speed,
+        vy: Math.sin(angle + spread) * speed,
+        color: Math.random() > 0.3 ? '#ea580c' : '#facc15',
+        radius: Math.random() * 5 + 3,
+        alpha: 0.9,
+        decay: 2.8
+      });
+    }
+  }
+
   update(dt) {
     // 1. Update Sparks
     for (let i = this.sparks.length - 1; i >= 0; i--) {

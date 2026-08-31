@@ -38,6 +38,18 @@ export const CHASSIS_PARTS = [
     baseColor: '#10b981',
     cost: 600,
     unlocked: false
+  },
+  {
+    id: 'TITAN',
+    name: { en: 'Titan Biped Mech', zh: '泰坦双足重型突击机甲', es: 'Bípedo Titán', ja: 'タイタン2脚メカ' },
+    icon: '🦾',
+    maxHp: 320,
+    speed: 205,
+    rotationSpeed: 3.6,
+    recoilAbsorb: 0.75,
+    baseColor: '#ec4899',
+    cost: 900,
+    unlocked: false
   }
 ];
 
@@ -82,6 +94,32 @@ export const WEAPON_PARTS = [
     unlocked: false
   },
   {
+    id: 'FLAMETHROWER',
+    name: { en: 'Inferno Flamethrower', zh: '炼狱重型喷火器', es: 'Lanzallamas Infernal', ja: 'インフェルノ火炎放射器' },
+    icon: '🔥',
+    type: 'FIRE',
+    damage: 14,
+    fireRate: 0.08,
+    range: 190,
+    color: '#f97316',
+    recoil: 5,
+    cost: 550,
+    unlocked: false
+  },
+  {
+    id: 'HARPOON',
+    name: { en: 'Magnetic Harpoon Hook', zh: '磁力抓钩牵引枪', es: 'Arpón Magnético', ja: '電磁ワイヤーフック' },
+    icon: '🧲',
+    type: 'HARPOON',
+    damage: 22,
+    fireRate: 0.75,
+    range: 320,
+    color: '#06b6d4',
+    recoil: 10,
+    cost: 650,
+    unlocked: false
+  },
+  {
     id: 'TESLA',
     name: { en: 'Tesla Arc Emitter', zh: '高压特斯拉电磁炮', es: 'Emisor de Arco Tesla', ja: 'テスラ高圧放電砲' },
     icon: '⚡',
@@ -92,6 +130,19 @@ export const WEAPON_PARTS = [
     color: '#a855f7',
     recoil: 20,
     cost: 700,
+    unlocked: false
+  },
+  {
+    id: 'MISSILE',
+    name: { en: 'Swarm Micro-Missiles', zh: '微型追踪蜂群导弹', es: 'Micromisiles de Enjambre', ja: '群生追尾マイクロミサイル' },
+    icon: '🚀',
+    type: 'MISSILE',
+    damage: 26,
+    fireRate: 0.65,
+    range: 460,
+    color: '#ec4899',
+    recoil: 25,
+    cost: 850,
     unlocked: false
   }
 ];
@@ -126,6 +177,26 @@ export const MODULE_PARTS = [
     cooldown: 7.0,
     desc: 'Deploys 3 explosive proximity mines behind you.',
     cost: 500,
+    unlocked: false
+  },
+  {
+    id: 'OVERCLOCK',
+    name: { en: 'Overclock Core Booster', zh: '反应堆超频过载', es: 'Sobreacelerador', ja: 'オーバークロック炉' },
+    icon: '⚡',
+    duration: 4.0,
+    cooldown: 8.5,
+    desc: 'Doubles fire rate and movement speed for 4 seconds.',
+    cost: 600,
+    unlocked: false
+  },
+  {
+    id: 'DRONE',
+    name: { en: 'Orbital Combat Drone', zh: '作战护卫僚机无人机', es: 'Dron de Ataque', ja: '護衛支援ドローン' },
+    icon: '🛸',
+    duration: 6.0,
+    cooldown: 9.0,
+    desc: 'Deploys an automated laser drone that orbits and lasers nearby rivals.',
+    cost: 750,
     unlocked: false
   }
 ];
@@ -176,6 +247,30 @@ export function drawMecha(ctx, mecha, animTime = 0) {
     ctx.lineWidth = 3;
     ctx.fillRect(-18, -16, 36, 32);
     ctx.strokeRect(-18, -16, 36, 32);
+  } else if (chassisId === 'TITAN') {
+    // Heavy Biped Legs with Hydraulic Pistons
+    const legOffset = Math.sin(animTime * 10) * 8;
+    ctx.strokeStyle = chassis.baseColor;
+    ctx.lineWidth = 6;
+    // Left leg
+    ctx.beginPath();
+    ctx.moveTo(-10, -18);
+    ctx.lineTo(-20 + legOffset, -28);
+    ctx.stroke();
+    // Right leg
+    ctx.beginPath();
+    ctx.moveTo(-10, 18);
+    ctx.lineTo(-20 - legOffset, 28);
+    ctx.stroke();
+
+    // Reinforced Titan Torso
+    ctx.fillStyle = '#1e1b4b';
+    ctx.strokeStyle = '#ec4899';
+    ctx.lineWidth = 3;
+    ctx.beginPath();
+    ctx.arc(0, 0, 26, 0, Math.PI * 2);
+    ctx.fill();
+    ctx.stroke();
   } else {
     // Spider 4 Legs
     ctx.strokeStyle = chassis.baseColor;
@@ -229,6 +324,30 @@ export function drawMecha(ctx, mecha, animTime = 0) {
     ctx.strokeStyle = '#ffffff';
     ctx.stroke();
     ctx.restore();
+  } else if (weapon.id === 'FLAMETHROWER') {
+    ctx.fillStyle = '#ea580c';
+    ctx.fillRect(8, -6, 22, 12);
+    ctx.fillStyle = '#f97316';
+    ctx.beginPath();
+    ctx.arc(30, 0, 6, 0, Math.PI * 2);
+    ctx.fill();
+  } else if (weapon.id === 'HARPOON') {
+    ctx.fillStyle = '#0891b2';
+    ctx.fillRect(10, -4, 20, 8);
+    ctx.fillStyle = '#06b6d4';
+    ctx.beginPath();
+    ctx.moveTo(30, -8);
+    ctx.lineTo(38, 0);
+    ctx.lineTo(30, 8);
+    ctx.closePath();
+    ctx.fill();
+  } else if (weapon.id === 'MISSILE') {
+    ctx.fillStyle = '#475569';
+    ctx.fillRect(8, -12, 18, 8);
+    ctx.fillRect(8, 4, 18, 8);
+    ctx.fillStyle = '#ec4899';
+    ctx.fillRect(26, -11, 4, 6);
+    ctx.fillRect(26, 5, 4, 6);
   } else if (weapon.id === 'TESLA') {
     ctx.fillStyle = '#a855f7';
     ctx.fillRect(10, -4, 18, 8);
