@@ -83,7 +83,6 @@ export class PhysicsWorld3D {
   }
 
   triggerDrop() {
-    if (this.claw.state !== 'IDLE') return false;
     this.claw.state = 'DROPPING';
     this.claw.targetAngle = this.claw.openAngle; // Open wide
     soundEngine.playClawDrop();

@@ -4,12 +4,12 @@
  */
 
 import * as THREE from 'https://unpkg.com/three@0.160.0/build/three.module.js';
-import { PhysicsWorld3D } from './physics3d.js?v=5.0';
-import { ITEM_DEFS, createItem3DMesh, calculateCombos } from './items.js?v=5.0';
-import { MONSTER_ROSTER, Monster } from './monsters.js?v=5.0';
-import { CLAW_UPGRADES, ITEM_SHOP_OFFERS } from './shop.js?v=5.0';
-import { soundEngine } from './audio.js?v=5.0';
-import { i18n } from './i18n.js?v=5.0';
+import { PhysicsWorld3D } from './physics3d.js?v=6.0';
+import { ITEM_DEFS, createItem3DMesh, calculateCombos } from './items.js?v=6.0';
+import { MONSTER_ROSTER, Monster } from './monsters.js?v=6.0';
+import { CLAW_UPGRADES, ITEM_SHOP_OFFERS } from './shop.js?v=6.0';
+import { soundEngine } from './audio.js?v=6.0';
+import { i18n } from './i18n.js?v=6.0';
 
 export class DungeonClawGame {
   constructor() {
@@ -231,7 +231,13 @@ export class DungeonClawGame {
     // Keyboard controls
     window.addEventListener('keydown', (e) => {
       this.keys[e.key.toLowerCase()] = true;
-      if (e.code === 'Space') {
+      if (
+        e.code === 'Space' ||
+        e.code === 'Enter' ||
+        e.code === 'ArrowDown' ||
+        e.code === 'KeyS' ||
+        e.key.toLowerCase() === 's'
+      ) {
         e.preventDefault();
         this.triggerDrop();
       }
@@ -332,7 +338,16 @@ export class DungeonClawGame {
 
     // UI Buttons
     if (this.ui.btnStart) this.ui.btnStart.addEventListener('click', () => this.startGame());
-    if (this.ui.btnDropClaw) this.ui.btnDropClaw.addEventListener('click', () => this.triggerDrop());
+    if (this.ui.btnDropClaw) {
+      this.ui.btnDropClaw.addEventListener('pointerdown', (e) => {
+        e.preventDefault();
+        this.triggerDrop();
+      });
+      this.ui.btnDropClaw.addEventListener('click', (e) => {
+        e.preventDefault();
+        this.triggerDrop();
+      });
+    }
     if (this.ui.btnEndTurn) this.ui.btnEndTurn.addEventListener('click', () => this.executeMonsterTurn());
 
     if (this.ui.btnToggleView) {
@@ -728,7 +743,7 @@ Play free on web:
 
     if (this.ui.turnHintText) {
       if (this.gameState === 'PLAYER_TURN') {
-        this.ui.turnHintText.innerText = `🟢 YOUR TURN: Tap [◀️ LEFT / RIGHT ▶️] or [A/D] / Click to aim, then [DROP CLAW]! (Energy: ${this.energy}/${this.maxEnergy})`;
+        this.ui.turnHintText.innerText = `🟢 YOUR TURN: Tap [◀️ LEFT / RIGHT ▶️] or [A/D] / Click to aim, then press [⬇️ DROP CLAW / Space / ⬇️]! (Energy: ${this.energy}/${this.maxEnergy})`;
         this.ui.turnHintText.style.color = '#38bdf8';
       } else if (this.gameState === 'CLAW_ACTIVE') {
         this.ui.turnHintText.innerText = '🤖 Crane lowering & lifting loot...';
@@ -745,7 +760,7 @@ Play free on web:
 
     if (this.ui.btnDropClaw) {
       this.ui.btnDropClaw.disabled = !canControl;
-      this.ui.btnDropClaw.innerText = canControl ? '👇 DROP CLAW (SPACE)' : (this.gameState === 'CLAW_ACTIVE' ? '⏳ Grabbing...' : '⌛ Waiting...');
+      this.ui.btnDropClaw.innerText = canControl ? '⬇️ DROP CLAW (Space / ⬇️)' : (this.gameState === 'CLAW_ACTIVE' ? '⏳ Grabbing...' : '⌛ Waiting...');
     }
   }
 
