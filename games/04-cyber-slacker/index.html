@@ -1,0 +1,317 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>Cyber Slacker: Office Battle Royale (赛博工位大逃杀)</title>
+  <meta name="description" content="Trade meme coins and slack off on the job while evading the micromanaging boss and HR with a 0.05s instant panic Excel disguise!">
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+  <!-- Retro Office OS Desktop Frame -->
+  <div id="desktopContainer">
+
+    <!-- Top Corporate Status Bar -->
+    <header class="os-menubar">
+      <div class="os-logo">
+        <span>💼 CYBER-SLACK OS v3.2</span>
+      </div>
+
+      <div class="hud-stats-group">
+        <div class="stat-badge">
+          <span>💰 <span data-i18n="cashLabel">Net Worth</span>:</span>
+          <span id="netWorthDisplay" class="val text-gold">$500.00</span>
+        </div>
+        <div class="stat-badge">
+          <span>⭐ <span data-i18n="slackerXpLabel">Slack XP</span>:</span>
+          <span id="slackerXpDisplay" class="val text-cyan">0</span>
+        </div>
+        <div class="stat-badge">
+          <span>🕒 <span data-i18n="shiftTimeLabel">Time</span>:</span>
+          <span id="shiftClockDisplay" class="val">09:00 AM</span>
+        </div>
+      </div>
+
+      <div class="top-nav-controls">
+        <button id="audioToggleBtn" class="icon-btn" title="Toggle Sound">🔊</button>
+        <select id="langSelect" class="lang-dropdown">
+          <option value="en">English</option>
+          <option value="zh">简体中文</option>
+          <option value="es">Español</option>
+          <option value="ja">日本語</option>
+        </select>
+      </div>
+    </header>
+
+    <!-- Boss Patrol & Suspicion Header Card -->
+    <section class="boss-patrol-bar">
+      <div class="boss-info">
+        <span id="bossNameDisplay">👨‍💼 Bob (Team Lead)</span>
+        <span id="statusBadge" class="status-indicator">🟢 Office Clear</span>
+      </div>
+      <div class="suspicion-container">
+        <div class="suspicion-label">
+          <span data-i18n="bossSuspicionLabel">BOSS SUSPICION</span>
+        </div>
+        <div class="meter-bar">
+          <div id="suspicionFill" class="meter-fill" style="width: 0%;"></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Floating Praise Banner -->
+    <div id="praiseBanner" class="praise-banner">
+      ✨ Boss saw you analyzing Excel: "Excellent work! +$500 Bonus!"
+    </div>
+
+    <!-- Main Slacker Workstation Window -->
+    <main id="workstationView" class="workstation-window">
+      <!-- Window Titlebar -->
+      <div class="window-titlebar">
+        <div class="window-title">📁 Secret_Browser_Tab_42 [INCOGNITO]</div>
+        <div class="window-buttons">
+          <span class="win-btn">_</span>
+          <span class="win-btn">□</span>
+          <span class="win-btn close">✕</span>
+        </div>
+      </div>
+
+      <!-- App Tabs -->
+      <nav class="app-tabs-nav">
+        <button id="tabCryptoBtn" class="tab-btn active" data-i18n="tabCrypto">
+          📈 Crypto / Meme Trader
+        </button>
+        <button id="tabRunnerBtn" class="tab-btn" data-i18n="tabMiniGame">
+          🕹️ Retro Runner
+        </button>
+        <button id="tabGossipBtn" class="tab-btn" data-i18n="tabGossip">
+          💬 Office Gossip
+        </button>
+        <button id="tabShopBtn" class="tab-btn" data-i18n="tabGear">
+          🛍️ Desk Gadgets
+        </button>
+      </nav>
+
+      <!-- Panel 1: Crypto Candlestick Trading -->
+      <div id="panelCrypto" class="tab-content" style="display: block;">
+        <div class="crypto-header-row">
+          <div id="coinSelectButtons" class="coin-selector-bar">
+            <button class="coin-pill active" data-coin="DOGE">🐕 $DOGE</button>
+            <button class="coin-pill" data-coin="PEPE">🐸 $PEPE</button>
+            <button class="coin-pill" data-coin="AI_CORP">🤖 $AICORP</button>
+            <button class="coin-pill" data-coin="COFFEE">☕ $BEANS</button>
+          </div>
+          <div class="coin-quote">
+            <span id="cryptoPriceText" class="current-price">$1.2000</span>
+            <span class="quote-holdings"><span data-i18n="portfolio">Holdings</span>: <span id="cryptoHoldingsText">0.00</span></span>
+          </div>
+        </div>
+
+        <div class="chart-box">
+          <canvas id="cryptoCanvas" width="580" height="190"></canvas>
+        </div>
+
+        <div class="trading-action-bar">
+          <button id="btnBuy25" class="action-btn buy-btn">
+            🟢 <span data-i18n="buyBtn">BUY</span> $25
+          </button>
+          <button id="btnBuy100" class="action-btn buy-btn">
+            🟢 <span data-i18n="buyBtn">BUY</span> $100
+          </button>
+          <button id="btnSellAll" class="action-btn sell-btn">
+            🔴 <span data-i18n="sellBtn">SELL ALL</span>
+          </button>
+        </div>
+      </div>
+
+      <!-- Panel 2: Retro Pixel Runner -->
+      <div id="panelRunner" class="tab-content" style="display: none;">
+        <div class="runner-box">
+          <canvas id="runnerCanvas" width="580" height="220"></canvas>
+        </div>
+        <div class="runner-instructions">
+          Press <b>SPACE</b> or <b>TAP SCREEN</b> to Jump over printers & collect coffee!
+        </div>
+      </div>
+
+      <!-- Panel 3: Gossip Chat -->
+      <div id="panelGossip" class="tab-content" style="display: none;">
+        <div id="gossipChatList" class="gossip-chat-feed">
+          <!-- Dynamically injected -->
+        </div>
+      </div>
+
+      <!-- Panel 4: Desk Gadgets Shop -->
+      <div id="panelShop" class="tab-content" style="display: none;">
+        <div id="shopCardsContainer" class="shop-grid">
+          <!-- Dynamically injected -->
+        </div>
+      </div>
+    </main>
+
+    <!-- Bottom Action Dock with Emergency Panic Button -->
+    <footer class="bottom-dock">
+      <button id="btnPanicToggle" class="panic-emergency-btn" data-i18n="panicBtn">
+        🚨 PANIC DISGUISE (SPACE)
+      </button>
+    </footer>
+
+  </div>
+
+  <!-- ULTRA-REALISTIC INSTANT EXCEL CAMOUFLAGE OVERLAY -->
+  <div id="panicOverlay" class="excel-camouflage-overlay" style="display: none;">
+    <div class="excel-header-ribbon">
+      <div class="excel-top-bar">
+        <span class="excel-logo">📊 Excel</span>
+        <span class="excel-filename">Q4_Corporate_KPI_Financial_Forecast_Matrix.xlsx - Excel</span>
+      </div>
+      <div class="excel-ribbon-tabs">
+        <span class="active">Home</span>
+        <span>Insert</span>
+        <span>Page Layout</span>
+        <span>Formulas</span>
+        <span>Data</span>
+        <span>Review</span>
+        <span>View</span>
+      </div>
+    </div>
+
+    <!-- Formula Bar -->
+    <div class="excel-formula-bar">
+      <span class="cell-name">C14</span>
+      <span class="fx-icon">fx</span>
+      <div class="formula-input">=SUM(C2:C12) * (1 + $B$15) * 1.185</div>
+    </div>
+
+    <!-- Spreadsheet Grid -->
+    <div class="excel-sheet-grid">
+      <table>
+        <thead>
+          <tr>
+            <th></th>
+            <th>A</th>
+            <th>B</th>
+            <th>C</th>
+            <th>D</th>
+            <th>E</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <th>1</th>
+            <td class="bold">Department</td>
+            <td class="bold">Q1 Target ($k)</td>
+            <td class="bold">Q2 Actual ($k)</td>
+            <td class="bold">Q3 Variance (%)</td>
+            <td class="bold">Q4 Projection</td>
+          </tr>
+          <tr>
+            <th>2</th>
+            <td>Enterprise Sales</td>
+            <td>$1,250.00</td>
+            <td>$1,420.50</td>
+            <td class="text-green">+13.6%</td>
+            <td>$1,650.00</td>
+          </tr>
+          <tr>
+            <th>3</th>
+            <td>Cloud Infrastructure</td>
+            <td>$850.00</td>
+            <td>$920.00</td>
+            <td class="text-green">+8.2%</td>
+            <td>$1,100.00</td>
+          </tr>
+          <tr>
+            <th>4</th>
+            <td>Strategic Marketing</td>
+            <td>$420.00</td>
+            <td>$395.00</td>
+            <td class="text-red">-5.9%</td>
+            <td>$480.00</td>
+          </tr>
+          <tr>
+            <th>5</th>
+            <td>R&D AI Innovations</td>
+            <td>$2,100.00</td>
+            <td>$2,450.00</td>
+            <td class="text-green">+16.6%</td>
+            <td>$3,200.00</td>
+          </tr>
+          <tr>
+            <th>6</th>
+            <td>Human Resources</td>
+            <td>$180.00</td>
+            <td>$175.00</td>
+            <td>-2.7%</td>
+            <td>$190.00</td>
+          </tr>
+          <tr class="highlight-row">
+            <th>7</th>
+            <td class="bold">Total Operations</td>
+            <td class="bold">$4,800.00</td>
+            <td class="bold">$5,360.50</td>
+            <td class="bold text-green">+11.6%</td>
+            <td class="bold">$6,620.00</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="excel-status-bar">
+      <span>READY</span>
+      <span>100% Zoom</span>
+      <span>Calculated (Automatic)</span>
+    </div>
+  </div>
+
+  <!-- Start Workday Modal -->
+  <div id="startScreen" class="modal-overlay">
+    <div class="modal-content">
+      <div class="modal-icon">💼⚡</div>
+      <h1 class="modal-title" data-i18n="gameTitle">Cyber Slacker: Office Battle Royale</h1>
+      <p class="modal-subtitle" data-i18n="tagline">
+        Meme Trading & Slacking Clicker ✕ Instant Panic Excel Disguise — Escape the Boss & Win Early Retirement!
+      </p>
+
+      <div class="rules-card">
+        <p>1. 📈 <b>Slack Off</b>: Trade Meme Coins, play Retro Runner, and chat on Gossip Slack to build Net Worth & Slack XP.</p>
+        <p>2. 👂 <b>Listen for Boss Cues</b>: Heavy footsteps and shadow warnings mean the Boss/HR is approaching!</p>
+        <p>3. 🚨 <b>Hit SPACE / Panic Button</b>: Instantly disguise screen as a realistic Excel matrix in 0.05s.</p>
+        <p>4. 🏆 <b>Survive 4 Shifts</b>: Earn $5,000+ Net Worth without getting busted to retire rich!</p>
+      </div>
+
+      <button id="btnStart" class="primary-start-btn" data-i18n="startPrompt">
+        ▶ CLOCK IN & START SHIFT
+      </button>
+    </div>
+  </div>
+
+  <!-- Game Over / Victory Modal -->
+  <div id="endModal" class="modal-overlay" style="display: none;">
+    <div class="modal-content">
+      <h2 id="endTitle" class="modal-title" data-i18n="bustedTitle">💀 YOU WERE BUSTED BY HR!</h2>
+      <p id="endDesc" class="modal-subtitle" data-i18n="bustedDesc">The boss caught you red-handed.</p>
+
+      <div class="results-stats-box">
+        <div>
+          <div class="res-label">Final Net Worth</div>
+          <div id="finalNetWorth" class="res-val text-gold">$0.00</div>
+        </div>
+        <div>
+          <div class="res-label">Total Slacker XP</div>
+          <div id="finalXp" class="res-val text-cyan">0 XP</div>
+        </div>
+      </div>
+
+      <div class="modal-actions">
+        <button id="btnPlayAgain" class="primary-start-btn" data-i18n="playAgain">🔄 New Workday</button>
+        <button id="btnShareScore" class="secondary-btn" data-i18n="shareScore">📋 Share Review</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Main Game Entry -->
+  <script type="module" src="js/game.js?v=1.0"></script>
+</body>
+</html>
