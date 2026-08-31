@@ -23,7 +23,7 @@ export class PhysicsWorld3D {
       y: 2.2, // Cable height
       targetY: 2.2,
       baseY: 2.2,
-      minY: -1.4, // Lowest drop reach
+      minY: -1.75, // Lowest drop reach
       speed: 3.5,
       dropSpeed: 4.5,
       liftSpeed: 3.5,
@@ -140,7 +140,7 @@ export class PhysicsWorld3D {
       if (this.claw.y >= this.claw.baseY) {
         this.claw.y = this.claw.baseY;
         this.claw.state = 'DELIVERING';
-        this.deliverTimer = 0.5;
+        this.deliverTimer = 0.4;
       }
     } else if (this.claw.state === 'DELIVERING') {
       this.deliverTimer -= dt;
@@ -150,7 +150,7 @@ export class PhysicsWorld3D {
         this.claw.grabbedItems = [];
         this.claw.state = 'IDLE';
 
-        if (this.onDeliveryCallback && delivered.length > 0) {
+        if (this.onDeliveryCallback) {
           this.onDeliveryCallback(delivered);
         }
       }
@@ -159,13 +159,13 @@ export class PhysicsWorld3D {
 
   performGraspDetection() {
     this.claw.grabbedItems = [];
-    const grabRadius = 0.75 * this.claw.gripStrength;
+    const grabRadius = 0.95 * this.claw.gripStrength;
 
     for (const item of this.items) {
       const distXZ = Math.hypot(item.pos.x - this.claw.x, item.pos.z - this.claw.z);
       const distY = Math.abs(item.pos.y - (this.claw.y - 0.3));
 
-      if (distXZ < grabRadius && distY < 0.6) {
+      if (distXZ < grabRadius && distY < 0.85) {
         item.isGrabbed = true;
         item.grabOffset = {
           x: (item.pos.x - this.claw.x) * 0.5,

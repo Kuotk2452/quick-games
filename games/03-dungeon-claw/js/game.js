@@ -412,38 +412,42 @@ Play free on web:
       return;
     }
 
-    const defs = deliveredItems.map(i => i.def);
-    const combo = calculateCombos(defs);
+    try {
+      const defs = deliveredItems.map(i => i.def);
+      const combo = calculateCombos(defs);
 
-    // Apply Effects
-    defs.forEach(d => soundEngine.playItemEffect(d.type));
+      // Apply Effects
+      defs.forEach(d => soundEngine.playItemEffect(d.id || d.type));
 
-    // Deal Damage to Monster
-    if (combo.totalDamage > 0) {
-      this.currentMonster.takeDamage(combo.totalDamage);
+      // Deal Damage to Monster
+      if (combo.totalDamage > 0) {
+        this.currentMonster.takeDamage(combo.totalDamage);
+      }
+
+      // Apply Armor & Heal & Gold
+      this.armor += combo.totalArmor;
+      this.hp = Math.min(this.maxHp, this.hp + combo.totalHeal);
+      this.gold += combo.totalGold;
+
+      // Show Combo text
+      const lootIcons = defs.map(d => d.icon).join(' ');
+      const desc = combo.comboText ? ` [${combo.comboText}]` : '';
+      this.showComboBanner(`✨ Grabbed: ${lootIcons}${desc} (+${combo.totalDamage} DMG, +${combo.totalArmor} Armor)`);
+
+      // Remove delivered items from scene and respawn new items into pit
+      deliveredItems.forEach(item => {
+        this.scene.remove(item.mesh);
+        this.physics.removeItem(item);
+
+        // Respawn replacement item at top of pit
+        const randomDef = Object.values(ITEM_DEFS)[Math.floor(Math.random() * (Object.values(ITEM_DEFS).length - 1))];
+        const newMesh = createItem3DMesh(randomDef);
+        this.scene.add(newMesh);
+        this.physics.addItem(newMesh, randomDef, (Math.random() - 0.5) * 3, 1.5, (Math.random() - 0.5) * 2);
+      });
+    } catch (err) {
+      console.error('Error handling loot:', err);
     }
-
-    // Apply Armor & Heal & Gold
-    this.armor += combo.totalArmor;
-    this.hp = Math.min(this.maxHp, this.hp + combo.totalHeal);
-    this.gold += combo.totalGold;
-
-    // Show Combo text
-    const lootIcons = defs.map(d => d.icon).join(' ');
-    const desc = combo.comboText ? ` [${combo.comboText}]` : '';
-    this.showComboBanner(`✨ Grabbed: ${lootIcons}${desc} (+${combo.totalDamage} DMG, +${combo.totalArmor} Armor)`);
-
-    // Remove delivered items from scene and respawn new items into pit
-    deliveredItems.forEach(item => {
-      this.scene.remove(item.mesh);
-      this.physics.removeItem(item);
-
-      // Respawn replacement item at top of pit
-      const randomDef = Object.values(ITEM_DEFS)[Math.floor(Math.random() * (Object.values(ITEM_DEFS).length - 1))];
-      const newMesh = createItem3DMesh(randomDef);
-      this.scene.add(newMesh);
-      this.physics.addItem(newMesh, randomDef, (Math.random() - 0.5) * 3, 1.5, (Math.random() - 0.5) * 2);
-    });
 
     this.updateHUD();
 
@@ -460,8 +464,10 @@ Play free on web:
   checkTurnEnd() {
     if (this.energy > 0) {
       this.gameState = 'PLAYER_TURN';
+      this.updateHUD();
     } else {
-      setTimeout(() => this.executeMonsterTurn(), 800);
+      this.showComboBanner('⏳ Energy Depleted! Monster attacking...');
+      setTimeout(() => this.executeMonsterTurn(), 900);
     }
   }
 
@@ -505,7 +511,6 @@ Play free on web:
     }
 
     this.currentMonster.nextTurn();
-    this.updateHUD();
 
     if (this.hp <= 0) {
       this.showGameOver();
@@ -514,6 +519,7 @@ Play free on web:
       this.armor = 0;
       this.gameState = 'PLAYER_TURN';
     }
+    this.updateHUD();
   }
 
   openShop() {
