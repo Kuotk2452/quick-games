@@ -103,7 +103,7 @@ class BossBootScreen {
     
     const t = this.clock.getElapsedTime();
     
-    if (this.isBooting) {
+    if (!this.isWalkingAway) {
       // Tap foot impatiently
       this.rightFoot.rotation.x = (Math.sin(t * 15) > 0) ? -0.3 : 0;
     } else {
@@ -116,9 +116,11 @@ class BossBootScreen {
   };
   
   bindEvents() {
-    this.tapText.addEventListener('click', () => {
-      if (!this.isBooting) return; // wait, isBooting should be false initially, actually it's true to represent booting state
-      this.isBooting = false; // Trigger walk away
+    // Bind to the entire screen for better UX, not just the text button
+    this.screen.addEventListener('click', () => {
+      if (!window.isBossBooting) return; // Prevent multiple clicks
+      window.isBossBooting = false; // Flag to prevent multiple clicks, but keep the visual boot active
+      this.isWalkingAway = true; // Trigger walk away animation
       
       this.tapText.classList.remove('pulse');
       this.tapText.classList.add('hidden');
