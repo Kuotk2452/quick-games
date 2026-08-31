@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>Neon Beat: Cyber Blade Rhythm (赛博光刃音游)</title>
+  <meta name="description" content="Dual Cyber Sabers ✕ Synthwave EDM Beats — Slice oncoming neon rhythm blocks to conquer the electronic music chart!">
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+  <!-- Main Game Shell -->
+  <div id="gameContainer">
+
+    <!-- Top Navigation & Resource Bar -->
+    <header class="neon-header">
+      <div class="header-left">
+        <a href="../../index.html" class="portal-back-btn" title="Back to Game Portal">
+          ← <span>Portal</span>
+        </a>
+        <div class="game-logo">
+          <span>⚡ NEON BEAT</span>
+        </div>
+      </div>
+
+      <div class="hud-stats-group">
+        <div class="hud-pill">
+          <span class="hud-label" data-i18n="scoreLabel">SCORE</span>
+          <span class="hud-val text-cyan"><span id="scoreDisplay">0</span></span>
+        </div>
+        <div class="hud-pill">
+          <span class="hud-label" data-i18n="comboLabel">COMBO</span>
+          <span id="comboDisplay" class="hud-val text-magenta">0x</span>
+        </div>
+        <div class="hud-pill">
+          <span class="hud-label" data-i18n="multiplierLabel">BOOST</span>
+          <span id="multiplierDisplay" class="hud-val text-gold">x1</span>
+        </div>
+      </div>
+
+      <div class="header-right">
+        <button id="audioToggleBtn" class="icon-btn" title="Toggle Sound">🔊</button>
+        <select id="langSelect" class="lang-dropdown">
+          <option value="en">English</option>
+          <option value="zh">中文</option>
+          <option value="es">Español</option>
+          <option value="ja">日本語</option>
+        </select>
+      </div>
+    </header>
+
+    <!-- FEVER Gauge Bar -->
+    <div class="fever-gauge-track">
+      <div id="feverFill" class="fever-gauge-fill"></div>
+    </div>
+
+    <!-- VIEW 1: Track Selection -->
+    <div id="trackSelectView" class="track-select-layout">
+      <div class="track-select-header">
+        <h2 class="track-select-title" data-i18n="selectTrackTitle">SELECT TRACK</h2>
+        <p class="track-select-desc">Swipe or click to slice matching Red & Blue neon rhythm cubes!</p>
+      </div>
+
+      <div id="trackListContainer" class="track-list-grid">
+        <!-- Dynamically generated track cards -->
+      </div>
+    </div>
+
+    <!-- VIEW 2: Gameplay Highway Canvas -->
+    <div id="gameplayView" class="gameplay-layout" style="display: none;">
+      <div class="canvas-box">
+        <canvas id="beatCanvas"></canvas>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- Track Results Modal -->
+  <div id="endModal" class="modal-overlay" style="display: none;">
+    <div class="modal-content">
+      <h2 class="modal-title" data-i18n="resultsTitle">🏆 TRACK COMPLETE!</h2>
+      
+      <div class="grade-circle">
+        <span id="gradeDisplay" class="grade-text">SSS</span>
+      </div>
+
+      <div class="stats-summary-grid">
+        <div class="stat-cell">
+          <span class="stat-label" data-i18n="scoreLabel">Score</span>
+          <span id="resultScore" class="stat-value text-cyan">0</span>
+        </div>
+        <div class="stat-cell">
+          <span class="stat-label" data-i18n="maxCombo">Max Combo</span>
+          <span id="resultMaxCombo" class="stat-value text-magenta">0x</span>
+        </div>
+        <div class="stat-cell">
+          <span class="stat-label" data-i18n="perfectCount">PERFECT</span>
+          <span id="resultPerfect" class="stat-value text-gold">0</span>
+        </div>
+        <div class="stat-cell">
+          <span class="stat-label" data-i18n="greatCount">GREAT</span>
+          <span id="resultGreat" class="stat-value text-cyan">0</span>
+        </div>
+        <div class="stat-cell">
+          <span class="stat-label" data-i18n="goodCount">GOOD</span>
+          <span id="resultGood" class="stat-value text-green">0</span>
+        </div>
+        <div class="stat-cell">
+          <span class="stat-label" data-i18n="missCount">MISS</span>
+          <span id="resultMiss" class="stat-value text-red">0</span>
+        </div>
+      </div>
+
+      <div class="modal-actions">
+        <button id="btnRetry" class="primary-start-btn" data-i18n="restartBtn">🔄 Retry</button>
+        <button id="btnSelectTrack" class="secondary-btn" data-i18n="selectSongBtn">🎵 Select Track</button>
+        <button id="btnShareScore" class="secondary-btn" data-i18n="shareScore">📋 Share</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Main Game Script -->
+  <script type="module" src="js/game.js?v=1.0"></script>
+</body>
+</html>

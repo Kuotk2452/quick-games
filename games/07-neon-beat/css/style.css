@@ -1,0 +1,443 @@
+/* ==========================================================
+   Neon Beat: Synthwave Cyberpunk Rhythm Slicer Styles
+   ========================================================== */
+
+:root {
+  --bg-dark: #05030a;
+  --panel-bg: rgba(15, 10, 28, 0.85);
+  --accent-cyan: #00f0ff;
+  --accent-magenta: #ec4899;
+  --accent-gold: #facc15;
+  --accent-red: #ef4444;
+  --accent-green: #10b981;
+  --accent-purple: #a855f7;
+  --text-main: #f8fafc;
+  --text-muted: #94a3b8;
+  --border-glow: rgba(0, 240, 255, 0.25);
+  --font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+  --font-mono: 'Consolas', 'Courier New', monospace;
+}
+
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+  user-select: none;
+  -webkit-user-select: none;
+}
+
+body, html {
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+  background-color: var(--bg-dark);
+  color: var(--text-main);
+  font-family: var(--font-family);
+}
+
+#gameContainer {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: space-between;
+  padding: 10px;
+  background: radial-gradient(circle at 50% 40%, #1e1035 0%, #05030a 100%);
+}
+
+/* ==========================================
+   TOP HEADER & HUD
+   ========================================== */
+.neon-header {
+  width: 100%;
+  max-width: 720px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 8px 14px;
+  background: var(--panel-bg);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid var(--border-glow);
+  border-radius: 14px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.6);
+  z-index: 10;
+}
+
+.header-left {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.portal-back-btn {
+  color: var(--text-muted);
+  text-decoration: none;
+  font-size: 13px;
+  font-weight: 700;
+  padding: 4px 8px;
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 8px;
+  transition: all 0.2s ease;
+}
+
+.portal-back-btn:hover {
+  color: var(--accent-cyan);
+  border-color: var(--accent-cyan);
+}
+
+.game-logo {
+  font-size: 15px;
+  font-weight: 900;
+  letter-spacing: 0.5px;
+  background: linear-gradient(135deg, var(--accent-cyan), var(--accent-magenta));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+.hud-stats-group {
+  display: flex;
+  gap: 14px;
+}
+
+.hud-pill {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.hud-label {
+  font-size: 10px;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.hud-val {
+  font-family: var(--font-mono);
+  font-size: 15px;
+  font-weight: 800;
+}
+
+.text-gold { color: var(--accent-gold); }
+.text-cyan { color: var(--accent-cyan); }
+.text-magenta { color: var(--accent-magenta); }
+.text-green { color: var(--accent-green); }
+.text-red { color: var(--accent-red); }
+
+.header-right {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.icon-btn {
+  background: rgba(255, 255, 255, 0.08);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  border-radius: 8px;
+  color: white;
+  padding: 5px 8px;
+  font-size: 14px;
+  cursor: pointer;
+}
+
+.lang-dropdown {
+  background: #0f172a;
+  border: 1px solid var(--border-glow);
+  color: white;
+  padding: 4px 6px;
+  border-radius: 8px;
+  font-size: 12px;
+  outline: none;
+}
+
+/* ==========================================
+   FEVER GAUGE BAR
+   ========================================== */
+.fever-gauge-track {
+  width: 100%;
+  max-width: 720px;
+  height: 4px;
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 2px;
+  overflow: hidden;
+  margin-top: 6px;
+}
+
+.fever-gauge-fill {
+  width: 0%;
+  height: 100%;
+  background: linear-gradient(90deg, var(--accent-cyan), var(--accent-magenta), var(--accent-gold));
+  transition: width 0.15s ease;
+  box-shadow: 0 0 10px var(--accent-magenta);
+}
+
+/* ==========================================
+   VIEW 1: TRACK SELECTION
+   ========================================== */
+.track-select-layout {
+  width: 100%;
+  max-width: 720px;
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-start;
+  margin-top: 10px;
+  background: var(--panel-bg);
+  border: 1px solid var(--border-glow);
+  border-radius: 16px;
+  padding: 16px;
+  overflow-y: auto;
+}
+
+.track-select-header {
+  text-align: center;
+  margin-bottom: 14px;
+}
+
+.track-select-title {
+  font-size: 20px;
+  font-weight: 800;
+  color: var(--accent-cyan);
+}
+
+.track-select-desc {
+  font-size: 12px;
+  color: var(--text-muted);
+  margin-top: 4px;
+}
+
+.track-list-grid {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.track-card {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 12px;
+  padding: 12px 16px;
+  transition: all 0.2s ease;
+}
+
+.track-card:hover {
+  border-color: var(--accent-cyan);
+  background: rgba(0, 240, 255, 0.08);
+}
+
+.track-info-left {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.track-badge {
+  font-size: 11px;
+  font-weight: 900;
+  padding: 4px 8px;
+  border-radius: 6px;
+}
+
+.track-title {
+  font-size: 14px;
+  font-weight: 800;
+  color: white;
+}
+
+.track-meta {
+  font-size: 11px;
+  color: var(--text-muted);
+  margin-top: 2px;
+}
+
+.track-info-right {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+}
+
+.track-best {
+  font-size: 12px;
+  font-family: var(--font-mono);
+  color: var(--accent-gold);
+}
+
+.btn-play-track {
+  padding: 8px 16px;
+  background: linear-gradient(135deg, var(--accent-cyan), #0284c7);
+  color: black;
+  border: none;
+  border-radius: 8px;
+  font-weight: 800;
+  font-size: 12px;
+  cursor: pointer;
+  box-shadow: 0 4px 12px rgba(0, 240, 255, 0.3);
+}
+
+/* ==========================================
+   VIEW 2: GAMEPLAY HIGHWAY CANVAS
+   ========================================== */
+.gameplay-layout {
+  width: 100%;
+  max-width: 720px;
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  margin-top: 6px;
+}
+
+.canvas-box {
+  position: relative;
+  width: 100%;
+  aspect-ratio: 68 / 54;
+  border-radius: 16px;
+  overflow: hidden;
+  border: 1px solid rgba(0, 240, 255, 0.3);
+  box-shadow: 0 0 35px rgba(236, 72, 153, 0.2);
+}
+
+#beatCanvas {
+  width: 100%;
+  height: 100%;
+  cursor: crosshair;
+  touch-action: none;
+}
+
+/* ==========================================
+   MODALS & RESULTS
+   ========================================== */
+.modal-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(5, 3, 10, 0.85);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 100;
+  padding: 20px;
+}
+
+.modal-content {
+  background: rgba(15, 10, 28, 0.95);
+  border: 1px solid var(--border-glow);
+  border-radius: 20px;
+  padding: 24px;
+  max-width: 440px;
+  width: 100%;
+  text-align: center;
+  box-shadow: 0 20px 50px rgba(0, 0, 0, 0.8);
+}
+
+.modal-title {
+  font-size: 20px;
+  font-weight: 800;
+  color: var(--accent-cyan);
+  margin-bottom: 12px;
+}
+
+.grade-circle {
+  width: 72px;
+  height: 72px;
+  border-radius: 50%;
+  border: 3px solid var(--accent-gold);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0 auto 16px auto;
+  box-shadow: 0 0 20px rgba(250, 204, 21, 0.4);
+}
+
+.grade-text {
+  font-size: 28px;
+  font-weight: 900;
+  color: var(--accent-gold);
+}
+
+.stats-summary-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
+  margin-bottom: 18px;
+}
+
+.stat-cell {
+  background: rgba(255, 255, 255, 0.05);
+  padding: 8px;
+  border-radius: 8px;
+  display: flex;
+  justify-content: space-between;
+}
+
+.stat-label {
+  font-size: 11px;
+  color: var(--text-muted);
+}
+
+.stat-value {
+  font-family: var(--font-mono);
+  font-size: 13px;
+  font-weight: 800;
+}
+
+.modal-actions {
+  display: flex;
+  gap: 8px;
+}
+
+.primary-start-btn {
+  flex: 1.2;
+  padding: 10px;
+  background: linear-gradient(135deg, var(--accent-cyan), #0284c7);
+  color: black;
+  border: none;
+  border-radius: 10px;
+  font-weight: 800;
+  font-size: 12px;
+  cursor: pointer;
+}
+
+.secondary-btn {
+  flex: 1;
+  background: rgba(255, 255, 255, 0.1);
+  color: white;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  border-radius: 10px;
+  padding: 10px;
+  font-weight: 700;
+  font-size: 12px;
+  cursor: pointer;
+}
+
+/* Mobile Responsiveness */
+@media (max-width: 640px) {
+  .track-card {
+    flex-direction: column;
+    gap: 8px;
+    align-items: flex-start;
+  }
+  .track-info-right {
+    width: 100%;
+    justify-content: space-between;
+  }
+  .hud-stats-group {
+    gap: 8px;
+  }
+}
