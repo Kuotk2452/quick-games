@@ -4,12 +4,12 @@
  */
 
 import * as THREE from 'https://unpkg.com/three@0.160.0/build/three.module.js';
-import { PhysicsWorld3D } from './physics3d.js?v=6.0';
-import { ITEM_DEFS, createItem3DMesh, calculateCombos } from './items.js?v=6.0';
-import { MONSTER_ROSTER, Monster } from './monsters.js?v=6.0';
-import { CLAW_UPGRADES, ITEM_SHOP_OFFERS } from './shop.js?v=6.0';
-import { soundEngine } from './audio.js?v=6.0';
-import { i18n } from './i18n.js?v=6.0';
+import { PhysicsWorld3D } from './physics3d.js?v=7.0';
+import { ITEM_DEFS, createItem3DMesh, calculateCombos } from './items.js?v=7.0';
+import { MONSTER_ROSTER, Monster } from './monsters.js?v=7.0';
+import { CLAW_UPGRADES, ITEM_SHOP_OFFERS } from './shop.js?v=7.0';
+import { soundEngine } from './audio.js?v=7.0';
+import { i18n } from './i18n.js?v=7.0';
 
 export class DungeonClawGame {
   constructor() {
@@ -267,9 +267,14 @@ export class DungeonClawGame {
     };
 
     let isDragging = false;
+    let pointerStartX = 0;
+    let pointerStartY = 0;
+
     const onPointerDown = (clientX, clientY) => {
-      if (this.gameState === 'PLAYER_TURN') {
+      if (this.gameState === 'PLAYER_TURN' && this.physics.claw.state === 'IDLE') {
         isDragging = true;
+        pointerStartX = clientX;
+        pointerStartY = clientY;
         aimAtScreenPos(clientX, clientY);
       }
     };
@@ -279,14 +284,21 @@ export class DungeonClawGame {
       aimAtScreenPos(clientX, clientY);
     };
 
-    const onPointerUp = () => {
+    const onPointerUp = (clientX, clientY) => {
+      if (isDragging && this.gameState === 'PLAYER_TURN' && this.physics.claw.state === 'IDLE') {
+        if (clientX !== undefined && clientY !== undefined) {
+          aimAtScreenPos(clientX, clientY);
+        }
+        // Instant drop on tap/click anywhere in the 3D scene!
+        this.triggerDrop();
+      }
       isDragging = false;
       soundEngine.stopMotorSound();
     };
 
     this.renderer.domElement.addEventListener('mousedown', (e) => onPointerDown(e.clientX, e.clientY));
     window.addEventListener('mousemove', (e) => onPointerMove(e.clientX, e.clientY));
-    window.addEventListener('mouseup', onPointerUp);
+    window.addEventListener('mouseup', (e) => onPointerUp(e.clientX, e.clientY));
 
     this.renderer.domElement.addEventListener('touchstart', (e) => {
       if (e.touches.length > 0) onPointerDown(e.touches[0].clientX, e.touches[0].clientY);
@@ -296,7 +308,10 @@ export class DungeonClawGame {
       if (e.touches.length > 0) onPointerMove(e.touches[0].clientX, e.touches[0].clientY);
     }, { passive: true });
 
-    window.addEventListener('touchend', onPointerUp);
+    window.addEventListener('touchend', (e) => {
+      const touch = e.changedTouches && e.changedTouches.length > 0 ? e.changedTouches[0] : null;
+      onPointerUp(touch ? touch.clientX : undefined, touch ? touch.clientY : undefined);
+    });
 
     // On-Screen Arcade Steering Buttons (Hold or Click)
     let steerInterval = null;
