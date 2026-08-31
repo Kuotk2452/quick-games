@@ -4,12 +4,12 @@
  */
 
 import * as THREE from 'https://unpkg.com/three@0.160.0/build/three.module.js';
-import { PhysicsWorld3D } from './physics3d.js?v=8.2';
-import { ITEM_DEFS, createItem3DMesh, calculateCombos } from './items.js?v=8.2';
-import { MONSTER_ROSTER, Monster } from './monsters.js?v=8.2';
-import { CLAW_UPGRADES, ITEM_SHOP_OFFERS } from './shop.js?v=8.2';
-import { soundEngine } from './audio.js?v=8.2';
-import { i18n } from './i18n.js?v=8.2';
+import { PhysicsWorld3D } from './physics3d.js?v=8.3';
+import { ITEM_DEFS, createItem3DMesh, calculateCombos } from './items.js?v=8.3';
+import { MONSTER_ROSTER, Monster } from './monsters.js?v=8.3';
+import { CLAW_UPGRADES, ITEM_SHOP_OFFERS } from './shop.js?v=8.3';
+import { soundEngine } from './audio.js?v=8.3';
+import { i18n } from './i18n.js?v=8.3';
 
 export class DungeonClawGame {
   constructor() {

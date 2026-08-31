@@ -83,46 +83,40 @@ class ClawSoundEngine {
     if (this.muted || !this.ctx || this.bgmPlaying) return;
     this.bgmPlaying = true;
     
-    // Play a continuous dark ambient drone (audible on laptop speakers)
-    const playDrone = () => {
+    // Cheerful, upbeat arcade chiptune melody
+    const sequence = [
+      261.6, 329.6, 392.0, 523.3, // C E G C
+      261.6, 349.2, 440.0, 523.3, // C F A C
+      293.7, 392.0, 493.9, 587.3, // D G B D
+      261.6, 329.6, 392.0, 523.3  // C E G C
+    ];
+    let noteIdx = 0;
+    
+    const playNote = () => {
       if (!this.bgmPlaying || !this.ctx) return;
       const now = this.ctx.currentTime;
       
-      // Base note (A2 = ~110Hz, A3 = 220Hz, E3 = 164.8Hz)
-      const freqs = [110, 164.81, 220];
+      const osc = this.ctx.createOscillator();
+      osc.type = 'triangle'; // Soft, marimba/flute-like tone
+      osc.frequency.setValueAtTime(sequence[noteIdx], now);
       
-      freqs.forEach(freq => {
-        const osc = this.ctx.createOscillator();
-        osc.type = 'sawtooth';
-        osc.frequency.setValueAtTime(freq, now);
-        // Slight detune wobble
-        osc.frequency.linearRampToValueAtTime(freq + 1, now + 4);
-        osc.frequency.linearRampToValueAtTime(freq, now + 8);
-        
-        const filter = this.ctx.createBiquadFilter();
-        filter.type = 'lowpass';
-        filter.frequency.setValueAtTime(400, now);
-        filter.frequency.linearRampToValueAtTime(800, now + 4);
-        filter.frequency.linearRampToValueAtTime(400, now + 8);
-        
-        const gain = this.ctx.createGain();
-        gain.gain.setValueAtTime(0, now);
-        // Fade in and out per cycle
-        gain.gain.linearRampToValueAtTime(0.08, now + 2);
-        gain.gain.linearRampToValueAtTime(0.04, now + 6);
-        gain.gain.linearRampToValueAtTime(0, now + 8.1); // Slightly overlap to prevent clicks
-        
-        osc.connect(filter);
-        filter.connect(gain);
-        gain.connect(this.ctx.destination);
-        
-        osc.start(now);
-        osc.stop(now + 8.1);
-      });
+      const gain = this.ctx.createGain();
+      gain.gain.setValueAtTime(0, now);
+      gain.gain.linearRampToValueAtTime(0.08, now + 0.05);
+      gain.gain.exponentialRampToValueAtTime(0.001, now + 0.25);
+      
+      osc.connect(gain);
+      gain.connect(this.ctx.destination);
+      
+      osc.start(now);
+      osc.stop(now + 0.3);
+      
+      noteIdx = (noteIdx + 1) % sequence.length;
     };
     
-    playDrone();
-    this.bgmInterval = setInterval(playDrone, 8000);
+    playNote();
+    // Play next note every 250ms (moderate bouncy tempo)
+    this.bgmInterval = setInterval(playNote, 250);
   }
 
   stopBGM() {
