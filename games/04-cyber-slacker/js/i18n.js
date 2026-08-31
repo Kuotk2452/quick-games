@@ -7,12 +7,7 @@ export const TRANSLATIONS = {
   en: {
     bossBootTap: 'BOSS IS WATCHING. CLOCK IN TO START',
     rulesCard: '<p>1. 🎮 <b>Slack Off</b>: Trade Meme Coins, play Retro Runner, and chat on Gossip Slack to build Net Worth & Slack XP.</p><p>2. 👞 <b>Listen for Boss Cues</b>: Heavy footsteps and shadow warnings mean the Boss/HR is approaching!</p><p>3. 🚨 <b>Hit SPACE / Panic Button</b>: Instantly disguise screen as a realistic Excel matrix in 0.05s.</p><p>4. 🌴 <b>Survive 4 Shifts</b>: Earn ,000+ Net Worth without getting busted to retire rich!</p>',
-    bossBootTap: '老板正在盯着你。点击屏幕打卡上班',
-    rulesCard: '<p>1. 🎮 <b>疯狂摸鱼</b>: 炒币、玩复古跑酷、刷办公室八卦，提升你的身价和摸鱼经验值！</p><p>2. 👞 <b>留意老板动静</b>: 听到沉重的脚步声，或者看到屏幕边缘的红色阴影，说明老板或HR正在靠近！</p><p>3. 🚨 <b>按下空格键 (Space) 紧急避险</b>: 0.05秒内瞬间将屏幕伪装成极其专业的 Excel 报表。</p><p>4. 🌴 <b>熬过4天工作日</b>: 不被抓包并赚够 ,000 身价，提前退休享受人生！</p>',
-    bossBootTap: 'EL JEFE TE OBSERVA. HAZ CLIC PARA FICHAR',
-    rulesCard: '<p>1. 🎮 <b>Holgazanear</b>: Intercambia Meme Coins, juega Retro Runner y chatea en Gossip Slack para ganar Patrimonio y Puntos Vago.</p><p>2. 👞 <b>Escucha al Jefe</b>: ¡Pasos pesados y sombras rojas significan que el Jefe/HR se acerca!</p><p>3. 🚨 <b>Botón de Pánico (ESPACIO)</b>: Disfraza la pantalla de Excel en 0.05s.</p><p>4. 🌴 <b>Sobrevive 4 Turnos</b>: ¡Gana ,000+ sin ser atrapado para retirarte joven!</p>',
-    bossBootTap: 'ボスが見ている。画面をクリックして出勤する',
-    rulesCard: '<p>1. 🎮 <b>サボる</b>: ミームコインの取引、レトロランナー、ゴシップチャットで資産とサボりXPを稼ぐ！</p><p>2. 👞 <b>ボスの気配に注意</b>: 重い足音や赤い影はボスや人事の接近の合図！</p><p>3. 🚨 <b>スペースキーでパニック偽装</b>: 0.05秒で画面をリアルなExcelシートに切り替える。</p><p>4. 🌴 <b>4シフト生き残れ</b>: バレずに,000稼いで早期リタイア（FIRE）を達成しろ！</p>',
+
     gameTitle: 'Cyber Slacker: Office Battle Royale',
     tagline: 'Meme Trading & Slacking Clicker ✕ Instant Panic Excel Disguise — Escape the Boss & Win Early Retirement!',
     startPrompt: '▶ CLOCK IN & START SHIFT',
@@ -42,6 +37,9 @@ export const TRANSLATIONS = {
     copiedAlert: 'Performance review copied to clipboard!'
   },
   zh: {
+    bossBootTap: '老板正在盯着你。点击屏幕打卡上班',
+    rulesCard: '<p>1. 🎮 <b>疯狂摸鱼</b>: 炒币、玩复古跑酷、刷办公室八卦，提升你的身价和摸鱼经验值！</p><p>2. 👞 <b>留意老板动静</b>: 听到沉重的脚步声，或者看到屏幕边缘的红色阴影，说明老板或HR正在靠近！</p><p>3. 🚨 <b>按下空格键 (Space) 紧急避险</b>: 0.05秒内瞬间将屏幕伪装成极其专业的 Excel 报表。</p><p>4. 🌴 <b>熬过4天工作日</b>: 不被抓包并赚够 ,000 身价，提前退休享受人生！</p>',
+
     gameTitle: 'Cyber Slacker: 赛博工位大逃杀',
     tagline: '炒币摸鱼 ✕ 0.05秒极速老板键伪装 —— 躲避老板突击检查，实现财富自由提早退休！',
     startPrompt: '▶ 打卡上班进入工位',
@@ -71,6 +69,9 @@ export const TRANSLATIONS = {
     copiedAlert: '摸鱼绩效战报已复制到剪贴板！'
   },
   es: {
+    bossBootTap: 'EL JEFE TE OBSERVA. HAZ CLIC PARA FICHAR',
+    rulesCard: '<p>1. 🎮 <b>Holgazanear</b>: Intercambia Meme Coins, juega Retro Runner y chatea en Gossip Slack para ganar Patrimonio y Puntos Vago.</p><p>2. 👞 <b>Escucha al Jefe</b>: ¡Pasos pesados y sombras rojas significan que el Jefe/HR se acerca!</p><p>3. 🚨 <b>Botón de Pánico (ESPACIO)</b>: Disfraza la pantalla de Excel en 0.05s.</p><p>4. 🌴 <b>Sobrevive 4 Turnos</b>: ¡Gana ,000+ sin ser atrapado para retirarte joven!</p>',
+
     gameTitle: 'Cyber Slacker: Batalla en la Oficina',
     tagline: 'Criptomonedas y Procrastinación ✕ Disfraz de Excel Instantáneo — ¡Escapa del jefe y retírate joven!',
     startPrompt: '▶ FICHAR Y COMENZAR TURNO',
@@ -100,6 +101,9 @@ export const TRANSLATIONS = {
     copiedAlert: '¡Informe copiado al portapapeles!'
   },
   ja: {
+    bossBootTap: 'ボスが見ている。画面をクリックして出勤する',
+    rulesCard: '<p>1. 🎮 <b>サボる</b>: ミームコインの取引、レトロランナー、ゴシップチャットで資産とサボりXPを稼ぐ！</p><p>2. 👞 <b>ボスの気配に注意</b>: 重い足音や赤い影はボスや人事の接近の合図！</p><p>3. 🚨 <b>スペースキーでパニック偽装</b>: 0.05秒で画面をリアルなExcelシートに切り替える。</p><p>4. 🌴 <b>4シフト生き残れ</b>: バレずに,000稼いで早期リタイア（FIRE）を達成しろ！</p>',
+
     gameTitle: 'サイバースラッカー: 社内サバイバル',
     tagline: '暗号資産トレード＆サボり ✕ 0.05秒緊急Excel偽装ボスボタン — 上司の監視を掻い潜り早期リタイアを目指せ！',
     startPrompt: '▶ タイムカードを押して出勤',
