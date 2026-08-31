@@ -69,6 +69,7 @@ export class Game {
 
     // Keyboard controls
     window.addEventListener('keydown', (e) => {
+      if (window.isBooting) return;
       this.keys[e.key.toLowerCase()] = true;
       if (e.code === 'Space') {
         e.preventDefault();
@@ -454,5 +455,6 @@ export class Game {
 // Instantiate and start game when DOM is loaded
 window.addEventListener('DOMContentLoaded', () => {
   const game = new Game();
+  window.gameInstance = game;
   game.start();
 });

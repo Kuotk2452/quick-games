@@ -497,3 +497,44 @@ body, html {
     grid-template-columns: 1fr;
   }
 }
+
+/* 3D Mage Boot Screen */
+.mage-boot-screen {
+  position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+  background: #000; z-index: 10000;
+  display: flex; flex-direction: column; justify-content: flex-end; align-items: center;
+  font-family: 'Courier New', Courier, monospace;
+  overflow: hidden; transition: opacity 0.5s ease-out;
+}
+.mage-boot-screen.hidden { opacity: 0; pointer-events: none; }
+
+.mage-canvas-container {
+  position: absolute; top: 0; left: 0; width: 100%; height: 100%;
+  pointer-events: none;
+}
+
+.mage-boot-tap {
+  position: relative; z-index: 10001; margin-bottom: 15%;
+  font-size: 22px; color: #44aaff; text-shadow: 0 0 15px rgba(68, 170, 255, 0.8);
+  letter-spacing: 3px; cursor: pointer; font-weight: bold;
+  padding: 15px 30px; border: 1px solid rgba(68, 170, 255, 0.3);
+  background: rgba(0, 20, 50, 0.5); border-radius: 4px;
+  box-shadow: inset 0 0 15px rgba(68, 170, 255, 0.2);
+}
+.mage-boot-tap.pulse { animation: magePulse 2s infinite; }
+.mage-boot-tap.hidden { display: none; }
+
+@keyframes magePulse { 0%, 100% { opacity: 1; box-shadow: inset 0 0 15px rgba(68,170,255,0.2), 0 0 10px rgba(68,170,255,0.4); } 50% { opacity: 0.5; box-shadow: inset 0 0 0px rgba(68,170,255,0), 0 0 0px rgba(68,170,255,0); } }
+
+.white-flash {
+  position: absolute; top: 0; left: 0; width: 100%; height: 100%;
+  background: #fff; z-index: 10002; opacity: 0; pointer-events: none;
+}
+.white-flash.active {
+  animation: flashWhite 1s forwards cubic-bezier(0.1, 0.8, 0.3, 1);
+}
+@keyframes flashWhite {
+  0% { opacity: 0; }
+  10% { opacity: 1; }
+  100% { opacity: 0; }
+}

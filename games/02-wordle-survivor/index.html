@@ -6,8 +6,16 @@
   <title>Wordle Survivor: Spell Roguelike (词灵幸存者)</title>
   <meta name="description" content="Vampire Survivors meets Wordle — Collect glowing letters, spell elemental words, cast screen-wiping magic and survive the monster hordes!">
   <link rel="stylesheet" href="css/style.css">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
 </head>
 <body>
+
+  <!-- 3D Mage Boot Sequence -->
+  <div id="mageBootScreen" class="mage-boot-screen active">
+    <div id="mageCanvasContainer" class="mage-canvas-container"></div>
+    <div id="mageBootTap" class="mage-boot-tap pulse">TAP TO AWAKEN THE MAGE</div>
+    <div id="whiteFlash" class="white-flash"></div>
+  </div>
 
   <!-- Game Canvas -->
   <canvas id="gameCanvas"></canvas>
@@ -136,13 +144,14 @@
       </div>
 
       <div class="modal-actions">
-        <button id="btnPlayAgain" class="primary-btn" data-i18n="playAgain">🔄 Play Again</button>
+        <button id="btnPlayAgain" class="primary-btn" data-i18n="playAgain">🎮 Play Again</button>
         <button id="btnShareScore" class="secondary-btn" data-i18n="shareScore">📋 Share Score Card</button>
       </div>
     </div>
   </div>
 
-  <!-- Main Game Entry -->
-  <script type="module" src="js/game.js"></script>
+  <script type="module" src="js/audio.js?v=1.1"></script>
+  <script type="module" src="js/mage_boot.js?v=1.1"></script>
+  <script type="module" src="js/game.js?v=1.1"></script>
 </body>
 </html>

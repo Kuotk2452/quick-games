@@ -20,12 +20,106 @@ class SoundEngine {
   }
 
   ensureContext() {
-    if (!this.ctx) {
-      this.initContext();
-    }
+    if (!this.ctx) this.initContext();
     if (this.ctx && this.ctx.state === 'suspended') {
       this.ctx.resume();
     }
+  }
+
+  playMagicalHum() {
+    this.ensureContext();
+    if (this.muted || !this.ctx) return;
+    
+    // Very low drone
+    const drone = this.ctx.createOscillator();
+    drone.type = 'sine';
+    drone.frequency.value = 60;
+    
+    // High choir-like tone
+    const choir = this.ctx.createOscillator();
+    choir.type = 'triangle';
+    choir.frequency.value = 400;
+    
+    // LFO for modulation
+    const lfo = this.ctx.createOscillator();
+    lfo.frequency.value = 0.5; // slow throb
+    
+    const droneGain = this.ctx.createGain();
+    droneGain.gain.value = 0.1;
+    
+    const choirGain = this.ctx.createGain();
+    choirGain.gain.value = 0; // modulated by LFO
+    
+    lfo.connect(choirGain.gain);
+    
+    drone.connect(droneGain);
+    droneGain.connect(this.ctx.destination);
+    
+    choir.connect(choirGain);
+    choirGain.connect(this.ctx.destination);
+    
+    drone.start();
+    choir.start();
+    lfo.start();
+    
+    this.magicalHumNodes = [drone, choir, lfo, droneGain, choirGain];
+  }
+
+  stopMagicalHum() {
+    if (this.magicalHumNodes) {
+      const now = this.ctx.currentTime;
+      this.magicalHumNodes.forEach(node => {
+        if (node.stop) node.stop(now + 0.5);
+        if (node.gain) node.gain.linearRampToValueAtTime(0, now + 0.5);
+      });
+      this.magicalHumNodes = null;
+    }
+  }
+
+  playSpellCast() {
+    this.ensureContext();
+    if (this.muted || !this.ctx) return;
+    
+    const now = this.ctx.currentTime;
+    const dur = 2.0;
+    
+    // Impact blast (noise)
+    const bufferSize = this.ctx.sampleRate * dur;
+    const buffer = this.ctx.createBuffer(1, bufferSize, this.ctx.sampleRate);
+    const data = buffer.getChannelData(0);
+    for (let i = 0; i < bufferSize; i++) data[i] = Math.random() * 2 - 1;
+    
+    const noise = this.ctx.createBufferSource();
+    noise.buffer = buffer;
+    
+    const noiseFilter = this.ctx.createBiquadFilter();
+    noiseFilter.type = 'lowpass';
+    noiseFilter.frequency.setValueAtTime(8000, now);
+    noiseFilter.frequency.exponentialRampToValueAtTime(100, now + dur);
+    
+    const noiseGain = this.ctx.createGain();
+    noiseGain.gain.setValueAtTime(0.8, now);
+    noiseGain.gain.exponentialRampToValueAtTime(0.01, now + dur);
+    
+    noise.connect(noiseFilter);
+    noiseFilter.connect(noiseGain);
+    noiseGain.connect(this.ctx.destination);
+    noise.start(now);
+    
+    // Magical Sweep (Chime)
+    const sweep = this.ctx.createOscillator();
+    sweep.type = 'sine';
+    sweep.frequency.setValueAtTime(800, now);
+    sweep.frequency.exponentialRampToValueAtTime(200, now + 1.0);
+    
+    const sweepGain = this.ctx.createGain();
+    sweepGain.gain.setValueAtTime(0.5, now);
+    sweepGain.gain.exponentialRampToValueAtTime(0.01, now + 1.0);
+    
+    sweep.connect(sweepGain);
+    sweepGain.connect(this.ctx.destination);
+    sweep.start(now);
+    sweep.stop(now + 1.1);
   }
 
   toggleMute() {
