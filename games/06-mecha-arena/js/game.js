@@ -67,10 +67,10 @@ export class MechaArenaGame {
     this.scrapCash = typeof localStorage !== 'undefined' ? Number(localStorage.getItem('ma_scrap') || 100) : 100;
     this.currentTournamentTier = typeof localStorage !== 'undefined' ? Number(localStorage.getItem('ma_tier') || 1) : 1;
 
-    // Player loadout
-    this.playerChassisId = 'HOVER';
-    this.playerWeaponId = 'GATLING';
-    this.playerModuleId = 'SHIELD';
+    // Player loadout (Persisted)
+    this.playerChassisId = typeof localStorage !== 'undefined' ? (localStorage.getItem('ma_chassis') || 'HOVER') : 'HOVER';
+    this.playerWeaponId = typeof localStorage !== 'undefined' ? (localStorage.getItem('ma_weapon') || 'GATLING') : 'GATLING';
+    this.playerModuleId = typeof localStorage !== 'undefined' ? (localStorage.getItem('ma_module') || 'SHIELD') : 'SHIELD';
 
     this.state = 'WORKSHOP'; // 'WORKSHOP' | 'ARENA'
     this.keys = {};
@@ -78,6 +78,7 @@ export class MechaArenaGame {
     this.isMouseDown = false;
 
     this.bullets = [];
+    this.mines = [];
     this.particles = new MechaParticleEngine(this.canvas);
     this.arena = new ArenaStage(this.width, this.height);
 
@@ -146,7 +147,7 @@ export class MechaArenaGame {
       this.keys[e.code] = true;
       if (e.code === 'Space' && this.state === 'ARENA') {
         e.preventDefault();
-        if (this.player) this.player.activateModule();
+        if (this.player) this.player.activateModule(this.mines);
       }
     });
 
@@ -184,7 +185,7 @@ export class MechaArenaGame {
 
     if (this.ui.btnModuleAction) {
       this.ui.btnModuleAction.addEventListener('click', () => {
-        if (this.player) this.player.activateModule();
+        if (this.player) this.player.activateModule(this.mines);
       });
     }
 
@@ -305,9 +306,9 @@ Play Free in Browser:
         if (part.id === currentEquipped) return;
 
         if (isUnlocked) {
-          if (category === 'CHASSIS') this.playerChassisId = part.id;
-          else if (category === 'WEAPON') this.playerWeaponId = part.id;
-          else this.playerModuleId = part.id;
+          if (category === 'CHASSIS') { this.playerChassisId = part.id; localStorage.setItem('ma_chassis', part.id); }
+          else if (category === 'WEAPON') { this.playerWeaponId = part.id; localStorage.setItem('ma_weapon', part.id); }
+          else { this.playerModuleId = part.id; localStorage.setItem('ma_module', part.id); }
           mechaAudio.playMetalImpact();
           this.renderPartsCategory(category);
         } else {
@@ -315,9 +316,9 @@ Play Free in Browser:
             this.scrapCash -= part.cost;
             localStorage.setItem('ma_scrap', this.scrapCash);
             part.unlocked = true;
-            if (category === 'CHASSIS') this.playerChassisId = part.id;
-            else if (category === 'WEAPON') this.playerWeaponId = part.id;
-            else this.playerModuleId = part.id;
+            if (category === 'CHASSIS') { this.playerChassisId = part.id; localStorage.setItem('ma_chassis', part.id); }
+            else if (category === 'WEAPON') { this.playerWeaponId = part.id; localStorage.setItem('ma_weapon', part.id); }
+            else { this.playerModuleId = part.id; localStorage.setItem('ma_module', part.id); }
             mechaAudio.playVictory();
             this.renderWorkshopUI();
           } else {
@@ -430,6 +431,26 @@ Play Free in Browser:
       });
     }
 
+    // 6.5. Update EMP Mines
+    for (let i = this.mines.length - 1; i >= 0; i--) {
+      const mine = this.mines[i];
+      if (mine.armTimer > 0) {
+        mine.armTimer -= dt;
+      } else {
+        const target = mine.isPlayer ? this.enemy : this.player;
+        if (!target.isDead) {
+          const dist = Math.hypot(target.pos.x - mine.x, target.pos.y - mine.y);
+          if (dist < target.radius + mine.radius) {
+            target.takeDamage(mine.damage);
+            this.particles.spawnExplosion(mine.x, mine.y, 25);
+            this.particles.spawnSparks(mine.x, mine.y, 15, '#a855f7');
+            this.mines.splice(i, 1);
+            continue;
+          }
+        }
+      }
+    }
+
     // 7. Update HUD
     if (this.ui.playerHpFill) {
       this.ui.playerHpFill.style.width = `${(this.player.hp / this.player.maxHp) * 100}%`;
@@ -493,6 +514,23 @@ Play Free in Browser:
       if (this.ctx) {
         this.ctx.clearRect(0, 0, this.width, this.height);
         this.arena.draw(this.ctx, timestamp / 1000);
+
+        // Draw Mines
+        this.mines.forEach(m => {
+          this.ctx.fillStyle = '#1e293b';
+          this.ctx.strokeStyle = '#a855f7';
+          this.ctx.lineWidth = 2;
+          this.ctx.beginPath();
+          this.ctx.arc(m.x, m.y, m.radius, 0, Math.PI * 2);
+          this.ctx.fill();
+          this.ctx.stroke();
+
+          // Blinking LED
+          this.ctx.fillStyle = Math.sin(timestamp / 1000 * 12) > 0 ? '#ef4444' : '#64748b';
+          this.ctx.beginPath();
+          this.ctx.arc(m.x, m.y, 4, 0, Math.PI * 2);
+          this.ctx.fill();
+        });
 
         // Draw Bullets
         this.bullets.forEach(b => {

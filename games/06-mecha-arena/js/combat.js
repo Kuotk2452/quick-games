@@ -54,7 +54,7 @@ export class RobotEntity {
     this.hp = Math.min(this.maxHp, this.hp + amount);
   }
 
-  activateModule() {
+  activateModule(mines = []) {
     if (this.moduleCooldown > 0) return false;
 
     if (this.moduleId === 'SHIELD') {
@@ -68,6 +68,21 @@ export class RobotEntity {
       this.vel.y += Math.sin(this.angle) * 480;
       this.moduleCooldown = 5.5;
       mechaAudio.playNitroDash();
+      return true;
+    } else if (this.moduleId === 'MINE') {
+      [-25, 0, 25].forEach(offset => {
+        const backAngle = this.angle + Math.PI + (offset * Math.PI / 180);
+        mines.push({
+          x: this.pos.x + Math.cos(backAngle) * 35,
+          y: this.pos.y + Math.sin(backAngle) * 35,
+          radius: 12,
+          damage: 40,
+          isPlayer: this.isPlayer,
+          armTimer: 0.5
+        });
+      });
+      this.moduleCooldown = 7.0;
+      mechaAudio.playTeslaZap();
       return true;
     }
     return false;

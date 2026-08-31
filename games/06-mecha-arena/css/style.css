@@ -483,3 +483,21 @@ body, html {
   font-weight: 700;
   cursor: pointer;
 }
+
+/* Mobile Responsiveness */
+@media (max-width: 640px) {
+  .workshop-layout {
+    flex-direction: column;
+    overflow-y: auto;
+  }
+  .preview-box {
+    max-height: 180px;
+  }
+  #workshopPreviewCanvas {
+    width: 160px;
+    height: 160px;
+  }
+  .hud-stats-group {
+    gap: 8px;
+  }
+}
