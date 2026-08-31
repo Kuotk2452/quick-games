@@ -199,6 +199,7 @@ body, html {
   display: flex;
   flex-direction: column;
   gap: 12px;
+  pointer-events: auto;
 }
 
 .act-card {
@@ -210,11 +211,14 @@ body, html {
   border-radius: 14px;
   padding: 14px 18px;
   transition: all 0.2s ease;
+  cursor: pointer;
+  pointer-events: auto;
 }
 
 .act-card:hover {
   border-color: var(--circus-gold);
   background: rgba(250, 204, 21, 0.08);
+  transform: translateY(-2px);
 }
 
 .act-card-left {

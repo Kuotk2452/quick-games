@@ -229,9 +229,18 @@ Play Free: https://quick-games-ez4.pages.dev/games/08-circus-3d/`;
         </div>
       `;
 
-      card.querySelector('.btn-start-act').addEventListener('click', () => {
+      // Click card to start
+      card.addEventListener('click', (e) => {
         this.startAct(idx);
       });
+
+      const btn = card.querySelector('.btn-start-act');
+      if (btn) {
+        btn.addEventListener('click', (e) => {
+          e.stopPropagation();
+          this.startAct(idx);
+        });
+      }
 
       this.ui.actCardsContainer.appendChild(card);
     });

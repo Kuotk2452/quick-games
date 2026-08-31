@@ -47,6 +47,7 @@ export class CircusStage3D {
     this.spotLight.shadow.mapSize.width = 1024;
     this.spotLight.shadow.mapSize.height = 1024;
     this.scene.add(this.spotLight);
+    this.scene.add(this.spotLight.target);
 
     // Colored Accent Rim Lights (Magenta & Cyan)
     this.rimLight1 = new THREE.PointLight(0xec4899, 1.8, 25);
