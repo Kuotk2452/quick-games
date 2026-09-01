@@ -220,6 +220,15 @@ export class DungeonClawGame {
       langSelect: document.getElementById('langSelect'),
       turnHintText: document.getElementById('turnHintText')
     };
+
+      // Developer cheat for testing ads
+      if (this.ui.hpDisplay) {
+        this.ui.hpDisplay.addEventListener('click', () => {
+          this.hp = 0;
+          this.showGameOver();
+        });
+      }
+
   }
 
   initEvents() {
