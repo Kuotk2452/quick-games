@@ -82,7 +82,7 @@ export class CyberSlackerGame {
       finalNetWorth: document.getElementById('finalNetWorth'),
       finalXp: document.getElementById('finalXp'),
       btnPlayAgain: document.getElementById('btnPlayAgain'),
-      btnAdRevive: document.getElementById('btnAdRevive'),
+      btnExtraLife: document.getElementById('btnExtraLife'),
       btnShareScore: document.getElementById('btnShareScore'),
       audioToggleBtn: document.getElementById('audioToggleBtn'),
       langSelect: document.getElementById('langSelect'),
@@ -223,8 +223,8 @@ export class CyberSlackerGame {
       });
     }
 
-    if (this.ui.btnAdRevive) {
-      this.ui.btnAdRevive.addEventListener('click', () => {
+    if (this.ui.btnExtraLife) {
+      this.ui.btnExtraLife.addEventListener('click', () => {
         if (window.QuickGamesAdSDK) {
           window.QuickGamesAdSDK.showRewardedVideo(() => {
             this.revivePlayer();
@@ -319,9 +319,9 @@ Play Free:
     if (this.ui.finalNetWorth) this.ui.finalNetWorth.innerText = `$${this.crypto.getTotalNetWorth()}`;
     if (this.ui.finalXp) this.ui.finalXp.innerText = Math.floor(this.slackerXp);
     
-    if (this.ui.btnAdRevive) {
-      this.ui.btnAdRevive.style.display = this.hasRevived ? 'none' : 'flex';
-      this.ui.btnAdRevive.style.width = '100%';
+    if (this.ui.btnExtraLife) {
+      this.ui.btnExtraLife.style.display = this.hasRevived ? 'none' : 'flex';
+      this.ui.btnExtraLife.style.width = '100%';
     }
     
     if (this.ui.endModal) this.ui.endModal.style.display = 'flex';

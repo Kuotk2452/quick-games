@@ -214,7 +214,7 @@ export class DungeonClawGame {
       btnLeaveShop: document.getElementById('btnLeaveShop'),
       gameOverModal: document.getElementById('gameOverModal'),
       btnPlayAgain: document.getElementById('btnPlayAgain'),
-      btnAdRevive: document.getElementById('btnAdRevive'),
+      btnExtraLife: document.getElementById('btnExtraLife'),
       btnShareScore: document.getElementById('btnShareScore'),
       audioToggleBtn: document.getElementById('audioToggleBtn'),
       langSelect: document.getElementById('langSelect'),
@@ -381,8 +381,8 @@ export class DungeonClawGame {
 
     if (this.ui.btnPlayAgain) this.ui.btnPlayAgain.addEventListener('click', () => this.startGame());
 
-    if (this.ui.btnAdRevive) {
-      this.ui.btnAdRevive.addEventListener('click', () => {
+    if (this.ui.btnExtraLife) {
+      this.ui.btnExtraLife.addEventListener('click', () => {
         if (window.QuickGamesAdSDK) {
           window.QuickGamesAdSDK.showRewardedVideo(() => {
             this.revivePlayer();
@@ -743,8 +743,8 @@ Play free on web:
     const fGold = document.getElementById('finalGold');
     if (fGold) fGold.innerText = `${this.gold} Gold`;
     
-    if (this.ui.btnAdRevive) {
-      this.ui.btnAdRevive.style.display = this.hasRevived ? 'none' : 'block';
+    if (this.ui.btnExtraLife) {
+      this.ui.btnExtraLife.style.display = this.hasRevived ? 'none' : 'block';
     }
     
     if (this.ui.gameOverModal) this.ui.gameOverModal.style.display = 'flex';

@@ -208,7 +208,7 @@ body, html {
   gap: 12px;
 }
 
-.dpad-btn {
+.dpextra-life-btn {
   background: rgba(30, 41, 59, 0.95);
   color: #38bdf8;
   border: 1px solid rgba(56, 189, 248, 0.5);
@@ -227,19 +227,19 @@ body, html {
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
 }
 
-.dpad-btn:hover:not(:disabled) {
+.dpextra-life-btn:hover:not(:disabled) {
   background: rgba(56, 189, 248, 0.25);
   border-color: #38bdf8;
   transform: translateY(-2px);
   box-shadow: 0 0 16px rgba(56, 189, 248, 0.5);
 }
 
-.dpad-btn:active:not(:disabled) {
+.dpextra-life-btn:active:not(:disabled) {
   transform: scale(0.94);
   background: rgba(56, 189, 248, 0.45);
 }
 
-.dpad-btn:disabled {
+.dpextra-life-btn:disabled {
   opacity: 0.3;
   cursor: not-allowed;
 }

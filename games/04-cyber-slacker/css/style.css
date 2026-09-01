@@ -788,7 +788,7 @@ body, html {
 }
 .white-flash.active { opacity: 1; transition: none; }
 
-.ad-btn {
+.extra-life-btn {
   width: 100%;
   padding: 14px;
   background: var(--circus-gold);
@@ -802,6 +802,6 @@ body, html {
   transition: transform 0.1s ease;
   box-shadow: 0 0 12px rgba(250, 204, 21, 0.4);
 }
-.ad-btn:active {
+.extra-life-btn:active {
   transform: scale(0.95);
 }
