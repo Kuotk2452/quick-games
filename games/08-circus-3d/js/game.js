@@ -160,6 +160,8 @@ export class CircusGame {
       resultCoins: document.getElementById('resultCoins'),
       btnNextAct: document.getElementById('btnNextAct'),
       btnRetry: document.getElementById('btnRetry'),
+      toggleHudBtn: document.getElementById('toggleHudBtn'),
+      gameplayHUD: document.getElementById('gameplayHUD'),
       btnSelectAct: document.getElementById('btnSelectAct'),
       btnShareScore: document.getElementById('btnShareScore'),
       audioToggleBtn: document.getElementById('audioToggleBtn'),
@@ -233,6 +235,14 @@ export class CircusGame {
     }
     if (this.ui.btnCloseWorkshop) {
       this.ui.btnCloseWorkshop.addEventListener('click', () => this.closeWorkshop());
+    }
+
+    if (this.ui.toggleHudBtn && this.ui.gameplayHUD) {
+      this.ui.toggleHudBtn.addEventListener('click', () => {
+        this.ui.gameplayHUD.classList.toggle('hud-collapsed');
+        const isCollapsed = this.ui.gameplayHUD.classList.contains('hud-collapsed');
+        this.ui.toggleHudBtn.innerHTML = isCollapsed ? '&#9660;' : '&#9650;';
+      });
     }
 
     // Modal Actions
