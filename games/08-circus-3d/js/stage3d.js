@@ -19,6 +19,7 @@ export class CircusStage3D {
     this.camera = new THREE.PerspectiveCamera(45, this.width / this.height, 0.1, 200);
     this.camera.position.set(-6.5, 4.5, 6.0);
     this.camera.lookAt(2.5, 1.2, 0);
+    this.updateCameraFov();
 
     // 3. Renderer
     this.renderer = new THREE.WebGLRenderer({ antialias: true, alpha: false });
@@ -187,12 +188,26 @@ export class CircusStage3D {
     this.renderer.render(this.scene, this.camera);
   }
 
+  updateCameraFov() {
+    const aspect = this.width / this.height;
+    const targetAspect = 1.2;
+    if (aspect < targetAspect) {
+      // Zoom out on portrait screens to prevent cropping
+      this.camera.fov = 45 * (targetAspect / aspect) * 0.85;
+      // Clamp fov to avoid extreme distortion
+      if (this.camera.fov > 100) this.camera.fov = 100;
+    } else {
+      this.camera.fov = 45;
+    }
+    this.camera.updateProjectionMatrix();
+  }
+
   handleResize() {
     if (!this.container) return;
     this.width = this.container.clientWidth;
     this.height = this.container.clientHeight;
     this.camera.aspect = this.width / this.height;
-    this.camera.updateProjectionMatrix();
+    this.updateCameraFov();
     this.renderer.setSize(this.width, this.height);
   }
 }
