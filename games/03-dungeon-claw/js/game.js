@@ -868,7 +868,7 @@ Play free on web:
       // Gentle float animation for monster
       if (this.currentMonster && this.currentMonster.mesh) {
         this.currentMonster.mesh.rotation.y = Math.sin(time * 0.002) * 0.25;
-        this.currentMonster.mesh.position.y = 4.2 + Math.sin(time * 0.004) * 0.15;
+        this.currentMonster.mesh.position.y = 1.2 + Math.sin(time * 0.004) * 0.15;
       }
 
       this.renderer.render(this.scene, this.camera);
