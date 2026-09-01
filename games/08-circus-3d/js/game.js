@@ -149,6 +149,7 @@ export class CircusGame {
       multiplierDisplay: document.getElementById('multiplierDisplay'),
       bulletTimeBanner: document.getElementById('bulletTimeBanner'),
       closeCallBanner: document.getElementById('closeCallBanner'),
+      perfectJumpBanner: document.getElementById('perfectJumpBanner'),
       bossHUD: document.getElementById('bossHUD'),
       bossName: document.getElementById('bossName'),
       bossHpText: document.getElementById('bossHpText'),
@@ -1289,7 +1290,22 @@ Play Free: https://quick-games-ez4.pages.dev/games/08-circus-3d/`;
           if (!obs.cleared && Math.abs(this.player.x - obs.x) < 0.6) {
             if (this.player.y > 0.7 && this.player.y < 2.5) {
               obs.cleared = true;
-              this.score += 200 * this.multiplier;
+              
+              // PERFECT JUMP (Center is roughly 1.6)
+              if (Math.abs(this.player.y - 1.6) < 0.3) {
+                this.score += 800 * this.multiplier;
+                this.bulletTimeTimer = 1.0; // 1.0s slow motion
+                circusAudio.playPerfectCheer();
+                
+                if (this.ui.perfectJumpBanner) {
+                  this.ui.perfectJumpBanner.style.display = 'block';
+                  setTimeout(() => {
+                    if (this.ui.perfectJumpBanner) this.ui.perfectJumpBanner.style.display = 'none';
+                  }, 1200);
+                }
+              } else {
+                this.score += 200 * this.multiplier;
+              }
             } else {
               this.handleObstacleHit(obs);
             }

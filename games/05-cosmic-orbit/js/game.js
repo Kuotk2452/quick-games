@@ -55,10 +55,10 @@ export class CosmicOrbitGame {
 
   initDOM() {
     this.ui = {
-      
-      
-      
-      
+      telemetryBootScreen: document.getElementById('telemetryBootScreen'),
+      bootRadar: document.getElementById('bootRadar'),
+      bootTextStatus: document.getElementById('bootTextStatus'),
+      bootTextTap: document.getElementById('bootTextTap'),
       scoreDisplay: document.getElementById('scoreDisplay'),
       highScoreDisplay: document.getElementById('highScoreDisplay'),
       nextPlanetIcon: document.getElementById('nextPlanetIcon'),
@@ -83,7 +83,30 @@ export class CosmicOrbitGame {
   initEvents() {
     this.isBooting = false;
     
-
+    if (this.ui.telemetryBootScreen) {
+      this.ui.telemetryBootScreen.addEventListener('click', () => {
+        if (this.isBooting) return;
+        this.isBooting = true;
+        
+        this.ui.bootTextTap.classList.remove('pulse');
+        this.ui.bootTextTap.classList.add('hidden');
+        this.ui.bootTextStatus.classList.add('locked');
+        this.ui.bootTextStatus.textContent = "CALIBRATING GRAV-SENSORS...";
+        
+        cosmicAudio.playTelemetryBeeps();
+        
+        setTimeout(() => {
+          this.ui.bootRadar.classList.add('locked');
+          this.ui.bootTextStatus.textContent = "UPLINK SECURED.";
+          cosmicAudio.playAirlockSwoosh();
+          
+          setTimeout(() => {
+            this.ui.telemetryBootScreen.classList.add('shutter-open');
+            // We don't change anything else; the startScreen is already visible underneath
+          }, 500);
+        }, 1500);
+      });
+    }
 
     if (this.ui.btnStart) {
       this.ui.btnStart.addEventListener('click', () => this.startGame());
