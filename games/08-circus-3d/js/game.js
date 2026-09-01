@@ -1047,6 +1047,7 @@ Play Free: https://quick-games-ez4.pages.dev/games/08-circus-3d/`;
     if (this.ui.resultCoins) this.ui.resultCoins.innerText = this.coins.toString();
     if (this.ui.btnNextAct) this.ui.btnNextAct.style.display = 'inline-block';
     if (this.ui.endModal) this.ui.endModal.style.display = 'flex';
+      if (this.ui.btnAdRevive) this.ui.btnAdRevive.style.display = 'none';
   }
 
   triggerGameOver() {
@@ -1068,6 +1069,7 @@ Play Free: https://quick-games-ez4.pages.dev/games/08-circus-3d/`;
     if (this.ui.resultCoins) this.ui.resultCoins.innerText = this.coins.toString();
     if (this.ui.btnNextAct) this.ui.btnNextAct.style.display = 'none';
     if (this.ui.endModal) this.ui.endModal.style.display = 'flex';
+      if (this.ui.btnAdRevive) this.ui.btnAdRevive.style.display = 'block';
   }
 
   updateHUD() {
