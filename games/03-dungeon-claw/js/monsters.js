@@ -152,7 +152,7 @@ export class Monster {
     hornR.rotation.z = 0.3;
     group.add(hornR);
 
-    group.position.set(0, 4.2, -1.8);
+    group.position.set(0, 1.2, -3.2);
     return group;
   }
 }
