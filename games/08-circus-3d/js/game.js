@@ -237,26 +237,47 @@ export class CircusGame {
       this.ui.btnCloseWorkshop.addEventListener('click', () => this.closeWorkshop());
     }
 
-    const toggleHUD = (e, forceCollapse = null) => {
-      if (e && e.preventDefault) e.preventDefault();
+    window.toggleHUD = (forceCollapse = null) => {
+      const btn = document.getElementById('toggleHudBtn');
+      const topBar = document.getElementById('hudTopBar');
+      const boss = document.getElementById('bossHUD');
       
-      if (forceCollapse === true) {
+      const isCurrentlyCollapsed = document.body.classList.contains('hud-collapsed');
+      let shouldCollapse = !isCurrentlyCollapsed;
+      if (forceCollapse !== null) shouldCollapse = forceCollapse;
+      
+      if (shouldCollapse) {
         document.body.classList.add('hud-collapsed');
-      } else if (forceCollapse === false) {
-        document.body.classList.remove('hud-collapsed');
+        if (topBar) topBar.style.display = 'none';
+        if (boss) {
+          boss.style.opacity = '0';
+          boss.style.pointerEvents = 'none';
+          boss.style.transform = 'translate(-50%, -200px)'; // move way off screen
+        }
+        if (btn) btn.innerHTML = '&#9660;';
       } else {
-        document.body.classList.toggle('hud-collapsed');
-      }
-      
-      const isCollapsed = document.body.classList.contains('hud-collapsed');
-      if (this.ui.toggleHudBtn) {
-        this.ui.toggleHudBtn.innerHTML = isCollapsed ? '&#9660;' : '&#9650;';
+        document.body.classList.remove('hud-collapsed');
+        if (topBar) topBar.style.display = 'flex';
+        if (boss) {
+          boss.style.opacity = '1';
+          boss.style.pointerEvents = 'auto';
+          boss.style.transform = 'translateX(-50%)'; // reset
+        }
+        if (btn) btn.innerHTML = '&#9650;';
       }
     };
 
     if (this.ui.toggleHudBtn) {
-      this.ui.toggleHudBtn.addEventListener('click', toggleHUD);
-      this.ui.toggleHudBtn.addEventListener('touchstart', toggleHUD, { passive: false });
+      // pointerdown works reliably for both touch and mouse
+      this.ui.toggleHudBtn.addEventListener('pointerdown', (e) => {
+        e.stopPropagation();
+        window.toggleHUD();
+      });
+      // also click as fallback
+      this.ui.toggleHudBtn.addEventListener('click', (e) => {
+        e.stopPropagation();
+        window.toggleHUD();
+      });
     }
 
     // Swipe up/down in the top half of the screen to toggle HUD
@@ -274,9 +295,9 @@ export class CircusGame {
         // If swiped vertically significantly, and gesture started in top 50% of screen
         if (Math.abs(dy) > 40 && hudTouchStartY < window.innerHeight / 2) {
           if (dy < -40) {
-            toggleHUD(null, true); // swipe up -> collapse
+            window.toggleHUD(true); // swipe up -> collapse
           } else if (dy > 40) {
-            toggleHUD(null, false); // swipe down -> expand
+            window.toggleHUD(false); // swipe down -> expand
           }
         }
       }
