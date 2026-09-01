@@ -383,7 +383,7 @@ export const ELEMENT_NAMES = {
 
 class I18nManager {
   constructor() {
-    this.currentLang = localStorage.getItem('emoji_craft_lang') || this.detectUserLanguage();
+    this.currentLang = localStorage.getItem('emoji_craft_lang') || 'en';
   }
 
   detectUserLanguage() {

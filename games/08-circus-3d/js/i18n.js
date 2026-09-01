@@ -222,7 +222,7 @@ class I18nManager {
   constructor() {
     this.currentLang = 'zh'; // Default Chinese
     if (typeof localStorage !== 'undefined') {
-      this.currentLang = localStorage.getItem('circus_3d_lang') || 'zh';
+      this.currentLang = localStorage.getItem('circus_3d_lang') || 'en';
     }
   }
 
