@@ -249,20 +249,12 @@ export class CircusGame {
       if (shouldCollapse) {
         document.body.classList.add('hud-collapsed');
         if (topBar) topBar.style.display = 'none';
-        if (boss) {
-          boss.style.opacity = '0';
-          boss.style.pointerEvents = 'none';
-          boss.style.transform = 'translate(-50%, -200px)'; // move way off screen
-        }
+
         if (btn) btn.innerHTML = '&#9660;';
       } else {
         document.body.classList.remove('hud-collapsed');
         if (topBar) topBar.style.display = 'flex';
-        if (boss) {
-          boss.style.opacity = '1';
-          boss.style.pointerEvents = 'auto';
-          boss.style.transform = 'translateX(-50%)'; // reset
-        }
+
         if (btn) btn.innerHTML = '&#9650;';
       }
     };
