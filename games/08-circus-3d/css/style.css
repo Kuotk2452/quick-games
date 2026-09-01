@@ -159,7 +159,7 @@ body, html {
   color: white;
   padding: 5px 8px;
   border-radius: 8px;
-  font-size: 12px;
+  font-size: 18px;
   outline: none;
 }
 
@@ -213,7 +213,7 @@ body, html {
   pointer-events: auto;
   z-index: 100;
 }
-.hud-collapsed #bossHUD {
+body.hud-collapsed #bossHUD {
   transform: translate(-50%, -20px) scale(0.95) !important;
 }
 
@@ -320,7 +320,7 @@ body, html {
 }
 
 .act-badge {
-  font-size: 12px;
+  font-size: 18px;
   font-weight: 900;
   padding: 4px 10px;
   border-radius: 8px;
@@ -334,7 +334,7 @@ body, html {
 }
 
 .act-desc {
-  font-size: 12px;
+  font-size: 18px;
   color: var(--text-muted);
   margin-top: 2px;
 }
@@ -360,7 +360,7 @@ body, html {
   padding: 8px 16px;
   border-radius: 10px;
   font-weight: 800;
-  font-size: 12px;
+  font-size: 18px;
   cursor: pointer;
   box-shadow: 0 4px 12px rgba(250, 204, 21, 0.3);
   pointer-events: auto;
@@ -554,7 +554,7 @@ body, html {
 }
 
 .item-desc {
-  font-size: 12px;
+  font-size: 18px;
   color: var(--text-muted);
 }
 
@@ -583,7 +583,7 @@ body, html {
   padding: 8px 14px;
   border-radius: 8px;
   font-weight: 800;
-  font-size: 12px;
+  font-size: 18px;
   cursor: pointer;
   white-space: nowrap;
 }
@@ -790,7 +790,7 @@ body, html {
     border-radius: 8px;
   }
   .touch-dir {
-    width: 40px;
+    width: 80px;
     height: 40px;
     font-size: 14px;
   }
@@ -807,16 +807,16 @@ body, html {
 /* Toggle HUD Button */
 .toggle-hud-btn {
   position: absolute;
-  top: 5px;
+  top: 0px;
   left: 50%;
   transform: translateX(-50%);
-  width: 40px;
-  height: 24px;
+  width: 80px;
+  height: 36px;
   background: rgba(255,255,255,0.15);
   border: 1px solid rgba(255,255,255,0.3);
   color: #fff;
-  border-radius: 0 0 8px 8px;
-  font-size: 12px;
+  border-radius: 0 0 16px 16px;
+  font-size: 18px;
   z-index: 1000;
   display: none; /* hidden by default, shown on mobile landscape */
   justify-content: center;
@@ -826,8 +826,8 @@ body, html {
   backdrop-filter: blur(4px);
 }
 
-.hud-collapsed #hudTopBar,
-.hud-collapsed #bossHUD {
+body.hud-collapsed #hudTopBar,
+body.hud-collapsed #bossHUD {
   opacity: 0;
   pointer-events: none;
   transform: translateY(-20px) scale(0.95);
