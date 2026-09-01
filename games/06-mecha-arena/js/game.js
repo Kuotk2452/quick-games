@@ -76,6 +76,8 @@ export class MechaArenaGame {
     this.keys = {};
     this.mousePos = { x: this.width / 2, y: this.height / 2 };
     this.isMouseDown = false;
+    this.joystickX = 0;
+    this.joystickY = 0;
 
     this.bullets = [];
     this.mines = [];
@@ -190,8 +192,8 @@ export class MechaArenaGame {
     const updateMouse = (e) => {
       if (!this.canvas) return;
       const rect = this.canvas.getBoundingClientRect();
-      const clientX = e.touches ? e.touches[0].clientX : e.clientX;
-      const clientY = e.touches ? e.touches[0].clientY : e.clientY;
+      const clientX = e.touches ? e.targetTouches[0].clientX : e.clientX;
+      const clientY = e.touches ? e.targetTouches[0].clientY : e.clientY;
       this.mousePos = {
         x: (clientX - rect.left) * (this.width / rect.width),
         y: (clientY - rect.top) * (this.height / rect.height)
@@ -204,7 +206,9 @@ export class MechaArenaGame {
         this.isMouseDown = true;
         updateMouse(e);
       });
-      window.addEventListener('mouseup', () => { this.isMouseDown = false; });
+      window.addEventListener('mouseup', () => { this.isMouseDown = false;
+    this.joystickX = 0;
+    this.joystickY = 0; });
 
       this.canvas.addEventListener('touchmove', updateMouse, { passive: true });
       this.canvas.addEventListener('touchstart', (e) => {
@@ -212,6 +216,63 @@ export class MechaArenaGame {
         updateMouse(e);
       }, { passive: true });
       window.addEventListener('touchend', () => { this.isMouseDown = false; });
+    }
+
+    // Virtual Joystick logic
+    const joystick = document.getElementById('virtualJoystick');
+    const joystickKnob = document.getElementById('joystickKnob');
+    if (joystick && joystickKnob) {
+      let isDraggingJoystick = false;
+      let jRect;
+      let jCenterX;
+      let jCenterY;
+
+      const onJoystickStart = (e) => {
+        e.preventDefault(); 
+        e.stopPropagation();
+        isDraggingJoystick = true;
+        jRect = joystick.getBoundingClientRect();
+        jCenterX = jRect.left + jRect.width / 2;
+        jCenterY = jRect.top + jRect.height / 2;
+        updateJoystick(e);
+      };
+
+      const updateJoystick = (e) => {
+        if (!isDraggingJoystick) return;
+        e.preventDefault();
+        e.stopPropagation();
+        const clientX = e.touches ? e.targetTouches[0].clientX : e.clientX;
+        const clientY = e.touches ? e.targetTouches[0].clientY : e.clientY;
+        
+        let dx = clientX - jCenterX;
+        let dy = clientY - jCenterY;
+        const maxDist = jRect.width / 2;
+        const dist = Math.hypot(dx, dy);
+
+        if (dist > maxDist) {
+          dx = (dx / dist) * maxDist;
+          dy = (dy / dist) * maxDist;
+        }
+
+        joystickKnob.style.transform = `translate(calc(-50% + ${dx}px), calc(-50% + ${dy}px))`;
+        
+        this.joystickX = dx / maxDist;
+        this.joystickY = dy / maxDist;
+      };
+
+      const onJoystickEnd = (e) => {
+        e.preventDefault();
+        e.stopPropagation();
+        isDraggingJoystick = false;
+        this.joystickX = 0;
+        this.joystickY = 0;
+        joystickKnob.style.transform = `translate(-50%, -50%)`;
+      };
+
+      joystick.addEventListener('touchstart', onJoystickStart, { passive: false });
+      joystick.addEventListener('touchmove', updateJoystick, { passive: false });
+      joystick.addEventListener('touchend', onJoystickEnd, { passive: false });
+      joystick.addEventListener('touchcancel', onJoystickEnd, { passive: false });
     }
 
     if (this.ui.btnModuleAction) {
@@ -372,6 +433,17 @@ Play Free in Browser:
     if (this.keys['KeyS'] || this.keys['ArrowDown']) moveY += 1;
     if (this.keys['KeyA'] || this.keys['ArrowLeft']) moveX -= 1;
     if (this.keys['KeyD'] || this.keys['ArrowRight']) moveX += 1;
+    
+    // Add virtual joystick
+    if (Math.abs(this.joystickX) > 0.1) moveX += this.joystickX;
+    if (Math.abs(this.joystickY) > 0.1) moveY += this.joystickY;
+    
+    // Clamp magnitude so diagonal + joystick doesn't go crazy
+    const moveMag = Math.hypot(moveX, moveY);
+    if (moveMag > 1) {
+      moveX /= moveMag;
+      moveY /= moveMag;
+    }
 
     if (moveX !== 0 || moveY !== 0) {
       const len = Math.hypot(moveX, moveY);

@@ -560,3 +560,38 @@ body, html {
   30% { filter: hue-rotate(180deg) contrast(0.5); transform: scale(1.05) translate(5px, 0); opacity: 0.9; }
   100% { filter: hue-rotate(0deg) contrast(1); transform: scale(2) translate(0); opacity: 0; display: none; }
 }
+
+/* Virtual Joystick */
+.virtual-joystick {
+  display: none; /* hidden on desktop */
+  position: absolute;
+  bottom: 20px;
+  left: 20px;
+  width: 120px;
+  height: 120px;
+  background: rgba(255, 255, 255, 0.1);
+  border: 2px solid rgba(255, 255, 255, 0.3);
+  border-radius: 50%;
+  touch-action: none; /* prevent scrolling */
+  z-index: 1000;
+  pointer-events: auto;
+}
+
+.joystick-knob {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 50px;
+  height: 50px;
+  background: rgba(245, 158, 11, 0.8);
+  border-radius: 50%;
+  transform: translate(-50%, -50%);
+  pointer-events: none;
+  box-shadow: 0 0 10px rgba(245, 158, 11, 0.5);
+}
+
+@media (max-width: 768px) {
+  .virtual-joystick {
+    display: block; /* show on mobile */
+  }
+}
