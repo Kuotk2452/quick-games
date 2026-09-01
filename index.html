@@ -9,12 +9,20 @@
 </head>
 <body>
 
-  <header>
-    <div class="logo-badge">
-      <span>⚡ QUICK GAMES STUDIO</span>
+    <header>
+    <div style="position: absolute; top: 20px; right: 20px; z-index: 999;">
+      <select id="portalLangSelect" style="background: rgba(255,255,255,0.1); border: 1px solid rgba(255,255,255,0.2); color: #fff; padding: 5px 10px; border-radius: 6px; font-family: inherit; font-size: 14px; cursor: pointer; outline: none; backdrop-filter: blur(5px);">
+        <option value="en">English</option>
+        <option value="zh">繁體中文</option>
+        <option value="es">Español</option>
+        <option value="ja">日本語</option>
+      </select>
     </div>
-    <h1>Indie Game Arcade</h1>
-    <p class="subtitle">Zero-install, high-retention browser games ready for global players, web portals, and mobile.</p>
+    <div class="logo-badge">
+      <span data-i18n="badge">⚡ QUICK GAMES STUDIO</span>
+    </div>
+    <h1 data-i18n="title">Indie Game Arcade</h1>
+    <p class="subtitle" data-i18n="subtitle">Zero-install, high-retention browser games ready for global players, web portals, and mobile.</p>
   </header>
 
   <main>
@@ -28,15 +36,13 @@
           </div>
           <span class="badge-status new">🔥 NEW 3D RELEASE</span>
         </div>
-        <h2 class="game-title">Dungeon Claw 3D: 抓娃娃地牢</h2>
-        <div class="game-genre">3D Physics Crane Claw ✕ Dungeon Roguelike</div>
-        <p class="game-desc">
-          Full 3D WebGL Crane Machine! Position your 3D mechanical claw, drop into the physics loot pit, chain multi-item combos (🗡️ Swords, 🛡️ Shields, 💣 Bombs), and conquer dungeon bosses!
-        </p>
+        <h2 class="game-title" data-i18n="g3_title">Dungeon Claw 3D</h2>
+        <div class="game-genre" data-i18n="g3_genre">3D Physics Crane Claw &times; Dungeon Roguelike</div>
+        <p class="game-desc" data-i18n="g3_desc">Full 3D WebGL Crane Machine! Position your 3D mechanical claw, drop into the physics loot pit, chain multi-item combos (🗡️ Swords, 🛡️ Shields, 💣 Bombs), and conquer dungeon bosses!</p>
         <div class="card-bottom">
-          <span style="font-size: 12px; color: #94a3b8;">EN / 中文 / ES / JA · 3D WebGL</span>
+          <span style="font-size: 12px; color: #94a3b8;"><span data-i18n="langs">EN / ZH / ES / JA</span> · 3D WebGL</span>
           <div class="play-action">
-            Play 3D Game <span class="arrow">→</span>
+            <span data-i18n="play">Play Game</span> <span class="arrow">→</span>
           </div>
         </div>
       </a>
@@ -49,15 +55,13 @@
           </div>
           <span class="badge-status playable">🟢 PLAYABLE</span>
         </div>
-        <h2 class="game-title">Wordle Survivor: 词灵幸存者</h2>
-        <div class="game-genre">Roguelike Bullet Heaven ✕ Word Magic</div>
-        <p class="game-desc">
-          Vampire Survivors meets Wordle. Slay monster hordes, harvest runic letters, spell 5000+ words to trigger massive elemental screen-wipes, and level up with 15+ perks!
-        </p>
+        <h2 class="game-title" data-i18n="g2_title">Wordle Survivor</h2>
+        <div class="game-genre" data-i18n="g2_genre">Roguelike Bullet Heaven &times; Word Magic</div>
+        <p class="game-desc" data-i18n="g2_desc">Vampire Survivors meets Wordle. Slay monster hordes, harvest runic letters, spell 5000+ words to trigger massive elemental screen-wipes, and level up with 15+ perks!</p>
         <div class="card-bottom">
-          <span style="font-size: 12px; color: #94a3b8;">EN / 中文 / ES / JA</span>
+          <span style="font-size: 12px; color: #94a3b8;"><span data-i18n="langs">EN / ZH / ES / JA</span></span>
           <div class="play-action">
-            Play Game <span class="arrow">→</span>
+            <span data-i18n="play">Play Game</span> <span class="arrow">→</span>
           </div>
         </div>
       </a>
@@ -70,15 +74,15 @@
           </div>
           <span class="badge-status playable">🟢 PLAYABLE</span>
         </div>
-        <h2 class="game-title">Emoji Craft: Infinite Fusion</h2>
-        <div class="game-genre">Endless Alchemy ✕ Daily Quests</div>
+        <h2 class="game-title" data-i18n="g1_title">Emoji Craft: Infinite Fusion</h2>
+        <div class="game-genre" data-i18n="g1_genre">Endless Alchemy &times; Daily Quests</div>
         <p class="game-desc">
           Combine basic elements into 150+ meme and science discoveries. Complete the Daily Codex challenge, share your emoji score card, and unlock recipes.
         </p>
         <div class="card-bottom">
-          <span style="font-size: 12px; color: #94a3b8;">EN / 中文 / ES / JA</span>
+          <span style="font-size: 12px; color: #94a3b8;"><span data-i18n="langs">EN / ZH / ES / JA</span></span>
           <div class="play-action">
-            Play Game <span class="arrow">→</span>
+            <span data-i18n="play">Play Game</span> <span class="arrow">→</span>
           </div>
         </div>
       </a>
@@ -91,15 +95,15 @@
           </div>
           <span class="badge-status new">🔥 NEW RELEASE</span>
         </div>
-        <h2 class="game-title">Cyber Slacker: 赛博工位大逃杀</h2>
-        <div class="game-genre">Workplace Stealth ✕ Panic Button Clicker</div>
+        <h2 class="game-title" data-i18n="g4_title">Cyber Slacker</h2>
+        <div class="game-genre" data-i18n="g4_genre">Workplace Stealth &times; Panic Button Clicker</div>
         <p class="game-desc">
           Trade volatile meme coins and slack off on the job while dodging the boss and HR. Hit the instant panic button to flip to an ultra-realistic Excel sheet in 0.05s!
         </p>
         <div class="card-bottom">
-          <span style="font-size: 12px; color: #94a3b8;">EN / 中文 / ES / JA</span>
+          <span style="font-size: 12px; color: #94a3b8;"><span data-i18n="langs">EN / ZH / ES / JA</span></span>
           <div class="play-action">
-            Play Game <span class="arrow">→</span>
+            <span data-i18n="play">Play Game</span> <span class="arrow">→</span>
           </div>
         </div>
       </a>
@@ -112,15 +116,15 @@
           </div>
           <span class="badge-status new">🔥 NEW RELEASE</span>
         </div>
-        <h2 class="game-title">Cosmic Orbit: 行星引力合成</h2>
-        <div class="game-genre">Orbital Gravity Physics ✕ Suika Merge</div>
+        <h2 class="game-title" data-i18n="g5_title">Cosmic Orbit</h2>
+        <div class="game-genre" data-i18n="g5_genre">Orbital Gravity Physics &times; Suika Merge</div>
         <p class="game-desc">
           Slingshot planets into a central black hole gravitational field. Merge celestial bodies from meteorites to supernovas with harmonic synthwave particle bursts!
         </p>
         <div class="card-bottom">
-          <span style="font-size: 12px; color: #94a3b8;">EN / 中文 / ES / JA</span>
+          <span style="font-size: 12px; color: #94a3b8;"><span data-i18n="langs">EN / ZH / ES / JA</span></span>
           <div class="play-action">
-            Play Game <span class="arrow">→</span>
+            <span data-i18n="play">Play Game</span> <span class="arrow">→</span>
           </div>
         </div>
       </a>
@@ -133,15 +137,15 @@
           </div>
           <span class="badge-status new">🔥 NEW RELEASE</span>
         </div>
-        <h2 class="game-title">Mecha Arena: 赛博机甲工坊</h2>
-        <div class="game-genre">Modular Mech Crafting ✕ Arena Combat</div>
+        <h2 class="game-title" data-i18n="g6_title">Mecha Arena</h2>
+        <div class="game-genre" data-i18n="g6_genre">Modular Mech Crafting &times; Arena Combat</div>
         <p class="game-desc">
           Assemble hovercraft/treads, plasma saws, twin lasers, and kinetic shields to dominate AI rivals and crush the Apex Behemoth Boss!
         </p>
         <div class="card-bottom">
-          <span style="font-size: 12px; color: #94a3b8;">EN / 中文 / ES / JA</span>
+          <span style="font-size: 12px; color: #94a3b8;"><span data-i18n="langs">EN / ZH / ES / JA</span></span>
           <div class="play-action">
-            Play Game <span class="arrow">→</span>
+            <span data-i18n="play">Play Game</span> <span class="arrow">→</span>
           </div>
         </div>
       </a>
@@ -154,15 +158,15 @@
           </div>
           <span class="badge-status new">🔥 NEW RELEASE</span>
         </div>
-        <h2 class="game-title">Neon Beat: 赛博光刃音游</h2>
-        <div class="game-genre">Rhythm Beat Slicer ✕ Synthwave Action</div>
+        <h2 class="game-title" data-i18n="g7_title">Neon Beat</h2>
+        <div class="game-genre" data-i18n="g7_genre">Rhythm Beat Slicer &times; Synthwave Action</div>
         <p class="game-desc">
           Slice oncoming neon rhythm beats with dual Red & Blue energy blades to 4 procedural electronic synth tracks!
         </p>
         <div class="card-bottom">
-          <span style="font-size: 12px; color: #94a3b8;">EN / 中文 / ES / JA</span>
+          <span style="font-size: 12px; color: #94a3b8;"><span data-i18n="langs">EN / ZH / ES / JA</span></span>
           <div class="play-action">
-            Play Game <span class="arrow">→</span>
+            <span data-i18n="play">Play Game</span> <span class="arrow">→</span>
           </div>
         </div>
       </a>
@@ -175,15 +179,15 @@
           </div>
           <span class="badge-status new">🔥 NEW RELEASE</span>
         </div>
-        <h2 class="game-title">Circus Rush 3D: 狂欢大马戏</h2>
-        <div class="game-genre">3D Circus Acrobatics ✕ Retro Homage</div>
+        <h2 class="game-title" data-i18n="g8_title">Circus Rush 3D</h2>
+        <div class="game-genre" data-i18n="g8_genre">3D Circus Acrobatics &times; Retro Homage</div>
         <p class="game-desc">
           Ride the mighty lion through blazing fire rings, walk tightropes, and vault over giant bouncy spheres in full 3D!
         </p>
         <div class="card-bottom">
-          <span style="font-size: 12px; color: #94a3b8;">EN / 中文 / ES / JA</span>
+          <span style="font-size: 12px; color: #94a3b8;"><span data-i18n="langs">EN / ZH / ES / JA</span></span>
           <div class="play-action">
-            Play Game <span class="arrow">→</span>
+            <span data-i18n="play">Play Game</span> <span class="arrow">→</span>
           </div>
         </div>
       </a>
@@ -196,15 +200,15 @@
           </div>
           <span class="badge-status new">🔥 NEW 3D RELEASE</span>
         </div>
-        <h2 class="game-title">Orbit Odyssey: 轨道飞船穿越</h2>
-        <div class="game-genre">Gravity Slingshot • Deep Space Runner</div>
-        <p class="game-desc">
+        <h2 class="game-title" data-i18n="g9_title">Orbit Odyssey</h2>
+        <div class="game-genre" data-i18n="g9_genre">Gravity Slingshot &times; Deep Space Runner</div>
+        <p class="game-desc" data-i18n="g9_desc">
           Pilot your interstellar starship through planetary gravity slingshots, asteroid belts, and avoid black holes in a procedural 2.5D galaxy.
         </p>
         <div class="card-bottom">
-          <span style="font-size: 12px; color: #94a3b8;">EN / 繁體 / ES / JA • 3D WebGL</span>
+          <span style="font-size: 12px; color: #94a3b8;"><span data-i18n="langs">EN / ZH / ES / JA</span> &middot; 3D WebGL</span>
           <div class="play-action">
-            PLAY <span style="font-size: 10px;">▶</span>
+            <span data-i18n="play">Play Game</span> <span class="arrow">→</span>
           </div>
         </div>
       </a>
@@ -216,5 +220,6 @@
     <p>© 2026 Quick Games Studio · Handcrafted with pure Web Standards for Global Web & Mobile.</p>
   </footer>
 
+  <script type="module" src="js/portal_i18n.js"></script>
 </body>
 </html>
