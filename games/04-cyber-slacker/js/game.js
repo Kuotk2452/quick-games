@@ -234,6 +234,16 @@ export class CyberSlackerGame {
       });
     }
 
+    if (this.ui.btnViewLeaderboard) {
+      this.ui.btnViewLeaderboard.addEventListener('click', () => {
+        if (window.leaderboardManager) {
+          window.leaderboardManager.show(this.netWorth);
+        } else {
+          console.error('LeaderboardManager not found');
+        }
+      });
+    }
+
     if (this.ui.btnPlayAgain) {
       this.ui.btnPlayAgain.addEventListener('click', () => {
         this.slackerXp = 0;
