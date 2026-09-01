@@ -9,14 +9,15 @@
 </head>
 <body>
 
-  <!-- Telemetry Boot Sequence -->
-  <div id="telemetryBootScreen" class="telemetry-boot-screen active">
-    <div class="radar-container" id="bootRadar">
-      <div class="crosshair-h"></div>
-      <div class="crosshair-v"></div>
-      <div class="radar-circle"></div>
-      <div class="radar-sweep"></div>
-    </div>
+    <!-- Arcade Boot Sequence -->
+  <div id="arcadeBootScreen" class="arcade-boot-screen active">
+    <div class="crt-overlay"></div>
+    <div class="boot-text pulse">INSERT COIN TO ORBIT</div>
+    <div class="boot-subtext">[ TAP TO START ]</div>
+    <!-- Gates for transition -->
+    <div class="iron-gate top-gate"></div>
+    <div class="iron-gate bottom-gate"></div>
+  </div>
     <div id="bootTextStatus" class="boot-text-status">INITIATING DEEP SPACE UPLINK...</div>
     <div id="bootTextTap" class="boot-text-tap pulse">TAP TO CALIBRATE GRAV-SENSORS</div>
   </div>
@@ -143,5 +144,6 @@
 
   <!-- Main Game Script -->
   <script type="module" src="js/game.js?v=1.1"></script>
+  <script type="module" src="js/arcade_boot.js?v=1.1"></script>
 </body>
 </html>

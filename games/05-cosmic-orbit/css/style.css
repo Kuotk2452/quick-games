@@ -471,3 +471,71 @@ body, html {
 .boot-text-tap.pulse { animation: pulseOpacity 1.5s infinite; }
 .boot-text-tap.hidden { opacity: 0; pointer-events: none; }
 @keyframes pulseOpacity { 0%, 100% { opacity: 1; } 50% { opacity: 0.3; } }
+
+/* Arcade Boot Screen */
+.arcade-boot-screen {
+  position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+  background: #000; z-index: 10000;
+  display: flex; flex-direction: column; justify-content: center; align-items: center;
+  font-family: 'Courier New', Courier, monospace; overflow: hidden;
+}
+.arcade-boot-screen.hidden { display: none; }
+
+.crt-overlay {
+  position: absolute; top: 0; left: 0; width: 100%; height: 100%;
+  background: linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.25) 50%), linear-gradient(90deg, rgba(255, 0, 0, 0.06), rgba(0, 255, 0, 0.02), rgba(0, 0, 255, 0.06));
+  background-size: 100% 2px, 3px 100%;
+  pointer-events: none; z-index: 10001;
+}
+
+.boot-text {
+  color: #ff3333; font-size: 24px; font-weight: bold; letter-spacing: 4px;
+  text-shadow: 0 0 10px rgba(255,51,51,0.8); z-index: 10002;
+}
+.boot-text.pulse { animation: arcadePulse 1.5s infinite step-end; }
+@keyframes arcadePulse { 0%, 100% { opacity: 1; } 50% { opacity: 0; } }
+
+.boot-subtext {
+  color: #888; font-size: 14px; margin-top: 20px; letter-spacing: 2px;
+  z-index: 10002; transition: opacity 0.3s;
+}
+.boot-subtext.hidden { opacity: 0; pointer-events: none; }
+
+/* Iron Gates */
+.iron-gate {
+  position: absolute; left: 0; width: 100%; height: 50%;
+  background: repeating-linear-gradient(45deg, #111, #111 20px, #222 20px, #222 40px);
+  border: 4px solid #333; z-index: 10003; transition: transform 1s cubic-bezier(0.8, 0, 0.2, 1);
+  box-shadow: inset 0 0 50px rgba(0,0,0,0.8);
+  pointer-events: none; opacity: 0;
+}
+.iron-gate.top-gate { top: 0; transform: translateY(-100%); border-bottom: 8px solid #000; }
+.iron-gate.bottom-gate { bottom: 0; transform: translateY(100%); border-top: 8px solid #000; }
+
+.arcade-boot-screen.opening .iron-gate { opacity: 1; transform: translateY(0); }
+.arcade-boot-screen.opening .iron-gate.top-gate { transform: translateY(-100%); opacity: 1; animation: slideUp 1s forwards; }
+.arcade-boot-screen.opening .iron-gate.bottom-gate { transform: translateY(100%); opacity: 1; animation: slideDown 1s forwards; }
+
+@keyframes slideUp { 0% { transform: translateY(0); } 100% { transform: translateY(-100%); } }
+@keyframes slideDown { 0% { transform: translateY(0); } 100% { transform: translateY(100%); } }
+
+/* Screen Shake & Flash */
+.arcade-boot-screen.shake { animation: arcadeShake 0.4s infinite; }
+@keyframes arcadeShake {
+  0% { transform: translate(1px, 1px) rotate(0deg); }
+  10% { transform: translate(-1px, -2px) rotate(-1deg); }
+  20% { transform: translate(-3px, 0px) rotate(1deg); }
+  30% { transform: translate(3px, 2px) rotate(0deg); }
+  40% { transform: translate(1px, -1px) rotate(1deg); }
+  50% { transform: translate(-1px, 2px) rotate(-1deg); }
+  60% { transform: translate(-3px, 1px) rotate(0deg); }
+  70% { transform: translate(3px, 1px) rotate(-1deg); }
+  80% { transform: translate(-1px, -1px) rotate(1deg); }
+  90% { transform: translate(1px, 2px) rotate(0deg); }
+  100% { transform: translate(1px, -2px) rotate(-1deg); }
+}
+
+.arcade-boot-screen.flash::after {
+  content: ''; position: absolute; top: 0; left: 0; width: 100%; height: 100%;
+  background: #fff; z-index: 10005; pointer-events: none;
+}
