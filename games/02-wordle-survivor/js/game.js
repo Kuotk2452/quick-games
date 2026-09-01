@@ -53,7 +53,8 @@ export class Game {
       dailyTargetWord: document.getElementById('dailyTargetWord'),
       dailyQuestBanner: document.getElementById('dailyQuestBanner'),
       highestWordDisplay: document.getElementById('highestWordDisplay'),
-      btnPlayAgain: document.getElementById('btnPlayAgain'),
+      btnExtraLife: document.getElementById('btnExtraLife'),
+        btnPlayAgain: document.getElementById('btnPlayAgain'),
       btnShareScore: document.getElementById('btnShareScore'),
       langSelect: document.getElementById('langSelect'),
       audioToggleBtn: document.getElementById('audioToggleBtn')
@@ -111,6 +112,20 @@ export class Game {
         if (this.gameState === 'PLAYING') {
           this.triggerCast();
         }
+      });
+    }
+
+    
+    // Ad Revive Logic
+    if (this.ui.btnExtraLife) {
+      this.ui.btnExtraLife.addEventListener('click', () => {
+        if (!window.QuickGamesAdSDK) {
+          alert('Ad SDK not found!');
+          return;
+        }
+        window.QuickGamesAdSDK.showRewardedVideo(() => {
+          this.revivePlayer();
+        });
       });
     }
 
@@ -187,6 +202,7 @@ export class Game {
     this.highestWord = '';
     this.highestDamage = 0;
     this.gameState = 'PLAYING';
+    this.hasRevived = false;
 
     if (this.ui.startScreen) this.ui.startScreen.style.display = 'none';
     if (this.ui.gameOverModal) this.ui.gameOverModal.style.display = 'none';
@@ -232,11 +248,34 @@ export class Game {
         perk.apply(this.player);
         this.ui.levelUpModal.style.display = 'none';
         this.gameState = 'PLAYING';
+    this.hasRevived = false;
       });
       this.ui.perkCardsContainer.appendChild(card);
     });
 
     this.ui.levelUpModal.style.display = 'flex';
+  }
+
+
+  revivePlayer() {
+    this.hasRevived = true;
+    this.player.stats.hp = Math.floor(this.player.stats.maxHp / 2); // 50% HP
+    this.gameState = 'PLAYING';
+    
+    if (this.ui.gameOverModal) {
+      this.ui.gameOverModal.style.display = 'none';
+    }
+    
+    // Clear close monsters to prevent instant death
+    if (this.enemyManager && this.enemyManager.enemies) {
+      this.enemyManager.enemies = this.enemyManager.enemies.filter(m => {
+        const dist = Math.hypot(m.x - this.player.x, m.y - this.player.y);
+        return dist > 250; // Keep monsters that are far away
+      });
+    }
+    
+    soundEngine.playLevelUp(); // Re-use level up sound for revive
+    this.gameLoop(0);
   }
 
   showGameOver() {
@@ -249,9 +288,15 @@ export class Game {
     document.getElementById('finalWords').innerText = this.player.wordsCastCount;
     document.getElementById('finalBestWord').innerText = this.highestWord ? `${this.highestWord} (+${this.highestDamage} DMG)` : 'None';
 
+
     if (this.ui.gameOverModal) {
       this.ui.gameOverModal.style.display = 'flex';
     }
+    
+    if (this.ui.btnExtraLife) {
+      this.ui.btnExtraLife.style.display = this.hasRevived ? 'none' : 'block';
+    }
+
   }
 
   formatTime(seconds) {
