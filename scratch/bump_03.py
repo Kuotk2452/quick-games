@@ -2,7 +2,7 @@
 with open(filepath, 'r', encoding='utf-8') as f:
     c = f.read()
 
-c = c.replace('game.js?v=8.7', 'game.js?v=8.8')
+c = c.replace('game.js?v=8.8', 'game.js?v=8.9')
 
 with open(filepath, 'w', encoding='utf-8') as f:
     f.write(c)
