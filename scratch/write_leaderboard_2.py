@@ -1,4 +1,7 @@
-export class LeaderboardManager {
+import os
+
+filepath = 'games/04-cyber-slacker/js/leaderboard.js'
+js = """export class LeaderboardManager {
   constructor() {
     // We bind close button event dynamically when showing, or just attach to window
   }
@@ -85,3 +88,7 @@ export class LeaderboardManager {
 }
 
 window.leaderboardManager = new LeaderboardManager();
+"""
+
+with open(filepath, 'w', encoding='utf-8') as f:
+    f.write(js)

@@ -11,6 +11,7 @@ import { SLACKER_UPGRADES } from './shop.js';
 
 export class CyberSlackerGame {
   constructor() {
+    window.slackerInstance = this;
     this.slackerXp = 0;
     this.shiftTimeRemaining = 60; // 60 seconds per shift
     this.shiftDuration = 60;
@@ -237,7 +238,7 @@ export class CyberSlackerGame {
     if (this.ui.btnViewLeaderboard) {
       this.ui.btnViewLeaderboard.addEventListener('click', () => {
         if (window.leaderboardManager) {
-          window.leaderboardManager.show(this.netWorth);
+          window.leaderboardManager.show(this.crypto.getTotalNetWorth());
         } else {
           console.error('LeaderboardManager not found');
         }
