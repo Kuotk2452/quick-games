@@ -1,7 +1,12 @@
 ﻿import re
-with open('index.html', 'r', encoding='utf-8') as f:
-    c = f.read()
 
-c = re.sub(r'<span data-i18n="langs">EN / ZH / ES / JA</span>ES / JA.*?3D WebGL</span>', '<span data-i18n="langs">EN / ZH / ES / JA</span> &middot; 3D WebGL</span>', c)
-c = re.sub(r'<span style="font-size: 12px; color: #94a3b8;"><span data-i18n="langs">EN / ZH / ES / JA</span>ES / JA', '<span style="font-size: 12px; color: #94a3b8;"><span data-i18n="langs">EN / ZH / ES / JA</span>', c)
-# Let's just restore from git and do the replace perfectly this time.
+for filepath in ['games/04-cyber-slacker/index.html', 'games/03-dungeon-claw/index.html']:
+    with open(filepath, 'r', encoding='utf-8') as f:
+        c = f.read()
+    
+    c = c.replace('<script src=\"../../js/mock-ad-sdk.js\"></script>\\n</body>', '<script src=\"../../js/mock-ad-sdk.js\"></script>\\n</body>')
+    # wait, the exact string is literally '\n</body>' because I escaped it in my powershell injection earlier.
+    c = c.replace('<script src=\"../../js/mock-ad-sdk.js\"></script>\\\\n</body>', '<script src=\"../../js/mock-ad-sdk.js\"></script>\\n</body>')
+    
+    with open(filepath, 'w', encoding='utf-8') as f:
+        f.write(c)

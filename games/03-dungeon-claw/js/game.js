@@ -214,6 +214,7 @@ export class DungeonClawGame {
       btnLeaveShop: document.getElementById('btnLeaveShop'),
       gameOverModal: document.getElementById('gameOverModal'),
       btnPlayAgain: document.getElementById('btnPlayAgain'),
+      btnAdRevive: document.getElementById('btnAdRevive'),
       btnShareScore: document.getElementById('btnShareScore'),
       audioToggleBtn: document.getElementById('audioToggleBtn'),
       langSelect: document.getElementById('langSelect'),
@@ -380,6 +381,16 @@ export class DungeonClawGame {
 
     if (this.ui.btnPlayAgain) this.ui.btnPlayAgain.addEventListener('click', () => this.startGame());
 
+    if (this.ui.btnAdRevive) {
+      this.ui.btnAdRevive.addEventListener('click', () => {
+        if (window.QuickGamesAdSDK) {
+          window.QuickGamesAdSDK.showRewardedVideo(() => {
+            this.revivePlayer();
+          });
+        }
+      });
+    }
+
     if (this.ui.btnShareScore) {
       this.ui.btnShareScore.addEventListener('click', () => {
         const text = `🕹️ Dungeon Claw 3D — Floor ${this.floorIndex + 1}
@@ -446,6 +457,7 @@ Play free on web:
     this.armor = 0;
     this.energy = 3;
     this.maxEnergy = 3;
+    this.hasRevived = false;
     this.gold = 0;
     this.floorIndex = 0;
 
@@ -730,7 +742,24 @@ Play free on web:
     if (fFloor) fFloor.innerText = `Floor ${this.floorIndex + 1}`;
     const fGold = document.getElementById('finalGold');
     if (fGold) fGold.innerText = `${this.gold} Gold`;
+    
+    if (this.ui.btnAdRevive) {
+      this.ui.btnAdRevive.style.display = this.hasRevived ? 'none' : 'block';
+    }
+    
     if (this.ui.gameOverModal) this.ui.gameOverModal.style.display = 'flex';
+  }
+
+  revivePlayer() {
+    this.hasRevived = true;
+    this.hp = this.maxHp;
+    this.energy = this.maxEnergy;
+    this.armor = 0;
+    this.gameState = 'PLAYER_TURN';
+    this.physics.claw.state = 'IDLE';
+    this.physics.claw.y = this.physics.claw.baseY;
+    if (this.ui.gameOverModal) this.ui.gameOverModal.style.display = 'none';
+    this.updateHUD();
   }
 
   showVictory() {

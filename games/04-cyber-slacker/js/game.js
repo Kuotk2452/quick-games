@@ -82,6 +82,7 @@ export class CyberSlackerGame {
       finalNetWorth: document.getElementById('finalNetWorth'),
       finalXp: document.getElementById('finalXp'),
       btnPlayAgain: document.getElementById('btnPlayAgain'),
+      btnAdRevive: document.getElementById('btnAdRevive'),
       btnShareScore: document.getElementById('btnShareScore'),
       audioToggleBtn: document.getElementById('audioToggleBtn'),
       langSelect: document.getElementById('langSelect'),
@@ -222,6 +223,16 @@ export class CyberSlackerGame {
       });
     }
 
+    if (this.ui.btnAdRevive) {
+      this.ui.btnAdRevive.addEventListener('click', () => {
+        if (window.QuickGamesAdSDK) {
+          window.QuickGamesAdSDK.showRewardedVideo(() => {
+            this.revivePlayer();
+          });
+        }
+      });
+    }
+
     if (this.ui.btnPlayAgain) {
       this.ui.btnPlayAgain.addEventListener('click', () => {
         this.slackerXp = 0;
@@ -267,6 +278,7 @@ Play Free:
 
   startShift() {
     this.isGameOver = false;
+    this.hasRevived = false;
     this.isVictory = false;
     this.shiftTimeRemaining = 60;
     this.isDisguised = false;
@@ -306,7 +318,25 @@ Play Free:
     if (this.ui.endDesc) this.ui.endDesc.innerText = i18n.t('bustedDesc');
     if (this.ui.finalNetWorth) this.ui.finalNetWorth.innerText = `$${this.crypto.getTotalNetWorth()}`;
     if (this.ui.finalXp) this.ui.finalXp.innerText = Math.floor(this.slackerXp);
+    
+    if (this.ui.btnAdRevive) {
+      this.ui.btnAdRevive.style.display = this.hasRevived ? 'none' : 'block';
+    }
+    
     if (this.ui.endModal) this.ui.endModal.style.display = 'flex';
+  }
+
+  revivePlayer() {
+    this.isGameOver = false;
+    this.hasRevived = true;
+    this.stealth.reset();
+    
+    // Reset boss position completely
+    this.stealth.currentDist = 120;
+    this.stealth.alertness = 0;
+    this.stealth.isApproaching = false;
+    
+    if (this.ui.endModal) this.ui.endModal.style.display = 'none';
   }
 
   handleBossInspectionPassed() {
