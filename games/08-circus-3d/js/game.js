@@ -303,7 +303,43 @@ export class CircusGame {
       });
     }
 
-    if (this.ui.btnNextAct) {
+    
+      if (this.ui.btnAdCoins) {
+        this.ui.btnAdCoins.addEventListener('click', () => {
+          if (window.MockRewardSDK) {
+            window.MockRewardSDK.showAd().then(success => {
+              if (success) {
+                this.coins += 500;
+                this.saveData();
+                this.renderWorkshopUpgrades();
+              }
+            });
+          }
+        });
+      }
+
+      if (this.ui.btnAdRevive) {
+        this.ui.btnAdRevive.addEventListener('click', () => {
+          if (window.MockRewardSDK) {
+            window.MockRewardSDK.showAd().then(success => {
+              if (success) {
+                this.ui.endModal.style.display = 'none';
+                this.ui.btnAdRevive.style.display = 'none';
+                
+                // Clear immediate obstacles so player doesn't instantly die again
+                this.obstacles = this.obstacles.filter(obs => obs.x > this.player.x + 10);
+                
+                // Resume game
+                this.state = 'PLAYING';
+                this.lastTime = performance.now();
+                requestAnimationFrame(this.loop);
+              }
+            });
+          }
+        });
+      }
+
+      if (this.ui.btnNextAct) {
       this.ui.btnNextAct.addEventListener('click', () => {
         const nextIdx = (this.currentActIdx + 1) % ACT_DEFINITIONS.length;
         this.startAct(nextIdx);

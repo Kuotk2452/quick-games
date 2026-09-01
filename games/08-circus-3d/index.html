@@ -133,10 +133,11 @@
       </div>
       <p class="modal-subtitle" data-i18n="workshopDesc">Upgrade your lion rider gear using gold coins earned from the arena!</p>
 
-      <div class="workshop-balance-bar">
+            <div class="workshop-balance-bar">
         <span data-i18n="bankCoinsLabel">Gold Coins:</span>
-        <span id="workshopCoinBalance" class="balance-num">🏺 500</span>
+        <span id="workshopCoinBalance" class="balance-num">💰 500</span>
       </div>
+      <button id="btnAdCoins" class="primary-btn" style="background: #eab308; color: #111; margin-bottom: 15px; width: 100%;">🎥 Watch Ad for +500 Coins</button>
 
       <div id="workshopUpgradesList" class="workshop-list">
         <!-- Dynamically rendered upgrades -->
@@ -161,7 +162,8 @@
         </div>
       </div>
 
-      <div class="modal-buttons">
+              <button id="btnAdRevive" class="primary-btn" style="display: none; background: #eab308; color: #111; margin-bottom: 10px; width: 100%;">🎥 Watch Ad to Revive</button>
+        <div class="modal-buttons">
         <button id="btnNextAct" class="primary-btn" data-i18n="nextActBtn" style="display: none;">🎪 Next Act</button>
         <button id="btnRetry" class="primary-btn" data-i18n="retryBtn">🔄 Retry</button>
         <button id="btnSelectAct" class="secondary-btn" data-i18n="selectActBtn">🎪 Act Select</button>
@@ -171,6 +173,7 @@
   </div>
 
   <!-- Main Game Source -->
-  <script type="module" src="js/game.js?v=6.9"></script>
+  <script src="../../js/mock-reward-sdk.js"></script>
+  <script type="module" src="js/game.js?v=2.3"></script>
 </body>
 </html>
