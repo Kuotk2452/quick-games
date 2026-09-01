@@ -296,6 +296,20 @@
   </div>
 
   <!-- Game Over / Victory Modal -->
+
+  <!-- Leaderboard Modal -->
+  <div id="leaderboardModal" class="modal-overlay" style="display: none; z-index: 10005;">
+    <div class="modal-content" style="max-width: 400px; padding: 20px;">
+      <h2 class="modal-title" style="color: #eab308; margin-bottom: 10px;">🏆 GLOBAL SLACKERS</h2>
+      <p class="modal-subtitle" style="margin-bottom: 20px;">Top Earners on Company Time</p>
+      
+      <div id="leaderboardList" style="display: flex; flex-direction: column; gap: 8px; margin-bottom: 20px; max-height: 300px; overflow-y: auto; text-align: left; padding: 10px; background: rgba(0,0,0,0.4); border-radius: 8px;">
+        <!-- Ranks injected here -->
+      </div>
+      
+      <button id="btnCloseLeaderboard" class="secondary-btn" style="width: 100%;">CLOSE</button>
+    </div>
+  </div>
   <div id="endModal" class="modal-overlay" style="display: none;">
     <div class="modal-content">
       <h2 id="endTitle" class="modal-title" data-i18n="bustedTitle">💀 YOU WERE BUSTED BY HR!</h2>
@@ -326,7 +340,8 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
     <script type="module" src="js/boss_boot.js?v=1.2"></script>
     <!-- Main Game Entry -->
-    <script type="module" src="js/game.js?v=1.4"></script>
+    <script type="module" src="js/game.js?v=1.5"></script>
   <script src="../../js/mock-reward-sdk.js"></script>
+  <script type="module" src="js/leaderboard.js?v=1.0"></script>
 </body>
 </html>

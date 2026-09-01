@@ -82,6 +82,7 @@ export class CyberSlackerGame {
       finalNetWorth: document.getElementById('finalNetWorth'),
       finalXp: document.getElementById('finalXp'),
       btnPlayAgain: document.getElementById('btnPlayAgain'),
+        btnViewLeaderboard: document.getElementById('btnViewLeaderboard'),
       btnExtraLife: document.getElementById('btnExtraLife'),
       btnShareScore: document.getElementById('btnShareScore'),
       audioToggleBtn: document.getElementById('audioToggleBtn'),
