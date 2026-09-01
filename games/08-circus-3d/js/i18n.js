@@ -220,7 +220,7 @@ export const TRANSLATIONS = {
 
 class I18nManager {
   constructor() {
-    this.currentLang = 'zh'; // Default Chinese
+    this.currentLang = 'en'; // Default English
     if (typeof localStorage !== 'undefined') {
       this.currentLang = localStorage.getItem('circus_3d_lang') || 'en';
     }
