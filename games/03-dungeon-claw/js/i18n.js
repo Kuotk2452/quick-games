@@ -100,13 +100,13 @@ export const TRANSLATIONS = {
 
 class I18n {
   constructor() {
-    this.currentLang = localStorage.getItem('dc_lang') || 'en';
+    this.currentLang = localStorage.getItem('dc_lang_v2') || 'en';
   }
 
   setLanguage(lang) {
     if (TRANSLATIONS[lang]) {
       this.currentLang = lang;
-      localStorage.setItem('dc_lang', lang);
+      localStorage.setItem('dc_lang_v2', lang);
       this.applyTranslations();
     }
   }

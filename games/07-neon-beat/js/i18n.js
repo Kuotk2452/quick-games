@@ -96,14 +96,14 @@ export const TRANSLATIONS = {
 
 class I18n {
   constructor() {
-    this.currentLang = typeof localStorage !== 'undefined' ? (localStorage.getItem('nb_lang') || 'en') : 'en';
+    this.currentLang = typeof localStorage !== 'undefined' ? (localStorage.getItem('nb_lang_v2') || 'en') : 'en';
   }
 
   setLanguage(lang) {
     if (TRANSLATIONS[lang]) {
       this.currentLang = lang;
       if (typeof localStorage !== 'undefined') {
-        localStorage.setItem('nb_lang', lang);
+        localStorage.setItem('nb_lang_v2', lang);
       }
       this.applyTranslations();
     }

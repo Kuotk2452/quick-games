@@ -136,13 +136,13 @@ export const TRANSLATIONS = {
 
 class I18n {
   constructor() {
-    this.currentLang = localStorage.getItem('cs_lang') || 'en';
+    this.currentLang = localStorage.getItem('cs_lang_v2') || 'en';
   }
 
   setLanguage(lang) {
     if (TRANSLATIONS[lang]) {
       this.currentLang = lang;
-      localStorage.setItem('cs_lang', lang);
+      localStorage.setItem('cs_lang_v2', lang);
       this.applyTranslations();
     }
   }

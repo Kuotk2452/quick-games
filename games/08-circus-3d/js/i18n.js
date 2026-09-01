@@ -222,7 +222,7 @@ class I18nManager {
   constructor() {
     this.currentLang = 'en'; // Default English
     if (typeof localStorage !== 'undefined') {
-      this.currentLang = localStorage.getItem('circus_3d_lang') || 'en';
+      this.currentLang = localStorage.getItem('circus_3d_lang_v2') || 'en';
     }
   }
 
@@ -230,7 +230,7 @@ class I18nManager {
     if (TRANSLATIONS[lang]) {
       this.currentLang = lang;
       if (typeof localStorage !== 'undefined') {
-        localStorage.setItem('circus_3d_lang', lang);
+        localStorage.setItem('circus_3d_lang_v2', lang);
       }
       this.applyTranslations();
     }

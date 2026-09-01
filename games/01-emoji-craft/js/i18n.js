@@ -383,7 +383,7 @@ export const ELEMENT_NAMES = {
 
 class I18nManager {
   constructor() {
-    this.currentLang = localStorage.getItem('emoji_craft_lang') || 'en';
+    this.currentLang = localStorage.getItem('emoji_craft_lang_v2') || 'en';
   }
 
   detectUserLanguage() {
@@ -397,7 +397,7 @@ class I18nManager {
   setLanguage(lang) {
     if (TRANSLATIONS[lang]) {
       this.currentLang = lang;
-      localStorage.setItem('emoji_craft_lang', lang);
+      localStorage.setItem('emoji_craft_lang_v2', lang);
       document.documentElement.lang = lang;
       return true;
     }
