@@ -320,7 +320,8 @@ Play Free:
     if (this.ui.finalXp) this.ui.finalXp.innerText = Math.floor(this.slackerXp);
     
     if (this.ui.btnAdRevive) {
-      this.ui.btnAdRevive.style.display = this.hasRevived ? 'none' : 'block';
+      this.ui.btnAdRevive.style.display = this.hasRevived ? 'none' : 'flex';
+      this.ui.btnAdRevive.style.width = '100%';
     }
     
     if (this.ui.endModal) this.ui.endModal.style.display = 'flex';
