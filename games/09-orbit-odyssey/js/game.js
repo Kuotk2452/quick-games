@@ -90,6 +90,32 @@ class OrbitGame {
     });
     this.ui.btnStart.addEventListener('click', () => this.startGame());
     this.ui.btnRestart.addEventListener('click', () => this.startGame());
+    if (this.ui.btnAdBoost) {
+      this.ui.btnAdBoost.addEventListener('click', () => {
+        if (window.QuickGamesAdSDK) {
+          window.QuickGamesAdSDK.showRewardedVideo(() => {
+            this.startGame();
+            this.player.y = 300;
+            this.maxDistance = 300;
+            this.distance = 300;
+            this.chunkY = 300;
+            this.spawnChunk(this.chunkY);
+            this.space.spawnExplosion(this.player.x, this.player.y);
+          });
+        }
+      });
+    }
+
+    if (this.ui.btnAdRevive) {
+      this.ui.btnAdRevive.addEventListener('click', () => {
+        if (window.QuickGamesAdSDK) {
+          window.QuickGamesAdSDK.showRewardedVideo(() => {
+            this.revivePlayer();
+          });
+        }
+      });
+    }
+
 
     const handleInteractStart = (e) => {
       if (this.state !== 'PLAYING') return;
