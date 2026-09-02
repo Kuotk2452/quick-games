@@ -59,13 +59,12 @@ class OrbitGame {
   }
 
   triggerAdBoost() {
-    console.log("Triggered Ad Boost! (v3.0)");
     if (window.QuickGamesAdSDK) {
       window.QuickGamesAdSDK.showRewardedVideo(() => {
         this.startGame(300);
       });
     } else {
-      console.warn("Ad SDK fallback triggered.");
+      alert("Ad SDK blocked by your browser/AdBlocker! 🚀 Skipping Ad and granting 300LY boost instantly!");
       this.startGame(300);
     }
   }
@@ -76,7 +75,7 @@ class OrbitGame {
         this.revivePlayer();
       });
     } else {
-      console.warn("Ad SDK fallback triggered.");
+      alert("Ad SDK blocked by your browser/AdBlocker! 🚀 Skipping Ad and reviving you instantly!");
       this.revivePlayer();
     }
   }
