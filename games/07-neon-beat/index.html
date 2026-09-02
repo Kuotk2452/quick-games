@@ -126,15 +126,20 @@
         </div>
       </div>
 
-      <div class="modal-actions">
-        <button id="btnRetry" class="primary-start-btn" data-i18n="restartBtn">🔄 Retry</button>
-        <button id="btnSelectTrack" class="secondary-btn" data-i18n="selectSongBtn">🎵 Select Track</button>
-        <button id="btnShareScore" class="secondary-btn" data-i18n="shareScore">📋 Share</button>
+            <div class="modal-actions" style="flex-direction: column; gap: 8px;">
+        <button id="btnAdDoubleScore" class="primary-start-btn" style="background: #eab308; color: #111; width: 100%; font-weight: bold;">🎥 Watch Ad: Double Score & Boost Grade (x2 ⚡)</button>
+        <div style="display: flex; gap: 8px; width: 100%;">
+          <button id="btnRetry" class="primary-start-btn" style="flex: 1;" data-i18n="restartBtn">🔄 Retry</button>
+          <button id="btnSelectTrack" class="secondary-btn" style="flex: 1;" data-i18n="selectSongBtn">🎵 Select Track</button>
+        </div>
+        <button id="btnShareScore" class="secondary-btn" style="width: 100%;" data-i18n="shareScore">📋 Share</button>
       </div>
     </div>
   </div>
 
+  <!-- Ad SDK -->
+  <script src="../../js/mock-reward-sdk.js"></script>
   <!-- Main Game Script -->
-  <script type="module" src="js/game.js?v=1.1"></script>
+  <script type="module" src="js/game.js?v=2.0"></script>
 </body>
 </html>

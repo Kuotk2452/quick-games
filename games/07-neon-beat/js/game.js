@@ -77,6 +77,7 @@ export class NeonBeatGame {
       resultGood: document.getElementById('resultGood'),
       resultMiss: document.getElementById('resultMiss'),
       btnRetry: document.getElementById('btnRetry'),
+      btnAdDoubleScore: document.getElementById('btnAdDoubleScore'),
       btnSelectTrack: document.getElementById('btnSelectTrack'),
       btnShareScore: document.getElementById('btnShareScore'),
       audioToggleBtn: document.getElementById('audioToggleBtn'),
@@ -106,6 +107,32 @@ export class NeonBeatGame {
             this.showTrackSelect();
           }, 200);
         }, 2000);
+      });
+    }
+
+    
+    if (this.ui.btnAdDoubleScore) {
+      this.ui.btnAdDoubleScore.addEventListener('click', () => {
+        if (window.QuickGamesAdSDK) {
+          window.QuickGamesAdSDK.showRewardedVideo(() => {
+            this.score *= 2;
+            if (this.ui.resultScore) this.ui.resultScore.innerText = this.score.toLocaleString();
+            if (this.ui.gradeDisplay) {
+              this.ui.gradeDisplay.innerText = 'SSS+';
+              this.ui.gradeDisplay.style.color = '#eab308';
+            }
+            if (this.ui.btnAdDoubleScore) {
+              this.ui.btnAdDoubleScore.innerText = '✅ Score Doubled! (x2 Applied)';
+              this.ui.btnAdDoubleScore.disabled = true;
+              this.ui.btnAdDoubleScore.style.opacity = '0.75';
+            }
+            const track = TRACK_LIST[this.selectedTrackIndex];
+            localStorage.setItem(
+b_score_, this.score.toString());
+            localStorage.setItem(
+b_grade_, 'SSS+');
+          });
+        }
       });
     }
 
@@ -464,6 +491,11 @@ Play Free: https://quick-games-ez4.pages.dev/games/07-neon-beat/`;
     if (this.ui.resultGood) this.ui.resultGood.innerText = this.stats.good;
     if (this.ui.resultMiss) this.ui.resultMiss.innerText = this.stats.miss;
 
+        if (this.ui.btnAdDoubleScore) {
+      this.ui.btnAdDoubleScore.innerText = '🎥 Watch Ad: Double Score & Boost Grade (x2 ⚡)';
+      this.ui.btnAdDoubleScore.disabled = false;
+      this.ui.btnAdDoubleScore.style.opacity = '1';
+    }
     if (this.ui.endModal) this.ui.endModal.style.display = 'flex';
   }
 
