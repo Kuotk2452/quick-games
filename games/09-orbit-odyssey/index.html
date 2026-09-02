@@ -93,7 +93,7 @@
         </div>
 
                 <button id="btnStart" class="btn-primary">INITIATE LAUNCH</button>
-        <button id="btnAdBoost" class="btn-primary" style="background: #eab308; color: #111; margin-top: 10px; width: 100%; font-weight: bold; border-color: #fef08a;">
+        <button id="btnAdBoost" onclick="window.gameApp.triggerAdBoost()" class="btn-primary" style="background: #eab308; color: #111; margin-top: 10px; width: 100%; font-weight: bold; border-color: #fef08a;">
           ⚡ Watch Ad: +300 LY Warp Jump Boost
         </button>
       </div>
@@ -111,7 +111,7 @@
         </div>
 
                 <div class="action-buttons">
-          <button id="btnAdRevive" class="btn-primary" style="background: #eab308; color: #111; margin-bottom: 10px; width: 100%; font-weight: bold; border-color: #fef08a;">
+          <button id="btnAdRevive" onclick="window.gameApp.triggerAdRevive()" class="btn-primary" style="background: #eab308; color: #111; margin-bottom: 10px; width: 100%; font-weight: bold; border-color: #fef08a;">
             🎥 Watch Ad: Quantum Warp Revive (Continue Run)
           </button>
           <button id="btnRestart" class="btn-primary">REDEPLOY</button>
@@ -123,6 +123,6 @@
   <!-- Ad SDK -->
   <script src="../../js/mock-reward-sdk.js"></script>
   <!-- Main Game Script -->
-  <script type="module" src="js/game.js?v=2.1"></script>
+  <script type="module" src="js/game.js?v=2.2"></script>
 </body>
 </html>

@@ -58,6 +58,28 @@ class OrbitGame {
     requestAnimationFrame(this.loop.bind(this));
   }
 
+  triggerAdBoost() {
+    if (window.QuickGamesAdSDK) {
+      window.QuickGamesAdSDK.showRewardedVideo(() => {
+        this.startGame(300);
+      });
+    } else {
+      console.warn("Ad SDK fallback triggered.");
+      this.startGame(300);
+    }
+  }
+
+  triggerAdRevive() {
+    if (window.QuickGamesAdSDK) {
+      window.QuickGamesAdSDK.showRewardedVideo(() => {
+        this.revivePlayer();
+      });
+    } else {
+      console.warn("Ad SDK fallback triggered.");
+      this.revivePlayer();
+    }
+  }
+
   runBootSequence() {
     const sequence = [
       "INITIATING HYPER-DRIVE OS...",
@@ -500,4 +522,4 @@ class OrbitGame {
 }
 
 // Boot game
-new OrbitGame();
+window.gameApp = new OrbitGame();
