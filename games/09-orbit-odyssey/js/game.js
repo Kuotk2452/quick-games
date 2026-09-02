@@ -59,6 +59,7 @@ class OrbitGame {
   }
 
   triggerAdBoost() {
+    console.log("Triggered Ad Boost! (v3.0)");
     if (window.QuickGamesAdSDK) {
       window.QuickGamesAdSDK.showRewardedVideo(() => {
         this.startGame(300);
@@ -182,9 +183,9 @@ class OrbitGame {
     this.chunkY = startDistance;
 
     // Clear world with GPU memory disposal
-    this.planets.forEach(p => this.space.disposeObject(p.mesh));
-    this.asteroids.forEach(a => this.space.disposeObject(a.mesh));
-    this.blackholes.forEach(b => this.space.disposeObject(b.group));
+    this.planets.forEach(p => { if (this.space.disposeObject) this.space.disposeObject(p.mesh); else this.space.scene.remove(p.mesh); });
+    this.asteroids.forEach(a => { if (this.space.disposeObject) this.space.disposeObject(a.mesh); else this.space.scene.remove(a.mesh); });
+    this.blackholes.forEach(b => { if (this.space.disposeObject) this.space.disposeObject(b.group); else this.space.scene.remove(b.group); });
     this.planets = [];
     this.asteroids = [];
     this.blackholes = [];
@@ -507,15 +508,15 @@ class OrbitGame {
     const thresholdY = this.player.y - 300;
     
     this.planets = this.planets.filter(p => {
-      if (p.y < thresholdY) { this.space.disposeObject(p.mesh); return false; }
+      if (p.y < thresholdY) { if (this.space.disposeObject) this.space.disposeObject(p.mesh); else this.space.scene.remove(p.mesh); return false; }
       return true;
     });
     this.asteroids = this.asteroids.filter(a => {
-      if (a.y < thresholdY) { this.space.disposeObject(a.mesh); return false; }
+      if (a.y < thresholdY) { if (this.space.disposeObject) this.space.disposeObject(a.mesh); else this.space.scene.remove(a.mesh); return false; }
       return true;
     });
     this.blackholes = this.blackholes.filter(b => {
-      if (b.y < thresholdY) { this.space.disposeObject(b.group); return false; }
+      if (b.y < thresholdY) { if (this.space.disposeObject) this.space.disposeObject(b.group); else this.space.scene.remove(b.group); return false; }
       return true;
     });
   }
