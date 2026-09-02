@@ -98,6 +98,9 @@ class OrbitGame {
           window.QuickGamesAdSDK.showRewardedVideo(() => {
             this.startGame(300);
           });
+        } else {
+          console.warn("Ad SDK not found (blocked by AdBlocker?). Proceeding with fallback.");
+          this.startGame(300);
         }
       });
     }
@@ -108,6 +111,9 @@ class OrbitGame {
           window.QuickGamesAdSDK.showRewardedVideo(() => {
             this.revivePlayer();
           });
+        } else {
+          console.warn("Ad SDK not found (blocked by AdBlocker?). Proceeding with fallback.");
+          this.revivePlayer();
         }
       });
     }
