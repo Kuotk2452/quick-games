@@ -1,128 +1,256 @@
 <!DOCTYPE html>
+
 <html lang="en">
+
 <head>
+
   <meta charset="UTF-8">
+
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+
   <title>Game 09: Orbit Odyssey</title>
+
   <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Rajdhani:wght@500;700&display=swap" rel="stylesheet">
+
   <link rel="stylesheet" href="css/style.css">
+
   
+
   <!-- Three.js (Import Map for ES modules) -->
+
   <script type="importmap">
+
     {
+
       "imports": {
+
         "three": "https://unpkg.com/three@0.160.0/build/three.module.js",
+
         "three/addons/": "https://unpkg.com/three@0.160.0/examples/jsm/"
+
       }
+
     }
+
   </script>
+
 </head>
+
 <body>
+
   <!-- Global Back Button -->
+
   <a href="../../index.html" class="portal-back-btn">
+
     <div class="portal-back-icon"></div>
+
     <span>GAMES</span>
+
   </a>
 
+
+
   <!-- 3D Canvas Container -->
+
   <div id="gameContainer"></div>
 
+
+
   <!-- UI Overlay -->
+
   <div id="uiLayer" class="ui-layer">
+
     
+
     <!-- HUD -->
+
     <div id="hud" class="hud-panel hidden">
+
       <div class="hud-top">
+
         <div class="score-display">DISTANCE: <span id="distanceCount" class="glow-text">0</span> LY</div>
+
         <div class="fuel-display">
+
           <span>COMBO: <span id="comboCount" class="glow-text-magenta">x1</span></span>
+
         </div>
+
       </div>
+
       <div id="closeCallBanner" class="close-call-banner hidden">PERFECT ORBIT! +500</div>
+
     </div>
+
+
 
     <!-- Boot Sequence -->
+
     <div id="bootScreen" class="modal active boot-screen">
+
       <div class="terminal-text" id="terminalText"></div>
+
     </div>
+
+
 
     <!-- Animated Tutorial -->
+
     <div id="tutorialScreen" class="modal hidden">
+
       <div class="modal-content glass-panel tutorial-panel">
+
         <h2 class="tutorial-title text-cyan">TETHER CALIBRATION</h2>
+
         
+
         <div class="anim-container">
+
           <!-- SVG for smooth orbit animation -->
+
           <svg viewBox="0 0 200 200" class="tether-svg">
+
             <circle cx="100" cy="100" r="30" class="wire-planet"></circle>
+
             <circle cx="100" cy="100" r="60" class="wire-orbit"></circle>
+
             <!-- Ship -->
+
             <polygon points="90,30 110,40 90,50" class="wire-ship"></polygon>
+
             <!-- Tether Line -->
+
             <line x1="100" y1="100" x2="100" y2="40" class="wire-tether"></line>
+
             <!-- Slingshot Path -->
+
             <line x1="100" y1="40" x2="200" y2="40" class="wire-slingshot"></line>
+
           </svg>
+
           <div class="touch-indicator"></div>
+
         </div>
+
+
 
         <p class="tutorial-desc"><span class="highlight">PRESS & HOLD</span> to grapple and orbit.<br><span class="highlight">RELEASE</span> to slingshot forward.</p>
+
         <button id="btnAckTutorial" class="btn-primary">SYSTEM READY</button>
+
       </div>
+
     </div>
+
+
 
     <!-- Main Menu -->
+
     <div id="mainMenu" class="modal hidden">
+
       <div class="modal-content glass-panel">
+
         <h1 class="title-glitch" data-text="ORBIT ODYSSEY">ORBIT ODYSSEY</h1>
+
         <p class="subtitle">GRAVITATIONAL SLINGSHOT RUNNER</p>
+
         
+
         <div class="instructions">
+
           <div class="inst-item">
+
             <span class="icon">👆</span>
+
             <p><strong>PRESS & HOLD</strong><br>Deploy gravity tether to orbit nearest planet</p>
+
           </div>
+
           <div class="inst-item">
+
             <span class="icon">🖐️</span>
+
             <p><strong>RELEASE</strong><br>Slingshot forward into deep space</p>
+
           </div>
+
           <div class="inst-item">
+
             <span class="icon">⚠️</span>
+
             <p><strong>AVOID</strong><br>Black Holes & Asteroids</p>
+
           </div>
+
         </div>
+
+
 
                 <button id="btnStart" class="btn-primary">INITIATE LAUNCH</button>
-        <button id="btnAdBoost" onclick="window.gameApp.triggerAdBoost()" class="btn-primary" style="background: #eab308; color: #111; margin-top: 10px; width: 100%; font-weight: bold; border-color: #fef08a;">
+
+        <button id="btnAdBoost" class="btn-primary" style="background: #eab308; color: #111; margin-top: 10px; width: 100%; font-weight: bold; border-color: #fef08a;">
+
           ⚡ Watch Ad: +300 LY Warp Jump Boost
+
         </button>
+
       </div>
+
     </div>
+
+
 
     <!-- Game Over Menu -->
+
     <div id="gameOverMenu" class="modal hidden">
+
       <div class="modal-content glass-panel error-panel">
+
         <h1 class="title-glitch text-red" id="deathReason" data-text="SIGNAL LOST">SIGNAL LOST</h1>
+
         
+
         <div class="stats-box">
+
           <p>DISTANCE TRAVELED</p>
+
           <h2 id="finalScore" class="glow-text">0 LY</h2>
+
           <p class="high-score-text">BEST: <span id="bestScore">0</span> LY</p>
+
         </div>
+
+
 
                 <div class="action-buttons">
-          <button id="btnAdRevive" onclick="window.gameApp.triggerAdRevive()" class="btn-primary" style="background: #eab308; color: #111; margin-bottom: 10px; width: 100%; font-weight: bold; border-color: #fef08a;">
+
+          <button id="btnAdRevive" class="btn-primary" style="background: #eab308; color: #111; margin-bottom: 10px; width: 100%; font-weight: bold; border-color: #fef08a;">
+
             🎥 Watch Ad: Quantum Warp Revive (Continue Run)
+
           </button>
+
           <button id="btnRestart" class="btn-primary">REDEPLOY</button>
+
         </div>
+
       </div>
+
     </div>
+
   </div>
 
+
+
   <!-- Ad SDK -->
-  <script src="../../js/mock-reward-sdk.js"></script>
+
+  <script src="../../js/mock-reward-sdk.js?v=2.0"></script>
+
   <!-- Main Game Script -->
-  <script type="module" src="js/game.js?v=4.0"></script>
+
+  <script type="module" src="js/game.js?v=6.0"></script>
+
 </body>
+
 </html>
+

@@ -115,32 +115,13 @@ class OrbitGame {
     });
     this.ui.btnStart.addEventListener('click', () => this.startGame());
     this.ui.btnRestart.addEventListener('click', () => this.startGame());
+    
     if (this.ui.btnAdBoost) {
-      this.ui.btnAdBoost.addEventListener('click', () => {
-        if (window.QuickGamesAdSDK) {
-          window.QuickGamesAdSDK.showRewardedVideo(() => {
-            this.startGame(300);
-          });
-        } else {
-          console.warn("Ad SDK not found (blocked by AdBlocker?). Proceeding with fallback.");
-          this.startGame(300);
-        }
-      });
+      this.ui.btnAdBoost.addEventListener('click', (e) => { e.preventDefault(); this.triggerAdBoost(); });
     }
-
     if (this.ui.btnAdRevive) {
-      this.ui.btnAdRevive.addEventListener('click', () => {
-        if (window.QuickGamesAdSDK) {
-          window.QuickGamesAdSDK.showRewardedVideo(() => {
-            this.revivePlayer();
-          });
-        } else {
-          console.warn("Ad SDK not found (blocked by AdBlocker?). Proceeding with fallback.");
-          this.revivePlayer();
-        }
-      });
+      this.ui.btnAdRevive.addEventListener('click', (e) => { e.preventDefault(); this.triggerAdRevive(); });
     }
-
 
     const handleInteractStart = (e) => {
       if (this.state !== 'PLAYING') return;
