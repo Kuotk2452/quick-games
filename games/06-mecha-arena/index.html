@@ -67,8 +67,11 @@
           <div class="holo-scanline"></div>
         </div>
 
-        <button id="btnDeploy" class="deploy-action-btn" data-i18n="deployBtn">
+                <button id="btnDeploy" class="deploy-action-btn" data-i18n="deployBtn">
           ⚔️ ENTER ARENA TOURNAMENT
+        </button>
+        <button id="btnAdScrap" class="deploy-action-btn" style="background: #eab308; color: #111; margin-top: 10px; border-color: #fef08a; font-weight: bold;">
+          💰 Watch Ad for + Scrap Cash
         </button>
       </div>
 
@@ -129,14 +132,19 @@
       <h2 id="endTitle" class="modal-title" data-i18n="victoryTitle">🏆 TOURNAMENT VICTORY!</h2>
       <p id="endDesc" class="modal-subtitle" data-i18n="victoryDesc">Opponent mecha destroyed into scrap metal!</p>
 
-      <div class="modal-actions">
-        <button id="btnNextMatch" class="primary-start-btn" data-i18n="nextMatchBtn">⚔️ Next Match</button>
-        <button id="btnShareScore" class="secondary-btn" data-i18n="shareScore">📋 Share Build</button>
+            <div class="modal-actions" style="flex-direction: column; gap: 8px;">
+        <button id="btnAdRevive" class="primary-start-btn" style="display: none; background: #eab308; color: #111; width: 100%; font-weight: bold;">🎥 Watch Ad: Emergency Overclock Revive (100% HP)</button>
+        <div style="display: flex; gap: 8px; width: 100%;">
+          <button id="btnNextMatch" class="primary-start-btn" style="flex: 1;" data-i18n="nextMatchBtn">⚔️ Next Match</button>
+          <button id="btnShareScore" class="secondary-btn" style="flex: 1;" data-i18n="shareScore">📋 Share Build</button>
+        </div>
       </div>
     </div>
   </div>
 
+  <!-- Ad SDK -->
+  <script src="../../js/mock-reward-sdk.js"></script>
   <!-- Main Game Script -->
-  <script type="module" src="js/game.js?v=1.1"></script>
+  <script type="module" src="js/game.js?v=2.0"></script>
 </body>
 </html>

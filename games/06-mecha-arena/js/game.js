@@ -107,6 +107,8 @@ export class MechaArenaGame {
       scrapCashDisplay: document.getElementById('scrapCashDisplay'),
       leagueDisplay: document.getElementById('leagueDisplay'),
       btnDeploy: document.getElementById('btnDeploy'),
+      btnAdScrap: document.getElementById('btnAdScrap'),
+      btnAdRevive: document.getElementById('btnAdRevive'),
       btnReturnWorkshop: document.getElementById('btnReturnWorkshop'),
       partsContainer: document.getElementById('partsContainer'),
       tabChassisBtn: document.getElementById('tabChassisBtn'),
@@ -152,6 +154,32 @@ export class MechaArenaGame {
             mechaAudio.ensureContext();
           }, 300);
         }, 2500);
+      });
+    }
+
+    
+    if (this.ui.btnAdScrap) {
+      this.ui.btnAdScrap.addEventListener('click', () => {
+        if (window.QuickGamesAdSDK) {
+          window.QuickGamesAdSDK.showRewardedVideo(() => {
+            this.scrapCash += 500;
+            localStorage.setItem('ma_scrap', this.scrapCash);
+            this.renderWorkshopUI();
+            mechaAudio.playMetallicClank();
+          });
+        }
+      });
+    }
+
+    if (this.ui.btnAdRevive) {
+      this.ui.btnAdRevive.addEventListener('click', () => {
+        if (window.QuickGamesAdSDK) {
+          window.QuickGamesAdSDK.showRewardedVideo(() => {
+            if (this.ui.endModal) this.ui.endModal.style.display = 'none';
+            if (this.ui.btnAdRevive) this.ui.btnAdRevive.style.display = 'none';
+            this.revivePlayer();
+          });
+        }
       });
     }
 
@@ -308,6 +336,16 @@ Play Free in Browser:
         navigator.clipboard.writeText(text).then(() => alert(i18n.t('copiedAlert'))).catch(() => prompt('Mecha Build:', text));
       });
     }
+  }
+
+  
+  revivePlayer() {
+    this.player = new CombatantBot('PLAYER', this.playerChassisId, this.playerWeaponId, this.playerModuleId, 120, this.height / 2, false);
+    this.player.isDead = false;
+    this.player.hp = this.player.maxHp;
+    this.player.shieldTimer = 3.5; // 3.5s shield bubble on revive
+    this.particles.spawnExplosion(this.player.pos.x, this.player.pos.y, 50);
+    mechaAudio.playHydraulicPowerUp();
   }
 
   returnToWorkshop() {
@@ -634,13 +672,15 @@ Play Free in Browser:
 
       if (this.ui.endTitle) this.ui.endTitle.innerText = i18n.t('victoryTitle');
       if (this.ui.endDesc) this.ui.endDesc.innerText = `Reward: +$${tourney.reward} Scrap Cash!`;
-      if (this.ui.endModal) this.ui.endModal.style.display = 'flex';
+            if (this.ui.endModal) this.ui.endModal.style.display = 'flex';
+      if (this.ui.btnAdRevive) this.ui.btnAdRevive.style.display = 'none';
       this.enemy = null;
     } else if (this.player.isDead) {
       // Defeat
       if (this.ui.endTitle) this.ui.endTitle.innerText = i18n.t('defeatTitle');
       if (this.ui.endDesc) this.ui.endDesc.innerText = i18n.t('defeatDesc');
-      if (this.ui.endModal) this.ui.endModal.style.display = 'flex';
+            if (this.ui.endModal) this.ui.endModal.style.display = 'flex';
+      if (this.ui.btnAdRevive) this.ui.btnAdRevive.style.display = 'block';
       this.player = null;
     }
   }
