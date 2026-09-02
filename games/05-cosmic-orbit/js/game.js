@@ -73,6 +73,8 @@ export class CosmicOrbitGame {
       finalScore: document.getElementById('finalScore'),
       btnPlayAgain: document.getElementById('btnPlayAgain'),
       btnShareScore: document.getElementById('btnShareScore'),
+      btnAdRevive: document.getElementById('btnAdRevive'),
+      btnAdSupercharge: document.getElementById('btnAdSupercharge'),
       audioToggleBtn: document.getElementById('audioToggleBtn'),
       langSelect: document.getElementById('langSelect'),
       btnPowerPulse: document.getElementById('btnPowerPulse'),
@@ -110,6 +112,41 @@ export class CosmicOrbitGame {
 
     if (this.ui.btnStart) {
       this.ui.btnStart.addEventListener('click', () => this.startGame());
+    }
+
+    
+    if (this.ui.btnAdSupercharge) {
+      this.ui.btnAdSupercharge.addEventListener('click', () => {
+        if (window.QuickGamesAdSDK) {
+          window.QuickGamesAdSDK.showRewardedVideo(() => {
+            // Mega Gravity Pulse + Merge bonus
+            this.physics.applyGravityPulse();
+            this.score += 1000;
+            this.updateHUD();
+            this.particles.spawnSupernova(this.centerX, this.centerY, '#eab308');
+            cosmicAudio.playSupernovaChime();
+          });
+        }
+      });
+    }
+
+    if (this.ui.btnAdRevive) {
+      this.ui.btnAdRevive.addEventListener('click', () => {
+        if (window.QuickGamesAdSDK) {
+          window.QuickGamesAdSDK.showRewardedVideo(() => {
+            // Clear outer overflowing planets to save run
+            const limit = this.physics.eventHorizonRadius * 0.85;
+            this.physics.bodies = this.physics.bodies.filter(b => Math.hypot(b.pos.x - this.centerX, b.pos.y - this.centerY) < limit);
+            this.physics.overflowWarningTime = 0;
+            this.isGameOver = false;
+                if (this.ui.endModal) this.ui.endModal.style.display = 'none';
+    if (this.ui.btnAdRevive) this.ui.btnAdRevive.style.display = 'none';
+            if (this.ui.horizonWarning) this.ui.horizonWarning.style.display = 'none';
+            this.particles.spawnSupernova(this.centerX, this.centerY, '#00f0ff');
+            cosmicAudio.playSupernovaChime();
+          });
+        }
+      });
     }
 
     if (this.ui.btnPlayAgain) {
@@ -221,7 +258,8 @@ Play Free in Browser:
     this.physics.overflowWarningTime = 0;
 
     if (this.ui.startScreen) this.ui.startScreen.style.display = 'none';
-    if (this.ui.endModal) this.ui.endModal.style.display = 'none';
+        if (this.ui.endModal) this.ui.endModal.style.display = 'none';
+    if (this.ui.btnAdRevive) this.ui.btnAdRevive.style.display = 'none';
 
     cosmicAudio.ensureContext();
     this.pickNextPlanet();
@@ -283,7 +321,8 @@ Play Free in Browser:
       if (this.ui.endTitle) this.ui.endTitle.innerText = i18n.t('victorySupernova');
       if (this.ui.endDesc) this.ui.endDesc.innerText = 'You successfully merged the ultimate Singularity Quasar!';
       if (this.ui.finalScore) this.ui.finalScore.innerText = `${this.score} pts`;
-      if (this.ui.endModal) this.ui.endModal.style.display = 'flex';
+              if (this.ui.endModal) this.ui.endModal.style.display = 'flex';
+        if (this.ui.btnAdRevive) this.ui.btnAdRevive.style.display = 'block';
     }
 
     this.updateHUD();
@@ -421,7 +460,8 @@ Play Free in Browser:
         if (this.ui.endTitle) this.ui.endTitle.innerText = i18n.t('gameOverTitle');
         if (this.ui.endDesc) this.ui.endDesc.innerText = i18n.t('gameOverDesc');
         if (this.ui.finalScore) this.ui.finalScore.innerText = `${this.score} pts`;
-        if (this.ui.endModal) this.ui.endModal.style.display = 'flex';
+                if (this.ui.endModal) this.ui.endModal.style.display = 'flex';
+        if (this.ui.btnAdRevive) this.ui.btnAdRevive.style.display = 'block';
       }
 
       this.updateHUD();

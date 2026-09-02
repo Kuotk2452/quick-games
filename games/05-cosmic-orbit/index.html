@@ -89,6 +89,10 @@
         <span class="power-icon">🧲</span>
         <span class="power-text" data-i18n="powerMagneticSingularity">Twin Pull</span>
       </button>
+      <button id="btnAdSupercharge" class="power-btn" style="border-color: rgba(234, 179, 8, 0.6); color: #eab308;">
+        <span class="power-icon">⚡</span>
+        <span class="power-text">Supercharge (Ad)</span>
+      </button>
     </footer>
 
     <!-- Evolution Tree Hint Bar -->
@@ -134,14 +138,19 @@
         </div>
       </div>
 
-      <div class="modal-actions">
-        <button id="btnPlayAgain" class="primary-start-btn" data-i18n="playAgain">🔄 New Solar System</button>
-        <button id="btnShareScore" class="secondary-btn" data-i18n="shareScore">📋 Share Discovery</button>
+            <div class="modal-actions" style="flex-direction: column; gap: 8px;">
+        <button id="btnAdRevive" class="primary-start-btn" style="display: none; background: #eab308; color: #111; width: 100%; font-weight: bold;">🎥 Watch Ad to Clear Horizon & Revive</button>
+        <div style="display: flex; gap: 8px; width: 100%;">
+          <button id="btnPlayAgain" class="primary-start-btn" style="flex: 1;" data-i18n="playAgain">🔄 New System</button>
+          <button id="btnShareScore" class="secondary-btn" style="flex: 1;" data-i18n="shareScore">📋 Share</button>
+        </div>
       </div>
     </div>
   </div>
 
+  <!-- Ad SDK -->
+  <script src="../../js/mock-reward-sdk.js"></script>
   <!-- Main Game Script -->
-  <script type="module" src="js/game.js?v=2.4"></script>
+  <script type="module" src="js/game.js?v=2.5"></script>
 </body>
 </html>
