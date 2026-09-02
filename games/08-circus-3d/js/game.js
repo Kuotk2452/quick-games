@@ -310,10 +310,9 @@ export class CircusGame {
         this.ui.btnAdCoins.addEventListener('click', () => {
           if (window.QuickGamesAdSDK) {
             window.QuickGamesAdSDK.showRewardedVideo(() => {
-              this.coins += 500;
-              workshop.addCoins(500); // Also update workshop bank immediately
+              workshop.addCoins(500);
               this.updateBankHeader();
-              if (this.ui.workshopCoinBalance) this.ui.workshopCoinBalance.innerText = this.coins.toString();
+              this.renderWorkshop(); // Updates all buttons and coin balance correctly
             });
           }
         });
