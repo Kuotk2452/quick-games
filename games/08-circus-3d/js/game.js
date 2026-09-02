@@ -164,6 +164,8 @@ export class CircusGame {
       toggleHudBtn: document.getElementById('toggleHudBtn'),
       gameplayHUD: document.getElementById('gameplayHUD'),
       btnSelectAct: document.getElementById('btnSelectAct'),
+        btnAdCoins: document.getElementById('btnAdCoins'),
+        btnAdRevive: document.getElementById('btnAdRevive'),
       btnShareScore: document.getElementById('btnShareScore'),
       audioToggleBtn: document.getElementById('audioToggleBtn'),
       langSelect: document.getElementById('langSelect'),
