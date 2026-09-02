@@ -70,6 +70,7 @@ class OrbitGame {
   }
 
   triggerAdRevive() {
+    alert("DIAGNOSTIC: Button click successfully reached Javascript!");
     if (window.QuickGamesAdSDK) {
       window.QuickGamesAdSDK.showRewardedVideo(() => {
         this.revivePlayer();
