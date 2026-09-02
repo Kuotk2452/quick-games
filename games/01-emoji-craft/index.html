@@ -191,6 +191,9 @@
       </div>
 
       <div class="flex flex-col gap-2.5">
+                <button id="btn-daily-ad-double" onclick="window.monetization.claimDailyDoubleReward()" class="w-full py-3 px-4 rounded-xl font-black text-slate-900 bg-gradient-to-r from-amber-400 to-yellow-300 hover:from-amber-300 hover:to-yellow-200 shadow-lg shadow-amber-500/25 transition transform active:scale-95 flex items-center justify-center gap-2">
+          <span>🎬 Watch Ad for 2x Daily Rewards & +3 Hints</span>
+        </button>
         <button onclick="window.dailyQuest.generateShareText()" class="w-full py-3 px-4 rounded-xl font-black text-slate-900 bg-gradient-to-r from-emerald-400 to-teal-300 hover:from-emerald-300 hover:to-teal-200 shadow-lg shadow-emerald-500/25 transition transform active:scale-95 flex items-center justify-center gap-2" data-i18n="copyShareCard">
           <span>📋 Copy Result (Wordle-style)</span>
         </button>
@@ -230,13 +233,15 @@
     </div>
   </div>
 
+  <!-- 广告 SDK 引入 -->
+  <script src="../../js/mock-reward-sdk.js"></script>
   <!-- 脚本引入 -->
   <script type="module" src="js/i18n.js"></script>
   <script type="module" src="js/recipes.js"></script>
   <script type="module" src="js/audio.js"></script>
   <script type="module" src="js/particles.js"></script>
-  <script type="module" src="js/monetization.js"></script>
+  <script type="module" src="js/monetization.js?v=2.0"></script>
   <script type="module" src="js/daily.js?v=1.3"></script>
-  <script type="module" src="js/game.js?v=1.3"></script>
+  <script type="module" src="js/game.js?v=2.0"></script>
 </body>
 </html>

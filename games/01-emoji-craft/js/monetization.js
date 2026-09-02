@@ -49,6 +49,14 @@ class MonetizationEngine {
       return;
     }
 
+    if (window.QuickGamesAdSDK) {
+      window.QuickGamesAdSDK.showRewardedVideo(() => {
+        this.addFreeHint(1);
+        if (onReward) onReward();
+      });
+      return;
+    }
+
     this.onRewardCallback = onReward;
     const modal = document.getElementById('rewarded-ad-modal');
     if (!modal) return;
@@ -62,6 +70,43 @@ class MonetizationEngine {
     modal.classList.add('flex');
 
     this.startAdCountdown(15);
+  }
+
+  claimDailyDoubleReward() {
+    if (this.isVIP) {
+      const btn = document.getElementById('btn-daily-ad-double');
+      if (btn) {
+        btn.innerHTML = '<span>👑 VIP Instant 2x Claimed!</span>';
+        btn.disabled = true;
+      }
+      this.addFreeHint(3);
+      if (window.gameApp) window.gameApp.updateHintBadge();
+      return;
+    }
+
+    if (window.QuickGamesAdSDK) {
+      window.QuickGamesAdSDK.showRewardedVideo(() => {
+        const btn = document.getElementById('btn-daily-ad-double');
+        if (btn) {
+          btn.innerHTML = '<span>✅ Double Rewards Claimed (+3 💡 Hints)</span>';
+          btn.disabled = true;
+          btn.classList.add('opacity-75', 'cursor-default');
+        }
+        this.addFreeHint(3);
+        if (window.gameApp) window.gameApp.updateHintBadge();
+      });
+    } else {
+      this.showRewardedVideo('Double Daily Gems', () => {
+        const btn = document.getElementById('btn-daily-ad-double');
+        if (btn) {
+          btn.innerHTML = '<span>✅ Double Rewards Claimed (+3 💡 Hints)</span>';
+          btn.disabled = true;
+          btn.classList.add('opacity-75', 'cursor-default');
+        }
+        this.addFreeHint(3);
+        if (window.gameApp) window.gameApp.updateHintBadge();
+      });
+    }
   }
 
   startAdCountdown(seconds = 15) {
