@@ -73,35 +73,40 @@ class MonetizationEngine {
   }
 
   claimDailyDoubleReward() {
+    const btn = document.getElementById('btn-daily-ad-double');
+    if (btn && btn.disabled) return; // Anti-spam: Ignore if already disabled
+
     if (this.isVIP) {
-      const btn = document.getElementById('btn-daily-ad-double');
       if (btn) {
-        btn.innerHTML = '<span>👑 VIP Instant 2x Claimed!</span>';
+        btn.innerHTML = `<span>👑 ${i18n.t('rewardClaimed') || 'VIP Instant 2x Claimed!'}</span>`;
         btn.disabled = true;
+        btn.classList.add('opacity-75', 'cursor-default');
       }
       this.addFreeHint(3);
       if (window.gameApp) window.gameApp.updateHintBadge();
       return;
     }
 
+    // Pre-disable to prevent rapid clicking spam
+    if (btn) {
+      btn.disabled = true;
+      btn.classList.add('opacity-75', 'cursor-default');
+    }
+
+    const successText = `<span>✅ ${i18n.t('rewardClaimed') || 'Double Rewards Claimed'} (+3 💡)</span>`;
+
     if (window.QuickGamesAdSDK) {
       window.QuickGamesAdSDK.showRewardedVideo(() => {
-        const btn = document.getElementById('btn-daily-ad-double');
         if (btn) {
-          btn.innerHTML = '<span>✅ Double Rewards Claimed (+3 💡 Hints)</span>';
-          btn.disabled = true;
-          btn.classList.add('opacity-75', 'cursor-default');
+          btn.innerHTML = successText;
         }
         this.addFreeHint(3);
         if (window.gameApp) window.gameApp.updateHintBadge();
       });
     } else {
-      this.showRewardedVideo('Double Daily Gems', () => {
-        const btn = document.getElementById('btn-daily-ad-double');
+      this.showRewardedVideo(i18n.t('hint') || 'Double Daily Gems', () => {
         if (btn) {
-          btn.innerHTML = '<span>✅ Double Rewards Claimed (+3 💡 Hints)</span>';
-          btn.disabled = true;
-          btn.classList.add('opacity-75', 'cursor-default');
+          btn.innerHTML = successText;
         }
         this.addFreeHint(3);
         if (window.gameApp) window.gameApp.updateHintBadge();
@@ -167,6 +172,14 @@ class MonetizationEngine {
       modal.classList.remove('flex');
     }
     if (this.adTimer) clearInterval(this.adTimer);
+    
+    // Re-enable double reward button if the ad was closed before claiming
+    const btn = document.getElementById('btn-daily-ad-double');
+    if (btn && btn.disabled && !btn.innerHTML.includes('✅') && !btn.innerHTML.includes('👑')) {
+      btn.disabled = false;
+      btn.classList.remove('opacity-75', 'cursor-default');
+    }
+    this.onRewardCallback = null;
   }
 
   showVIPModal() {

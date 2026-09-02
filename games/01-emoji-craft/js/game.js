@@ -21,6 +21,7 @@ class GameApp {
     this.boardElements = [];
     this.nextUid = 1;
     this.dragOffset = { x: 0, y: 0 };
+    this.shownHints = new Set();
 
     this.initDOM();
     this.applyTranslations();
@@ -429,7 +430,17 @@ class GameApp {
     );
 
     if (availableRecipes.length > 0) {
-      const hint = availableRecipes[Math.floor(Math.random() * availableRecipes.length)];
+      let unseenRecipes = availableRecipes.filter(r => !this.shownHints.has(`${r.a}_${r.b}`));
+      
+      // Reset hints if all possible combinations have been shown
+      if (unseenRecipes.length === 0) {
+        this.shownHints.clear();
+        unseenRecipes = availableRecipes;
+      }
+      
+      const hint = unseenRecipes[Math.floor(Math.random() * unseenRecipes.length)];
+      this.shownHints.add(`${hint.a}_${hint.b}`);
+      
       const elA = enrichElement({ id: hint.a });
       const elB = enrichElement({ id: hint.b });
       this.showHintModal(i18n.t('hintMessage', { a: `${elA.emoji} ${elA.name}`, b: `${elB.emoji} ${elB.name}` }));

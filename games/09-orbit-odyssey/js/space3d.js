@@ -175,6 +175,23 @@ export class SpaceScene {
     }
   }
 
+  disposeObject(obj) {
+    if (!obj) return;
+    this.scene.remove(obj);
+    obj.traverse(child => {
+      if (child.isMesh) {
+        if (child.geometry) child.geometry.dispose();
+        if (child.material) {
+          if (Array.isArray(child.material)) {
+            child.material.forEach(m => m.dispose());
+          } else {
+            child.material.dispose();
+          }
+        }
+      }
+    });
+  }
+
   updateTether(startX, startY, endX, endY, active) {
     this.tetherLine.visible = active;
     if (active) {
@@ -220,6 +237,8 @@ export class SpaceScene {
       
       if (p.life <= 0) {
         this.scene.remove(p.mesh);
+        if (p.mesh.geometry) p.mesh.geometry.dispose();
+        if (p.mesh.material) p.mesh.material.dispose();
         this.particles.splice(i, 1);
       } else {
         p.mesh.material.opacity = p.life;

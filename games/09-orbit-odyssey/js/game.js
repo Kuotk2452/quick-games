@@ -94,13 +94,7 @@ class OrbitGame {
       this.ui.btnAdBoost.addEventListener('click', () => {
         if (window.QuickGamesAdSDK) {
           window.QuickGamesAdSDK.showRewardedVideo(() => {
-            this.startGame();
-            this.player.y = 300;
-            this.maxDistance = 300;
-            this.distance = 300;
-            this.chunkY = 300;
-            this.spawnChunk(this.chunkY);
-            this.space.spawnExplosion(this.player.x, this.player.y);
+            this.startGame(300);
           });
         }
       });
@@ -136,7 +130,7 @@ class OrbitGame {
     window.addEventListener('touchend', handleInteractEnd);
   }
 
-  startGame() {
+  startGame(startDistance = 0) {
     orbitAudio.ensureContext();
     orbitAudio.playBGM();
 
@@ -146,28 +140,33 @@ class OrbitGame {
     this.ui.hud.classList.remove('hidden');
 
     this.player.x = 0;
-    this.player.y = -50;
+    this.player.y = startDistance > 0 ? startDistance : -50;
     this.player.vx = 0;
     this.player.vy = 80;
     this.player.orbiting = false;
     this.player.targetPlanet = null;
     
-    this.distance = 0;
-    this.maxDistance = 0;
+    this.distance = startDistance;
+    this.maxDistance = startDistance;
     this.combo = 1;
-    this.chunkY = 0;
+    this.chunkY = startDistance;
 
-    // Clear world
-    this.planets.forEach(p => this.space.scene.remove(p.mesh));
-    this.asteroids.forEach(a => this.space.scene.remove(a.mesh));
-    this.blackholes.forEach(b => this.space.scene.remove(b.group));
+    // Clear world with GPU memory disposal
+    this.planets.forEach(p => this.space.disposeObject(p.mesh));
+    this.asteroids.forEach(a => this.space.disposeObject(a.mesh));
+    this.blackholes.forEach(b => this.space.disposeObject(b.group));
     this.planets = [];
     this.asteroids = [];
     this.blackholes = [];
 
     // Initial spawn
-    this.spawnChunk(0);
-    this.spawnChunk(200);
+    this.spawnChunk(this.chunkY);
+    this.spawnChunk(this.chunkY + 200);
+
+    if (startDistance > 0) {
+      this.space.spawnExplosion(this.player.x, this.player.y);
+      this.scoreBonus(0, `🚀 WARP JUMP TO ${startDistance}LY!`);
+    }
   }
 
   spawnChunk(yOffset) {
@@ -271,6 +270,51 @@ class OrbitGame {
     this.ui.closeCallBanner.textContent = text;
     this.ui.closeCallBanner.classList.remove('hidden');
     setTimeout(() => this.ui.closeCallBanner.classList.add('hidden'), 1000);
+  }
+
+  revivePlayer() {
+    this.state = 'PLAYING';
+    this.ui.gameOverMenu.classList.add('hidden');
+    this.ui.hud.classList.remove('hidden');
+
+    // Reset player velocity & flight state
+    this.player.vx = 0;
+    this.player.vy = 80;
+    this.player.orbiting = false;
+    this.player.targetPlanet = null;
+
+    // Clear nearby threats within 70 units so player does not die immediately
+    const safeRadius = 70;
+    
+    this.asteroids = this.asteroids.filter(a => {
+      const dx = a.x - this.player.x;
+      const dy = a.y - this.player.y;
+      if (Math.sqrt(dx*dx + dy*dy) < safeRadius + a.radius) {
+        this.space.disposeObject(a.mesh);
+        return false;
+      }
+      return true;
+    });
+
+    this.blackholes = this.blackholes.filter(b => {
+      const dx = b.x - this.player.x;
+      const dy = b.y - this.player.y;
+      if (Math.sqrt(dx*dx + dy*dy) < safeRadius + b.radius) {
+        this.space.disposeObject(b.group);
+        return false;
+      }
+      return true;
+    });
+
+    // Resume BGM & audio context
+    orbitAudio.ensureContext();
+    orbitAudio.playBGM();
+
+    // Visual effect
+    this.space.spawnExplosion(this.player.x, this.player.y);
+    this.space.updateTether(0, 0, 0, 0, false);
+    
+    this.scoreBonus(0, '⚡ QUANTUM REVIVE ACTIVE!');
   }
 
   die(reason) {
@@ -433,15 +477,15 @@ class OrbitGame {
     const thresholdY = this.player.y - 300;
     
     this.planets = this.planets.filter(p => {
-      if (p.y < thresholdY) { this.space.scene.remove(p.mesh); return false; }
+      if (p.y < thresholdY) { this.space.disposeObject(p.mesh); return false; }
       return true;
     });
     this.asteroids = this.asteroids.filter(a => {
-      if (a.y < thresholdY) { this.space.scene.remove(a.mesh); return false; }
+      if (a.y < thresholdY) { this.space.disposeObject(a.mesh); return false; }
       return true;
     });
     this.blackholes = this.blackholes.filter(b => {
-      if (b.y < thresholdY) { this.space.scene.remove(b.group); return false; }
+      if (b.y < thresholdY) { this.space.disposeObject(b.group); return false; }
       return true;
     });
   }

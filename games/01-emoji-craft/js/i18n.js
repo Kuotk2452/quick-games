@@ -73,6 +73,7 @@ export const TRANSLATIONS = {
 
     // Toast
     firstDiscovery: "✨ New Discovery: {emoji} {name}!",
+    rewardClaimed: "Double Rewards Claimed",
     footerVersion: "Emoji Craft v1.0.0 · Instant Free Browser Play",
     footerRemoveAds: "Remove Ads / Support Us"
   },
@@ -140,6 +141,7 @@ export const TRANSLATIONS = {
     vipSuccessAlert: "🎉 恭喜您已升级为 Emoji Craft 终身 VIP 尊贵玩家！享受永久免广告与无限配方提示！",
 
     firstDiscovery: "✨ 首次解锁新元素：{emoji} {name}！",
+    rewardClaimed: "双倍奖励已领取",
     footerVersion: "Emoji Craft v1.0.0 · 零门槛即开即玩",
     footerRemoveAds: "去除广告 / 支持作者"
   },
@@ -207,6 +209,7 @@ export const TRANSLATIONS = {
     vipSuccessAlert: "🎉 ¡Felicidades! ¡Ahora eres miembro VIP de por vida!",
 
     firstDiscovery: "✨ ¡Nuevo Descubrimiento: {emoji} {name}!",
+    rewardClaimed: "Recompensas Dobles Reclamadas",
     footerVersion: "Emoji Craft v1.0.0 · Juego Instantáneo en Navegador",
     footerRemoveAds: "Quitar Anuncios / Apoyar"
   },
