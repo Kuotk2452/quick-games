@@ -18,7 +18,9 @@ class OrbitGame {
       finalScore: document.getElementById('finalScore'),
       bestScore: document.getElementById('bestScore'),
       btnStart: document.getElementById('btnStart'),
-      btnRestart: document.getElementById('btnRestart')
+      btnRestart: document.getElementById('btnRestart'),
+      btnAdBoost: document.getElementById('btnAdBoost'),
+      btnAdRevive: document.getElementById('btnAdRevive')
     };
 
     this.state = 'BOOT'; // BOOT, TUTORIAL, MENU, PLAYING, GAMEOVER
