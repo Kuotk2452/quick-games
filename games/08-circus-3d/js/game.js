@@ -308,13 +308,12 @@ export class CircusGame {
     
       if (this.ui.btnAdCoins) {
         this.ui.btnAdCoins.addEventListener('click', () => {
-          if (window.MockRewardSDK) {
-            window.MockRewardSDK.showAd().then(success => {
-              if (success) {
-                this.coins += 500;
-                this.saveData();
-                this.renderWorkshopUpgrades();
-              }
+          if (window.QuickGamesAdSDK) {
+            window.QuickGamesAdSDK.showRewardedVideo(() => {
+              this.coins += 500;
+              workshop.addCoins(500); // Also update workshop bank immediately
+              this.updateBankHeader();
+              if (this.ui.workshopCoinBalance) this.ui.workshopCoinBalance.innerText = this.coins.toString();
             });
           }
         });
@@ -322,20 +321,18 @@ export class CircusGame {
 
       if (this.ui.btnAdRevive) {
         this.ui.btnAdRevive.addEventListener('click', () => {
-          if (window.MockRewardSDK) {
-            window.MockRewardSDK.showAd().then(success => {
-              if (success) {
-                this.ui.endModal.style.display = 'none';
-                this.ui.btnAdRevive.style.display = 'none';
-                
-                // Clear immediate obstacles so player doesn't instantly die again
-                this.obstacles = this.obstacles.filter(obs => obs.x > this.player.x + 10);
-                
-                // Resume game
-                this.state = 'PLAYING';
-                this.lastTime = performance.now();
-                requestAnimationFrame(this.loop);
-              }
+          if (window.QuickGamesAdSDK) {
+            window.QuickGamesAdSDK.showRewardedVideo(() => {
+              this.ui.endModal.style.display = 'none';
+              this.ui.btnAdRevive.style.display = 'none';
+              
+              // Clear immediate obstacles so player doesn't instantly die again
+              this.obstacles = this.obstacles.filter(obs => obs.x > this.player.x + 10);
+              
+              // Resume game
+              this.state = 'PLAYING';
+              this.lastTime = performance.now();
+              requestAnimationFrame(this.loop);
             });
           }
         });
