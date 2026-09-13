@@ -208,38 +208,50 @@ body, html {
   gap: 12px;
 }
 
-.dpextra-life-btn {
+.dpad-cluster {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+}
+
+.dpad-middle-row {
+  display: flex;
+  gap: 4px;
+}
+
+.dpad-btn {
   background: rgba(30, 41, 59, 0.95);
   color: #38bdf8;
   border: 1px solid rgba(56, 189, 248, 0.5);
-  padding: 14px 16px;
-  border-radius: 18px;
-  font-size: 14px;
+  width: 44px;
+  height: 38px;
+  border-radius: 12px;
+  font-size: 16px;
   font-weight: 900;
   cursor: pointer;
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: 4px;
-  transition: all 0.15s ease;
   user-select: none;
   touch-action: none;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
+  transition: all 0.1s ease;
 }
 
-.dpextra-life-btn:hover:not(:disabled) {
-  background: rgba(56, 189, 248, 0.25);
+.dpad-btn:hover:not(:disabled) {
+  background: rgba(56, 189, 248, 0.3);
   border-color: #38bdf8;
   transform: translateY(-2px);
-  box-shadow: 0 0 16px rgba(56, 189, 248, 0.5);
+  box-shadow: 0 0 12px rgba(56, 189, 248, 0.5);
 }
 
-.dpextra-life-btn:active:not(:disabled) {
-  transform: scale(0.94);
-  background: rgba(56, 189, 248, 0.45);
+.dpad-btn:active:not(:disabled) {
+  transform: scale(0.92);
+  background: rgba(56, 189, 248, 0.5);
 }
 
-.dpextra-life-btn:disabled {
+.dpad-btn:disabled {
   opacity: 0.3;
   cursor: not-allowed;
 }

@@ -118,6 +118,8 @@ export class MechaArenaGame {
       enemyHpFill: document.getElementById('enemyHpFill'),
       enemyNameDisplay: document.getElementById('enemyNameDisplay'),
       btnModuleAction: document.getElementById('btnModuleAction'),
+      moduleActionIcon: document.getElementById('moduleActionIcon'),
+      moduleActionText: document.getElementById('moduleActionText'),
       moduleCooldownOverlay: document.getElementById('moduleCooldownOverlay'),
       endModal: document.getElementById('endModal'),
       endTitle: document.getElementById('endTitle'),
@@ -216,62 +218,46 @@ export class MechaArenaGame {
       this.keys[e.code] = false;
     });
 
-    // Mouse / Touch Aiming & Firing
-    const updateMouse = (e) => {
+    // Mouse & Touch Coordinates Helper
+    const updateMousePos = (clientX, clientY) => {
       if (!this.canvas) return;
       const rect = this.canvas.getBoundingClientRect();
-      const clientX = e.touches ? e.targetTouches[0].clientX : e.clientX;
-      const clientY = e.touches ? e.targetTouches[0].clientY : e.clientY;
       this.mousePos = {
         x: (clientX - rect.left) * (this.width / rect.width),
         y: (clientY - rect.top) * (this.height / rect.height)
       };
     };
 
+    // 1. Mouse Aiming & Firing (Desktop)
     if (this.canvas) {
-      this.canvas.addEventListener('mousemove', updateMouse);
+      this.canvas.addEventListener('mousemove', (e) => {
+        updateMousePos(e.clientX, e.clientY);
+      });
       this.canvas.addEventListener('mousedown', (e) => {
         this.isMouseDown = true;
-        updateMouse(e);
+        updateMousePos(e.clientX, e.clientY);
       });
-      window.addEventListener('mouseup', () => { this.isMouseDown = false;
-    this.joystickX = 0;
-    this.joystickY = 0; });
-
-      this.canvas.addEventListener('touchmove', updateMouse, { passive: true });
-      this.canvas.addEventListener('touchstart', (e) => {
-        this.isMouseDown = true;
-        updateMouse(e);
-      }, { passive: true });
-      window.addEventListener('touchend', () => { this.isMouseDown = false; });
+      window.addEventListener('mouseup', () => {
+        this.isMouseDown = false;
+        // Never reset joystickX / joystickY on mouseup - mobile browsers fire synthetic mouseup!
+      });
     }
+
+    // 2. Multi-Touch Tracking (Tablets, iPads, Phones)
+    let joystickTouchId = null;
+    let aimTouchId = null;
 
     // Virtual Joystick logic
     const joystick = document.getElementById('virtualJoystick');
     const joystickKnob = document.getElementById('joystickKnob');
+
     if (joystick && joystickKnob) {
-      let isDraggingJoystick = false;
-      let jRect;
-      let jCenterX;
-      let jCenterY;
+      let jRect = null;
+      let jCenterX = 0;
+      let jCenterY = 0;
 
-      const onJoystickStart = (e) => {
-        e.preventDefault(); 
-        e.stopPropagation();
-        isDraggingJoystick = true;
-        jRect = joystick.getBoundingClientRect();
-        jCenterX = jRect.left + jRect.width / 2;
-        jCenterY = jRect.top + jRect.height / 2;
-        updateJoystick(e);
-      };
-
-      const updateJoystick = (e) => {
-        if (!isDraggingJoystick) return;
-        e.preventDefault();
-        e.stopPropagation();
-        const clientX = e.touches ? e.targetTouches[0].clientX : e.clientX;
-        const clientY = e.touches ? e.targetTouches[0].clientY : e.clientY;
-        
+      const handleJoystickMove = (clientX, clientY) => {
+        if (!jRect) jRect = joystick.getBoundingClientRect();
         let dx = clientX - jCenterX;
         let dy = clientY - jCenterY;
         const maxDist = jRect.width / 2;
@@ -283,30 +269,115 @@ export class MechaArenaGame {
         }
 
         joystickKnob.style.transform = `translate(calc(-50% + ${dx}px), calc(-50% + ${dy}px))`;
-        
         this.joystickX = dx / maxDist;
         this.joystickY = dy / maxDist;
       };
 
-      const onJoystickEnd = (e) => {
-        e.preventDefault();
-        e.stopPropagation();
-        isDraggingJoystick = false;
+      const resetJoystick = () => {
+        joystickTouchId = null;
         this.joystickX = 0;
         this.joystickY = 0;
-        joystickKnob.style.transform = `translate(-50%, -50%)`;
+        if (joystickKnob) {
+          joystickKnob.style.transform = 'translate(-50%, -50%)';
+        }
       };
 
-      joystick.addEventListener('touchstart', onJoystickStart, { passive: false });
-      joystick.addEventListener('touchmove', updateJoystick, { passive: false });
-      joystick.addEventListener('touchend', onJoystickEnd, { passive: false });
-      joystick.addEventListener('touchcancel', onJoystickEnd, { passive: false });
+      joystick.addEventListener('touchstart', (e) => {
+        e.preventDefault();
+        e.stopPropagation();
+        if (joystickTouchId === null && e.changedTouches.length > 0) {
+          const touch = e.changedTouches[0];
+          joystickTouchId = touch.identifier;
+          jRect = joystick.getBoundingClientRect();
+          jCenterX = jRect.left + jRect.width / 2;
+          jCenterY = jRect.top + jRect.height / 2;
+          handleJoystickMove(touch.clientX, touch.clientY);
+        }
+      }, { passive: false });
+
+      // Window-level touchmove so dragging thumb outside the 124px circle keeps steering
+      window.addEventListener('touchmove', (e) => {
+        if (joystickTouchId !== null) {
+          for (let i = 0; i < e.touches.length; i++) {
+            if (e.touches[i].identifier === joystickTouchId) {
+              handleJoystickMove(e.touches[i].clientX, e.touches[i].clientY);
+              break;
+            }
+          }
+        }
+      }, { passive: false });
+
+      const onJoystickTouchEnd = (e) => {
+        if (joystickTouchId !== null) {
+          for (let i = 0; i < e.changedTouches.length; i++) {
+            if (e.changedTouches[i].identifier === joystickTouchId) {
+              resetJoystick();
+              break;
+            }
+          }
+        }
+      };
+
+      window.addEventListener('touchend', onJoystickTouchEnd, { passive: false });
+      window.addEventListener('touchcancel', onJoystickTouchEnd, { passive: false });
     }
 
+    // 3. Canvas Aiming & Firing via Touch
+    if (this.canvas) {
+      this.canvas.addEventListener('touchstart', (e) => {
+        for (let i = 0; i < e.changedTouches.length; i++) {
+          const touch = e.changedTouches[i];
+          if (touch.identifier !== joystickTouchId) {
+            aimTouchId = touch.identifier;
+            this.isMouseDown = true;
+            updateMousePos(touch.clientX, touch.clientY);
+            break;
+          }
+        }
+      }, { passive: true });
+
+      this.canvas.addEventListener('touchmove', (e) => {
+        if (aimTouchId !== null) {
+          for (let i = 0; i < e.touches.length; i++) {
+            if (e.touches[i].identifier === aimTouchId) {
+              updateMousePos(e.touches[i].clientX, e.touches[i].clientY);
+              break;
+            }
+          }
+        }
+      }, { passive: true });
+
+      const onAimTouchEnd = (e) => {
+        if (aimTouchId !== null) {
+          for (let i = 0; i < e.changedTouches.length; i++) {
+            if (e.changedTouches[i].identifier === aimTouchId) {
+              aimTouchId = null;
+              this.isMouseDown = false;
+              break;
+            }
+          }
+        }
+      };
+
+      window.addEventListener('touchend', onAimTouchEnd, { passive: true });
+      window.addEventListener('touchcancel', onAimTouchEnd, { passive: true });
+    }
+
+    // 4. On-Screen Tactical Module Action Button (Shield / Space)
     if (this.ui.btnModuleAction) {
-      this.ui.btnModuleAction.addEventListener('click', () => {
-        if (this.player) this.player.activateModule(this.mines, this.drones);
-      });
+      const triggerModule = (e) => {
+        if (e) {
+          e.preventDefault();
+          e.stopPropagation();
+        }
+        if (this.state === 'ARENA' && this.player) {
+          this.player.activateModule(this.mines, this.drones);
+        }
+      };
+
+      this.ui.btnModuleAction.addEventListener('pointerdown', triggerModule);
+      this.ui.btnModuleAction.addEventListener('touchstart', triggerModule, { passive: false });
+      this.ui.btnModuleAction.addEventListener('click', triggerModule);
     }
 
     if (this.ui.audioToggleBtn) {
@@ -380,6 +451,21 @@ Play Free in Browser:
 
     this.bullets = [];
     this.arena = new ArenaStage(this.width, this.height);
+
+    // Initialize On-Screen Tactical Power Button (Shield / Space)
+    const moduleInfo = {
+      SHIELD: { icon: '🛡️', name: 'SHIELD' },
+      NITRO: { icon: '⚡', name: 'NITRO' },
+      MINE: { icon: '💣', name: 'MINES' },
+      OVERCLOCK: { icon: '🔥', name: 'OVERCLOCK' },
+      DRONE: { icon: '🛸', name: 'DRONE' }
+    };
+    const mod = moduleInfo[this.playerModuleId] || moduleInfo.SHIELD;
+    if (this.ui.moduleActionIcon) this.ui.moduleActionIcon.innerText = mod.icon;
+    if (this.ui.moduleActionText) this.ui.moduleActionText.innerText = mod.name;
+    if (this.ui.btnModuleAction) {
+      this.ui.btnModuleAction.classList.remove('cooldown', 'active-power');
+    }
   }
 
   renderWorkshopUI() {
@@ -647,12 +733,38 @@ Play Free in Browser:
       }
     }
 
-    // 7. Update HUD
+    // 7. Update HUD & Tactical Module Button
     if (this.ui.playerHpFill) {
       this.ui.playerHpFill.style.width = `${(this.player.hp / this.player.maxHp) * 100}%`;
     }
     if (this.ui.enemyHpFill) {
       this.ui.enemyHpFill.style.width = `${(this.enemy.hp / this.enemy.maxHp) * 100}%`;
+    }
+
+    if (this.ui.btnModuleAction) {
+      const moduleInfo = {
+        SHIELD: { icon: '🛡️', name: 'SHIELD' },
+        NITRO: { icon: '⚡', name: 'NITRO' },
+        MINE: { icon: '💣', name: 'MINES' },
+        OVERCLOCK: { icon: '🔥', name: 'OVERCLOCK' },
+        DRONE: { icon: '🛸', name: 'DRONE' }
+      };
+      const mod = moduleInfo[this.playerModuleId] || moduleInfo.SHIELD;
+
+      if (this.player.shieldActive || this.player.overclockTimer > 0) {
+        this.ui.btnModuleAction.classList.remove('cooldown');
+        this.ui.btnModuleAction.classList.add('active-power');
+        if (this.ui.moduleActionText) this.ui.moduleActionText.innerText = 'ACTIVE!';
+      } else if (this.player.moduleCooldown > 0) {
+        this.ui.btnModuleAction.classList.remove('active-power');
+        this.ui.btnModuleAction.classList.add('cooldown');
+        if (this.ui.moduleActionText) {
+          this.ui.moduleActionText.innerText = `${this.player.moduleCooldown.toFixed(1)}s`;
+        }
+      } else {
+        this.ui.btnModuleAction.classList.remove('cooldown', 'active-power');
+        if (this.ui.moduleActionText) this.ui.moduleActionText.innerText = mod.name;
+      }
     }
 
     // 8. Match Result Conditions
@@ -774,7 +886,7 @@ Play Free in Browser:
 
 if (typeof window !== 'undefined') {
   window.addEventListener('DOMContentLoaded', () => {
-    new MechaArenaGame();
+    window.mechaGame = new MechaArenaGame();
     i18n.applyTranslations();
   });
 }

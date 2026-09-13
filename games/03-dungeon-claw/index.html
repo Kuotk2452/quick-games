@@ -79,17 +79,21 @@
         </div>
       </div>
 
-      <!-- Action Buttons with On-Screen Steering -->
+      <!-- Action Buttons with 4-Way Arcade D-Pad & Drop Trigger -->
       <div class="action-buttons-group">
-        <button id="btnMoveLeft" class="dpextra-life-btn" title="Move Claw Left">
-          ◀️ LEFT
-        </button>
+        <div class="dpad-cluster">
+          <button id="btnMoveUp" class="dpad-btn" title="Move Claw Forward (▲)">▲</button>
+          <div class="dpad-middle-row">
+            <button id="btnMoveLeft" class="dpad-btn" title="Move Claw Left (◀)">◀</button>
+            <button id="btnMoveDown" class="dpad-btn" title="Move Claw Backward (▼)">▼</button>
+            <button id="btnMoveRight" class="dpad-btn" title="Move Claw Right (▶)">▶</button>
+          </div>
+        </div>
+
         <button id="btnDropClaw" class="drop-claw-btn" data-i18n="dropClaw">
           ⬇️ DROP CLAW (SPACE / ⬇️)
         </button>
-        <button id="btnMoveRight" class="dpextra-life-btn" title="Move Claw Right">
-          RIGHT ▶️
-        </button>
+
         <button id="btnToggleView" class="view-btn" data-i18n="viewToggleFront">
           🎥 View
         </button>

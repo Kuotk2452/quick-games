@@ -215,6 +215,8 @@ export class DungeonClawGame {
       btnStart: document.getElementById('btnStart'),
       btnMoveLeft: document.getElementById('btnMoveLeft'),
       btnMoveRight: document.getElementById('btnMoveRight'),
+      btnMoveUp: document.getElementById('btnMoveUp'),
+      btnMoveDown: document.getElementById('btnMoveDown'),
       btnDropClaw: document.getElementById('btnDropClaw'),
       btnEndTurn: document.getElementById('btnEndTurn'),
       btnToggleView: document.getElementById('btnToggleView'),
@@ -268,96 +270,67 @@ export class DungeonClawGame {
       soundEngine.stopMotorSound();
     });
 
-    // Raycast Click-to-Aim & Direct Dragging for Crane
+    // Touch & Mouse Dragging for Crane + Direct Item Raycast Snap
+    let isDragging = false;
+    let lastClientX = 0;
+    let lastClientY = 0;
+
     const raycaster = new THREE.Raycaster();
     const mouse = new THREE.Vector2();
-    // Calibrated to pit floor depth where items rest (y = -1.55)
-    const targetPlane = new THREE.Plane(new THREE.Vector3(0, 1, 0), 1.55);
 
-    const aimAtScreenPos = (clientX, clientY) => {
+    const tryRaycastItemSnap = (clientX, clientY) => {
       if (this.gameState !== 'PLAYER_TURN' || this.physics.claw.state !== 'IDLE') return;
+      if (!this.physics.items || this.physics.items.length === 0) return;
       mouse.x = (clientX / window.innerWidth) * 2 - 1;
       mouse.y = -(clientY / window.innerHeight) * 2 + 1;
       raycaster.setFromCamera(mouse, this.camera);
-
-      // 1. Direct Item Snap: Check if user tapped directly on a 3D item mesh
-      if (this.physics.items && this.physics.items.length > 0) {
-        const itemMeshes = this.physics.items.map(i => i.mesh).filter(Boolean);
-        const intersects = raycaster.intersectObjects(itemMeshes, true);
-        if (intersects.length > 0) {
-          const hitObj = intersects[0].object;
-          let matchedItem = this.physics.items.find(i => i.mesh === hitObj);
-          if (!matchedItem) {
-            matchedItem = this.physics.items.find(i => {
-              let p = hitObj;
-              while (p) {
-                if (p === i.mesh) return true;
-                p = p.parent;
-              }
-              return false;
-            });
+      const itemMeshes = this.physics.items.map(i => i.mesh).filter(Boolean);
+      const intersects = raycaster.intersectObjects(itemMeshes, true);
+      if (intersects.length > 0) {
+        const hitObj = intersects[0].object;
+        const matchedItem = this.physics.items.find(i => {
+          let p = hitObj;
+          while (p) {
+            if (p === i.mesh) return true;
+            p = p.parent;
           }
-          if (matchedItem) {
-            this.physics.claw.x = THREE.MathUtils.clamp(matchedItem.pos.x, this.physics.bounds.minX + 0.3, this.physics.bounds.maxX - 0.3);
-            this.physics.claw.z = THREE.MathUtils.clamp(matchedItem.pos.z, this.physics.bounds.minZ + 0.3, this.physics.bounds.maxZ - 0.3);
-            soundEngine.startMotorSound();
-            return;
-          }
+          return false;
+        });
+        if (matchedItem) {
+          this.physics.claw.x = THREE.MathUtils.clamp(matchedItem.pos.x, this.physics.bounds.minX + 0.3, this.physics.bounds.maxX - 0.3);
+          this.physics.claw.z = THREE.MathUtils.clamp(matchedItem.pos.z, this.physics.bounds.minZ + 0.3, this.physics.bounds.maxZ - 0.3);
+          soundEngine.startMotorSound();
         }
       }
-
-      // 2. Plane Intersection at true pit floor height (y = -1.55)
-      const hit = new THREE.Vector3();
-      if (raycaster.ray.intersectPlane(targetPlane, hit)) {
-        this.physics.claw.x = THREE.MathUtils.clamp(hit.x, this.physics.bounds.minX + 0.3, this.physics.bounds.maxX - 0.3);
-        this.physics.claw.z = THREE.MathUtils.clamp(hit.z, this.physics.bounds.minZ + 0.3, this.physics.bounds.maxZ - 0.3);
-        soundEngine.startMotorSound();
-      }
     };
-
-    let isDragging = false;
-    let pointerStartX = 0;
-    let pointerStartY = 0;
-    let dragDist = 0;
-    let pointerDownTime = 0;
 
     const onPointerDown = (clientX, clientY) => {
       if (this.gameState === 'PLAYER_TURN' && this.physics.claw.state === 'IDLE') {
         isDragging = true;
-        pointerStartX = clientX;
-        pointerStartY = clientY;
-        dragDist = 0;
-        pointerDownTime = performance.now();
-        aimAtScreenPos(clientX, clientY);
+        lastClientX = clientX;
+        lastClientY = clientY;
+        tryRaycastItemSnap(clientX, clientY);
       }
     };
 
     const onPointerMove = (clientX, clientY) => {
-      if (!isDragging) return;
-      dragDist += Math.hypot(clientX - pointerStartX, clientY - pointerStartY);
-      pointerStartX = clientX;
-      pointerStartY = clientY;
-      aimAtScreenPos(clientX, clientY);
+      if (!isDragging || this.gameState !== 'PLAYER_TURN' || this.physics.claw.state !== 'IDLE') return;
+      const dx = (clientX - lastClientX) * 0.012;
+      const dz = (clientY - lastClientY) * 0.012;
+      lastClientX = clientX;
+      lastClientY = clientY;
+      this.physics.moveClaw(dx, dz, 0.3);
+      soundEngine.startMotorSound();
     };
 
-    const onPointerUp = (clientX, clientY) => {
-      if (isDragging && this.gameState === 'PLAYER_TURN' && this.physics.claw.state === 'IDLE') {
-        if (clientX !== undefined && clientY !== undefined) {
-          aimAtScreenPos(clientX, clientY);
-        }
-        // Only trigger instant drop if it was a distinct short tap on a treasure item (not while dragging/aiming)
-        const duration = performance.now() - pointerDownTime;
-        if (dragDist < 12 && duration < 300) {
-          this.triggerDrop();
-        }
-      }
+    const onPointerUp = () => {
       isDragging = false;
       soundEngine.stopMotorSound();
     };
 
     this.renderer.domElement.addEventListener('mousedown', (e) => onPointerDown(e.clientX, e.clientY));
     window.addEventListener('mousemove', (e) => onPointerMove(e.clientX, e.clientY));
-    window.addEventListener('mouseup', (e) => onPointerUp(e.clientX, e.clientY));
+    window.addEventListener('mouseup', onPointerUp);
 
     this.renderer.domElement.addEventListener('touchstart', (e) => {
       if (e.touches.length > 0) onPointerDown(e.touches[0].clientX, e.touches[0].clientY);
@@ -367,21 +340,19 @@ export class DungeonClawGame {
       if (e.touches.length > 0) onPointerMove(e.touches[0].clientX, e.touches[0].clientY);
     }, { passive: true });
 
-    window.addEventListener('touchend', (e) => {
-      const touch = e.changedTouches && e.changedTouches.length > 0 ? e.changedTouches[0] : null;
-      onPointerUp(touch ? touch.clientX : undefined, touch ? touch.clientY : undefined);
-    });
+    window.addEventListener('touchend', onPointerUp);
+    window.addEventListener('touchcancel', onPointerUp);
 
     // On-Screen Arcade Steering Buttons (Hold or Click)
     let steerInterval = null;
     const startSteer = (dx, dz) => {
       if (this.gameState !== 'PLAYER_TURN') return;
-      this.physics.moveClaw(dx, dz, 0.05);
+      this.physics.moveClaw(dx, dz, 0.06);
       soundEngine.startMotorSound();
       if (steerInterval) clearInterval(steerInterval);
       steerInterval = setInterval(() => {
         if (this.gameState === 'PLAYER_TURN') {
-          this.physics.moveClaw(dx, dz, 0.03);
+          this.physics.moveClaw(dx, dz, 0.04);
         } else {
           stopSteer();
         }
@@ -396,19 +367,19 @@ export class DungeonClawGame {
       soundEngine.stopMotorSound();
     };
 
-    if (this.ui.btnMoveLeft) {
-      this.ui.btnMoveLeft.addEventListener('pointerdown', (e) => { e.preventDefault(); startSteer(-1, 0); });
-      this.ui.btnMoveLeft.addEventListener('pointerup', stopSteer);
-      this.ui.btnMoveLeft.addEventListener('pointerleave', stopSteer);
-      this.ui.btnMoveLeft.addEventListener('click', (e) => { e.preventDefault(); this.physics.moveClaw(-0.8, 0, 0.1); });
-    }
+    const attachSteer = (btn, dx, dz) => {
+      if (!btn) return;
+      btn.addEventListener('pointerdown', (e) => { e.preventDefault(); startSteer(dx, dz); });
+      btn.addEventListener('pointerup', stopSteer);
+      btn.addEventListener('pointerleave', stopSteer);
+      btn.addEventListener('pointercancel', stopSteer);
+      btn.addEventListener('click', (e) => { e.preventDefault(); this.physics.moveClaw(dx * 0.8, dz * 0.8, 0.1); });
+    };
 
-    if (this.ui.btnMoveRight) {
-      this.ui.btnMoveRight.addEventListener('pointerdown', (e) => { e.preventDefault(); startSteer(1, 0); });
-      this.ui.btnMoveRight.addEventListener('pointerup', stopSteer);
-      this.ui.btnMoveRight.addEventListener('pointerleave', stopSteer);
-      this.ui.btnMoveRight.addEventListener('click', (e) => { e.preventDefault(); this.physics.moveClaw(0.8, 0, 0.1); });
-    }
+    attachSteer(this.ui.btnMoveLeft, -1, 0);
+    attachSteer(this.ui.btnMoveRight, 1, 0);
+    attachSteer(this.ui.btnMoveUp, 0, -1);
+    attachSteer(this.ui.btnMoveDown, 0, 1);
 
     // UI Buttons
     if (this.ui.btnStart) this.ui.btnStart.addEventListener('click', () => this.startGame());
@@ -867,6 +838,8 @@ Play free on web:
     const canControl = (this.gameState === 'PLAYER_TURN' && this.energy > 0);
     if (this.ui.btnMoveLeft) this.ui.btnMoveLeft.disabled = !canControl;
     if (this.ui.btnMoveRight) this.ui.btnMoveRight.disabled = !canControl;
+    if (this.ui.btnMoveUp) this.ui.btnMoveUp.disabled = !canControl;
+    if (this.ui.btnMoveDown) this.ui.btnMoveDown.disabled = !canControl;
 
     if (this.ui.btnDropClaw) {
       this.ui.btnDropClaw.disabled = !canControl;
