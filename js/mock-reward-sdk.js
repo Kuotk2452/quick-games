@@ -12,9 +12,8 @@ window.QuickGamesAdConfig = {
   MONETAG_ZONE_ID: '280186',
   MONETAG_TAG_URL: 'https://quge5.com/88/tag.min.js',
   
-  // Optional: Monetag DirectLink / SmartLink URL.
-  // If set, clicking Rewarded Ad will open the sponsor offer in a new tab for maximum eCPM.
-  MONETAG_DIRECT_LINK: '',
+  // Monetag Official DirectLink / SmartLink URL for Rewarded Actions (Tips, Revives, Doubles)
+  MONETAG_DIRECT_LINK: 'https://omg10.com/4/11795439',
   
   // Enable auto-injection of Monetag tag.min.js
   ENABLE_MULTI_TAG: true
@@ -138,11 +137,15 @@ window.QuickGamesAdSDK = {
     title.style.fontSize = '20px';
     title.style.fontWeight = '700';
 
-    // Subtitle
+    // Subtitle & clickable sponsor link
     const subtitle = document.createElement('p');
-    subtitle.innerText = txtNetwork;
+    if (window.QuickGamesAdConfig.MONETAG_DIRECT_LINK) {
+      subtitle.innerHTML = `${txtNetwork} · <a href="${window.QuickGamesAdConfig.MONETAG_DIRECT_LINK}" target="_blank" rel="noopener noreferrer" style="color:#38bdf8;text-decoration:underline;font-weight:bold;">${isZh ? '打开赞助商页面 ↗' : 'Open Sponsor Offer ↗'}</a>`;
+    } else {
+      subtitle.innerText = txtNetwork;
+    }
     subtitle.style.margin = '0 0 24px 0';
-    subtitle.style.fontSize = '12px';
+    subtitle.style.fontSize = '13px';
     subtitle.style.color = '#94a3b8';
 
     // Visual Icon / Progress Ring simulation
