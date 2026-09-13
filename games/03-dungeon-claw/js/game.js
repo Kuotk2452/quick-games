@@ -4,7 +4,7 @@
  */
 
 import * as THREE from 'https://unpkg.com/three@0.160.0/build/three.module.js';
-import { PhysicsWorld3D } from './physics3d.js?v=8.3';
+import { PhysicsWorld3D } from './physics3d.js?v=10.0';
 import { ITEM_DEFS, createItem3DMesh, calculateCombos } from './items.js?v=8.3';
 import { MONSTER_ROSTER, Monster } from './monsters.js?v=8.3';
 import { CLAW_UPGRADES, ITEM_SHOP_OFFERS } from './shop.js?v=8.3';
@@ -126,6 +126,26 @@ export class DungeonClawGame {
     const railX = new THREE.Mesh(new THREE.BoxGeometry(5.2, 0.15, 0.15), railMat);
     railX.position.set(0, 2.4, 0);
     this.cabinetGroup.add(railX);
+
+    // Holographic Ground Aiming Reticle (Directly under the claw on pit floor)
+    const reticleGroup = new THREE.Group();
+    const reticleRing = new THREE.Mesh(
+      new THREE.RingGeometry(0.75, 0.90, 32),
+      new THREE.MeshBasicMaterial({ color: 0x00f0ff, side: THREE.DoubleSide, transparent: true, opacity: 0.75 })
+    );
+    reticleRing.rotation.x = -Math.PI / 2;
+    reticleGroup.add(reticleRing);
+
+    const centerMarker = new THREE.Mesh(
+      new THREE.CircleGeometry(0.12, 16),
+      new THREE.MeshBasicMaterial({ color: 0xfacc15, side: THREE.DoubleSide, transparent: true, opacity: 0.85 })
+    );
+    centerMarker.rotation.x = -Math.PI / 2;
+    reticleGroup.add(centerMarker);
+
+    reticleGroup.position.set(0, -1.98, 0);
+    this.cabinetGroup.add(reticleGroup);
+    this.reticle = reticleGroup;
 
     this.scene.add(this.cabinetGroup);
   }
@@ -251,13 +271,42 @@ export class DungeonClawGame {
     // Raycast Click-to-Aim & Direct Dragging for Crane
     const raycaster = new THREE.Raycaster();
     const mouse = new THREE.Vector2();
-    const targetPlane = new THREE.Plane(new THREE.Vector3(0, 1, 0), 0);
+    // Calibrated to pit floor depth where items rest (y = -1.55)
+    const targetPlane = new THREE.Plane(new THREE.Vector3(0, 1, 0), 1.55);
 
     const aimAtScreenPos = (clientX, clientY) => {
       if (this.gameState !== 'PLAYER_TURN' || this.physics.claw.state !== 'IDLE') return;
       mouse.x = (clientX / window.innerWidth) * 2 - 1;
       mouse.y = -(clientY / window.innerHeight) * 2 + 1;
       raycaster.setFromCamera(mouse, this.camera);
+
+      // 1. Direct Item Snap: Check if user tapped directly on a 3D item mesh
+      if (this.physics.items && this.physics.items.length > 0) {
+        const itemMeshes = this.physics.items.map(i => i.mesh).filter(Boolean);
+        const intersects = raycaster.intersectObjects(itemMeshes, true);
+        if (intersects.length > 0) {
+          const hitObj = intersects[0].object;
+          let matchedItem = this.physics.items.find(i => i.mesh === hitObj);
+          if (!matchedItem) {
+            matchedItem = this.physics.items.find(i => {
+              let p = hitObj;
+              while (p) {
+                if (p === i.mesh) return true;
+                p = p.parent;
+              }
+              return false;
+            });
+          }
+          if (matchedItem) {
+            this.physics.claw.x = THREE.MathUtils.clamp(matchedItem.pos.x, this.physics.bounds.minX + 0.3, this.physics.bounds.maxX - 0.3);
+            this.physics.claw.z = THREE.MathUtils.clamp(matchedItem.pos.z, this.physics.bounds.minZ + 0.3, this.physics.bounds.maxZ - 0.3);
+            soundEngine.startMotorSound();
+            return;
+          }
+        }
+      }
+
+      // 2. Plane Intersection at true pit floor height (y = -1.55)
       const hit = new THREE.Vector3();
       if (raycaster.ray.intersectPlane(targetPlane, hit)) {
         this.physics.claw.x = THREE.MathUtils.clamp(hit.x, this.physics.bounds.minX + 0.3, this.physics.bounds.maxX - 0.3);
@@ -269,18 +318,25 @@ export class DungeonClawGame {
     let isDragging = false;
     let pointerStartX = 0;
     let pointerStartY = 0;
+    let dragDist = 0;
+    let pointerDownTime = 0;
 
     const onPointerDown = (clientX, clientY) => {
       if (this.gameState === 'PLAYER_TURN' && this.physics.claw.state === 'IDLE') {
         isDragging = true;
         pointerStartX = clientX;
         pointerStartY = clientY;
+        dragDist = 0;
+        pointerDownTime = performance.now();
         aimAtScreenPos(clientX, clientY);
       }
     };
 
     const onPointerMove = (clientX, clientY) => {
       if (!isDragging) return;
+      dragDist += Math.hypot(clientX - pointerStartX, clientY - pointerStartY);
+      pointerStartX = clientX;
+      pointerStartY = clientY;
       aimAtScreenPos(clientX, clientY);
     };
 
@@ -289,8 +345,11 @@ export class DungeonClawGame {
         if (clientX !== undefined && clientY !== undefined) {
           aimAtScreenPos(clientX, clientY);
         }
-        // Instant drop on tap/click anywhere in the 3D scene!
-        this.triggerDrop();
+        // Only trigger instant drop if it was a distinct short tap on a treasure item (not while dragging/aiming)
+        const duration = performance.now() - pointerDownTime;
+        if (dragDist < 12 && duration < 300) {
+          this.triggerDrop();
+        }
       }
       isDragging = false;
       soundEngine.stopMotorSound();
@@ -434,20 +493,20 @@ Play free on web:
 
   populateInitialPit() {
     const itemPool = [
-      ITEM_DEFS.SWORD, ITEM_DEFS.SWORD, ITEM_DEFS.SWORD,
-      ITEM_DEFS.SHIELD, ITEM_DEFS.SHIELD,
-      ITEM_DEFS.POTION,
-      ITEM_DEFS.BOMB,
+      ITEM_DEFS.SWORD, ITEM_DEFS.SWORD, ITEM_DEFS.SWORD, ITEM_DEFS.SWORD,
+      ITEM_DEFS.SHIELD, ITEM_DEFS.SHIELD, ITEM_DEFS.SHIELD,
+      ITEM_DEFS.POTION, ITEM_DEFS.POTION,
+      ITEM_DEFS.BOMB, ITEM_DEFS.BOMB,
       ITEM_DEFS.THUNDER_ORB,
-      ITEM_DEFS.COIN, ITEM_DEFS.COIN
+      ITEM_DEFS.COIN, ITEM_DEFS.COIN, ITEM_DEFS.COIN
     ];
 
     itemPool.forEach((def) => {
       const mesh = createItem3DMesh(def);
       this.scene.add(mesh);
-      const x = (Math.random() - 0.5) * 3.6;
-      const y = -0.5 + Math.random() * 1.5;
-      const z = (Math.random() - 0.5) * 2.4;
+      const x = (Math.random() - 0.5) * 3.2;
+      const y = -0.8 + Math.random() * 1.2;
+      const z = (Math.random() - 0.5) * 2.0;
       this.physics.addItem(mesh, def, x, y, z);
     });
   }
@@ -861,6 +920,14 @@ Play free on web:
       if (this.currentMonster && this.currentMonster.mesh) {
         this.currentMonster.mesh.rotation.y = Math.sin(time * 0.002) * 0.25;
         this.currentMonster.mesh.position.y = 1.2 + Math.sin(time * 0.004) * 0.15;
+      }
+
+      // Sync Holographic Ground Reticle
+      if (this.reticle) {
+        this.reticle.position.x = claw.x;
+        this.reticle.position.z = claw.z;
+        this.reticle.rotation.y = time * 0.0015;
+        this.reticle.visible = (this.gameState === 'PLAYER_TURN' || claw.state === 'DROPPING');
       }
 
       this.renderer.render(this.scene, this.camera);

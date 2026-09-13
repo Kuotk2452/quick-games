@@ -101,8 +101,17 @@ export class PhysicsWorld3D {
     if (this.claw.state === 'DROPPING') {
       this.claw.y -= this.claw.dropSpeed * dt;
 
-      if (this.claw.y <= this.claw.minY) {
-        this.claw.y = this.claw.minY;
+      // Check if claw has reached bottom or touched items
+      let hitItemTop = this.claw.minY;
+      for (const item of this.items) {
+        const distXZ = Math.hypot(item.pos.x - this.claw.x, item.pos.z - this.claw.z);
+        if (distXZ < 1.6 && item.pos.y > this.claw.minY) {
+          hitItemTop = Math.max(hitItemTop, item.pos.y - 0.2);
+        }
+      }
+
+      if (this.claw.y <= Math.max(this.claw.minY, hitItemTop)) {
+        this.claw.y = Math.max(this.claw.minY, hitItemTop);
         this.claw.state = 'GRABBING';
         this.claw.targetAngle = 0.05; // Close prongs tightly
         soundEngine.playClawGrab();
@@ -110,6 +119,19 @@ export class PhysicsWorld3D {
       }
     } else if (this.claw.state === 'GRABBING') {
       this.grabTimer -= dt;
+
+      // Gently pull nearby items toward claw center during grasp (Scooping magnetic effect)
+      for (const item of this.items) {
+        if (item.isGrabbed) continue;
+        const dx = this.claw.x - item.pos.x;
+        const dz = this.claw.z - item.pos.z;
+        const distXZ = Math.hypot(dx, dz);
+        if (distXZ < 2.0) {
+          item.vel.x += dx * 4.0 * dt;
+          item.vel.z += dz * 4.0 * dt;
+        }
+      }
+
       if (this.grabTimer <= 0) {
         // Detect and latch items
         this.performGraspDetection();
@@ -118,7 +140,7 @@ export class PhysicsWorld3D {
     } else if (this.claw.state === 'LIFTING') {
       this.claw.y += this.claw.liftSpeed * dt;
 
-      // Update positions of grabbed items to follow claw
+      // Update positions of grabbed items to follow claw securely
       for (const item of this.claw.grabbedItems) {
         item.pos.set(
           this.claw.x + item.grabOffset.x,
@@ -151,21 +173,48 @@ export class PhysicsWorld3D {
 
   performGraspDetection() {
     this.claw.grabbedItems = [];
-    const grabRadius = 1.35 * this.claw.gripStrength;
+    const grabRadius = 1.85 * this.claw.gripStrength; // Generous arcade grasp
+    const candidates = [];
 
     for (const item of this.items) {
       const distXZ = Math.hypot(item.pos.x - this.claw.x, item.pos.z - this.claw.z);
       const distY = Math.abs(item.pos.y - (this.claw.y - 0.2));
 
-      if (distXZ < grabRadius && distY < 1.2) {
-        item.isGrabbed = true;
-        item.grabOffset = {
-          x: (item.pos.x - this.claw.x) * 0.4,
-          y: (item.pos.y - (this.claw.y - 0.35)),
-          z: (item.pos.z - this.claw.z) * 0.4
-        };
-        this.claw.grabbedItems.push(item);
+      if (distXZ < grabRadius && distY < 1.8) {
+        candidates.push({ item, distXZ, distTotal: Math.hypot(distXZ, distY) });
       }
+    }
+
+    // Sort by proximity to claw center
+    candidates.sort((a, b) => a.distTotal - b.distTotal);
+
+    // Grab up to 3 items comfortably within the 3-prong articulation
+    const toGrab = candidates.slice(0, 3);
+
+    // Fallback: If nothing was within strict bounds, magnetic fallback grabs the single closest item if within 2.5 units
+    if (toGrab.length === 0 && this.items.length > 0) {
+      let closest = null;
+      let minDist = 2.5;
+      for (const item of this.items) {
+        const d = Math.hypot(item.pos.x - this.claw.x, item.pos.z - this.claw.z);
+        if (d < minDist) {
+          minDist = d;
+          closest = item;
+        }
+      }
+      if (closest) {
+        toGrab.push({ item: closest });
+      }
+    }
+
+    for (const { item } of toGrab) {
+      item.isGrabbed = true;
+      item.grabOffset = {
+        x: (item.pos.x - this.claw.x) * 0.25,
+        y: (item.pos.y - (this.claw.y - 0.35)) * 0.25,
+        z: (item.pos.z - this.claw.z) * 0.25
+      };
+      this.claw.grabbedItems.push(item);
     }
   }
 
