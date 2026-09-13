@@ -20,11 +20,19 @@ window.QuickGamesAdConfig = {
   ENABLE_MULTI_TAG: true
 };
 
-// 1. Auto-inject Monetag MultiTag (quge5.com CDN)
+// 1. Auto-inject Monetag MultiTag ONLY on Portal (Arcade Hub) to protect in-game player experience
 (function initMonetagMultiTag() {
   if (!window.QuickGamesAdConfig.ENABLE_MULTI_TAG) return;
   if (!window.QuickGamesAdConfig.MONETAG_ZONE_ID) return;
   
+  // PROTECT GAMEPLAY: Never auto-inject intrusive click/popunder tags inside active games!
+  // This ensures 100% uninterrupted, smooth gameplay with zero unexpected pauses.
+  const path = (window.location.pathname || '').toLowerCase();
+  if (path.includes('/games/')) {
+    console.log('[QuickGamesAdSDK] Inside game sandbox: Intrusive auto-ads DISABLED for optimal gaming experience.');
+    return;
+  }
+
   // Check if tag is already injected
   if (document.querySelector('script[data-zone="' + window.QuickGamesAdConfig.MONETAG_ZONE_ID + '"]')) {
     return;
@@ -44,7 +52,7 @@ window.QuickGamesAdConfig = {
         (document.body || document.documentElement).appendChild(s);
       });
     }
-    console.log('[QuickGamesAdSDK] Monetag MultiTag initialized (Zone: ' + window.QuickGamesAdConfig.MONETAG_ZONE_ID + ')');
+    console.log('[QuickGamesAdSDK] Monetag MultiTag initialized on Portal (Zone: ' + window.QuickGamesAdConfig.MONETAG_ZONE_ID + ')');
   } catch (err) {
     console.warn('[QuickGamesAdSDK] MultiTag injection deferred:', err);
   }
