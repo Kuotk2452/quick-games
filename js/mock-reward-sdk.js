@@ -8,8 +8,9 @@
  */
 
 window.QuickGamesAdConfig = {
-  // Monetag MultiTag Zone ID (Dedicated for quick-games-ez4.pages.dev)
-  MONETAG_ZONE_ID: '11795131',
+  // Monetag MultiTag Zone ID & Script URL (Dedicated for quick-games-ez4.pages.dev)
+  MONETAG_ZONE_ID: '280186',
+  MONETAG_TAG_URL: 'https://quge5.com/88/tag.min.js',
   
   // Optional: Monetag DirectLink / SmartLink URL.
   // If set, clicking Rewarded Ad will open the sponsor offer in a new tab for maximum eCPM.
@@ -19,7 +20,7 @@ window.QuickGamesAdConfig = {
   ENABLE_MULTI_TAG: true
 };
 
-// 1. Auto-inject Monetag MultiTag (Same as Sherlock-ai.app)
+// 1. Auto-inject Monetag MultiTag (quge5.com CDN)
 (function initMonetagMultiTag() {
   if (!window.QuickGamesAdConfig.ENABLE_MULTI_TAG) return;
   if (!window.QuickGamesAdConfig.MONETAG_ZONE_ID) return;
@@ -32,8 +33,9 @@ window.QuickGamesAdConfig = {
   try {
     const s = document.createElement('script');
     s.dataset.zone = window.QuickGamesAdConfig.MONETAG_ZONE_ID;
-    s.src = 'https://nap5k.com/tag.min.js';
+    s.src = window.QuickGamesAdConfig.MONETAG_TAG_URL;
     s.async = true;
+    s.setAttribute('data-cfasync', 'false');
     const target = document.body || document.documentElement;
     if (target) {
       target.appendChild(s);
