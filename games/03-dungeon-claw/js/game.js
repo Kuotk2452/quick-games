@@ -4,7 +4,7 @@
  */
 
 import * as THREE from 'https://unpkg.com/three@0.160.0/build/three.module.js';
-import { PhysicsWorld3D } from './physics3d.js?v=10.0';
+import { PhysicsWorld3D } from './physics3d.js?v=11.0';
 import { ITEM_DEFS, createItem3DMesh, calculateCombos } from './items.js?v=8.3';
 import { MONSTER_ROSTER, Monster } from './monsters.js?v=8.3';
 import { CLAW_UPGRADES, ITEM_SHOP_OFFERS } from './shop.js?v=8.3';
@@ -939,6 +939,6 @@ Play free on web:
 }
 
 window.addEventListener('DOMContentLoaded', () => {
-  const game = new DungeonClawGame();
+  window.game = new DungeonClawGame();
   i18n.applyTranslations();
 });

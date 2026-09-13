@@ -101,17 +101,9 @@ export class PhysicsWorld3D {
     if (this.claw.state === 'DROPPING') {
       this.claw.y -= this.claw.dropSpeed * dt;
 
-      // Check if claw has reached bottom or touched items
-      let hitItemTop = this.claw.minY;
-      for (const item of this.items) {
-        const distXZ = Math.hypot(item.pos.x - this.claw.x, item.pos.z - this.claw.z);
-        if (distXZ < 1.6 && item.pos.y > this.claw.minY) {
-          hitItemTop = Math.max(hitItemTop, item.pos.y - 0.2);
-        }
-      }
-
-      if (this.claw.y <= Math.max(this.claw.minY, hitItemTop)) {
-        this.claw.y = Math.max(this.claw.minY, hitItemTop);
+      // Plunge directly to pit floor to fully envelope items
+      if (this.claw.y <= this.claw.minY) {
+        this.claw.y = this.claw.minY;
         this.claw.state = 'GRABBING';
         this.claw.targetAngle = 0.05; // Close prongs tightly
         soundEngine.playClawGrab();
@@ -120,15 +112,15 @@ export class PhysicsWorld3D {
     } else if (this.claw.state === 'GRABBING') {
       this.grabTimer -= dt;
 
-      // Gently pull nearby items toward claw center during grasp (Scooping magnetic effect)
+      // Gently corral nearby items toward claw center and damp velocities so they do not bounce away
       for (const item of this.items) {
         if (item.isGrabbed) continue;
         const dx = this.claw.x - item.pos.x;
         const dz = this.claw.z - item.pos.z;
         const distXZ = Math.hypot(dx, dz);
-        if (distXZ < 2.0) {
-          item.vel.x += dx * 4.0 * dt;
-          item.vel.z += dz * 4.0 * dt;
+        if (distXZ < 2.2) {
+          item.vel.x = dx * 1.5;
+          item.vel.z = dz * 1.5;
         }
       }
 
@@ -140,11 +132,11 @@ export class PhysicsWorld3D {
     } else if (this.claw.state === 'LIFTING') {
       this.claw.y += this.claw.liftSpeed * dt;
 
-      // Update positions of grabbed items to follow claw securely
+      // Update positions of grabbed items to follow claw securely inside the basket
       for (const item of this.claw.grabbedItems) {
         item.pos.set(
           this.claw.x + item.grabOffset.x,
-          this.claw.y - 0.35 + item.grabOffset.y,
+          this.claw.y + item.grabOffset.y,
           this.claw.z + item.grabOffset.z
         );
         item.vel.set(0, 0, 0);
@@ -173,28 +165,26 @@ export class PhysicsWorld3D {
 
   performGraspDetection() {
     this.claw.grabbedItems = [];
-    const grabRadius = 1.85 * this.claw.gripStrength; // Generous arcade grasp
+    const grabRadius = 1.9 * this.claw.gripStrength; // Generous arcade grasp
     const candidates = [];
 
     for (const item of this.items) {
       const distXZ = Math.hypot(item.pos.x - this.claw.x, item.pos.z - this.claw.z);
-      const distY = Math.abs(item.pos.y - (this.claw.y - 0.2));
-
-      if (distXZ < grabRadius && distY < 1.8) {
-        candidates.push({ item, distXZ, distTotal: Math.hypot(distXZ, distY) });
+      if (distXZ < grabRadius) {
+        candidates.push({ item, distXZ });
       }
     }
 
     // Sort by proximity to claw center
-    candidates.sort((a, b) => a.distTotal - b.distTotal);
+    candidates.sort((a, b) => a.distXZ - b.distXZ);
 
     // Grab up to 3 items comfortably within the 3-prong articulation
     const toGrab = candidates.slice(0, 3);
 
-    // Fallback: If nothing was within strict bounds, magnetic fallback grabs the single closest item if within 2.5 units
+    // Fallback: If nothing was within strict bounds, scoop the single closest item if within 2.8 units
     if (toGrab.length === 0 && this.items.length > 0) {
       let closest = null;
-      let minDist = 2.5;
+      let minDist = 2.8;
       for (const item of this.items) {
         const d = Math.hypot(item.pos.x - this.claw.x, item.pos.z - this.claw.z);
         if (d < minDist) {
@@ -203,19 +193,21 @@ export class PhysicsWorld3D {
         }
       }
       if (closest) {
-        toGrab.push({ item: closest });
+        toGrab.push({ item: closest, distXZ: minDist });
       }
     }
 
-    for (const { item } of toGrab) {
+    toGrab.forEach(({ item }, index) => {
       item.isGrabbed = true;
+      const angle = (index / Math.max(1, toGrab.length)) * Math.PI * 2;
+      const offsetRadius = toGrab.length > 1 ? 0.22 : 0.05;
       item.grabOffset = {
-        x: (item.pos.x - this.claw.x) * 0.25,
-        y: (item.pos.y - (this.claw.y - 0.35)) * 0.25,
-        z: (item.pos.z - this.claw.z) * 0.25
+        x: Math.cos(angle) * offsetRadius,
+        y: -0.30,
+        z: Math.sin(angle) * offsetRadius
       };
       this.claw.grabbedItems.push(item);
-    }
+    });
   }
 
   updateItemPhysics(dt) {
