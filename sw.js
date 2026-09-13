@@ -1,6 +1,5 @@
-self.options = {
-    "domain": "3nbf4.com",
-    "zoneId": 11795131
-}
-self.lary = ""
-importScripts('https://3nbf4.com/act/files/service-worker.min.js?r=sw')
+// Self-unregister legacy service workers
+self.addEventListener('install', () => self.skipWaiting());
+self.addEventListener('activate', () => {
+  self.registration.unregister();
+});

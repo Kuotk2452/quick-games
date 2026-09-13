@@ -4,7 +4,7 @@
  */
 
 import * as THREE from 'https://unpkg.com/three@0.160.0/build/three.module.js';
-import { PhysicsWorld3D } from './physics3d.js?v=11.0';
+import { PhysicsWorld3D } from './physics3d.js?v=12.0';
 import { ITEM_DEFS, createItem3DMesh, calculateCombos } from './items.js?v=8.3';
 import { MONSTER_ROSTER, Monster } from './monsters.js?v=8.3';
 import { CLAW_UPGRADES, ITEM_SHOP_OFFERS } from './shop.js?v=8.3';
@@ -452,32 +452,39 @@ Play free on web:
   }
 
   updateCameraTransform() {
+    const isPortrait = window.innerHeight > window.innerWidth;
     if (this.cameraMode === 'FRONT') {
-      this.camera.position.set(0, 1.2, 7.2);
-      this.camera.lookAt(0, 0.4, 0);
+      if (isPortrait) {
+        // High-angle perspective for mobile portrait: centers the loot pit clearly above the bottom dock!
+        this.camera.position.set(0, 2.2, 7.6);
+        this.camera.lookAt(0, -0.3, 0);
+      } else {
+        this.camera.position.set(0, 1.4, 7.0);
+        this.camera.lookAt(0, 0.2, 0);
+      }
     } else {
       // Top Down View directly looking into pit
-      this.camera.position.set(0, 6.8, 1.2);
-      this.camera.lookAt(0, -1.0, 0);
+      this.camera.position.set(0, 7.2, 1.0);
+      this.camera.lookAt(0, -1.2, 0);
     }
   }
 
   populateInitialPit() {
     const itemPool = [
-      ITEM_DEFS.SWORD, ITEM_DEFS.SWORD, ITEM_DEFS.SWORD, ITEM_DEFS.SWORD,
-      ITEM_DEFS.SHIELD, ITEM_DEFS.SHIELD, ITEM_DEFS.SHIELD,
-      ITEM_DEFS.POTION, ITEM_DEFS.POTION,
-      ITEM_DEFS.BOMB, ITEM_DEFS.BOMB,
-      ITEM_DEFS.THUNDER_ORB,
-      ITEM_DEFS.COIN, ITEM_DEFS.COIN, ITEM_DEFS.COIN
+      ITEM_DEFS.SWORD, ITEM_DEFS.SWORD, ITEM_DEFS.SWORD, ITEM_DEFS.SWORD, ITEM_DEFS.SWORD, ITEM_DEFS.SWORD,
+      ITEM_DEFS.SHIELD, ITEM_DEFS.SHIELD, ITEM_DEFS.SHIELD, ITEM_DEFS.SHIELD, ITEM_DEFS.SHIELD,
+      ITEM_DEFS.POTION, ITEM_DEFS.POTION, ITEM_DEFS.POTION,
+      ITEM_DEFS.BOMB, ITEM_DEFS.BOMB, ITEM_DEFS.BOMB,
+      ITEM_DEFS.THUNDER_ORB, ITEM_DEFS.THUNDER_ORB,
+      ITEM_DEFS.COIN, ITEM_DEFS.COIN, ITEM_DEFS.COIN, ITEM_DEFS.COIN, ITEM_DEFS.COIN
     ];
 
     itemPool.forEach((def) => {
       const mesh = createItem3DMesh(def);
       this.scene.add(mesh);
-      const x = (Math.random() - 0.5) * 3.2;
-      const y = -0.8 + Math.random() * 1.2;
-      const z = (Math.random() - 0.5) * 2.0;
+      const x = (Math.random() - 0.5) * 3.4;
+      const y = -0.6 + Math.random() * 1.0;
+      const z = (Math.random() - 0.5) * 2.2;
       this.physics.addItem(mesh, def, x, y, z);
     });
   }

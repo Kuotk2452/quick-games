@@ -15,8 +15,8 @@ window.QuickGamesAdConfig = {
   // Monetag Official DirectLink / SmartLink URL for Rewarded Actions (Tips, Revives, Doubles)
   MONETAG_DIRECT_LINK: 'https://omg10.com/4/11795439',
   
-  // Enable auto-injection of Monetag tag.min.js
-  ENABLE_MULTI_TAG: true
+  // Enable auto-injection of Monetag tag.min.js (Disabled to prevent OnClick popunder click-hijacking)
+  ENABLE_MULTI_TAG: false
 };
 
 // 1. Auto-inject Monetag MultiTag ONLY on Portal (Arcade Hub) to protect in-game player experience

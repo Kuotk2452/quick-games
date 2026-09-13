@@ -231,3 +231,119 @@ footer {
   color: var(--text-muted);
   border-top: 1px solid rgba(255, 255, 255, 0.05);
 }
+
+/* ==========================================================
+   Horizontal Sponsor Ad Display Banners (Clean Display Ads)
+   ========================================================== */
+.top-ad-banner-container {
+  width: 100%;
+  max-width: 1280px;
+  margin: 0 auto 24px;
+  padding: 0 24px;
+}
+
+.horizontal-ad-banner {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background: linear-gradient(90deg, rgba(30, 41, 59, 0.85) 0%, rgba(15, 23, 42, 0.95) 100%);
+  border: 1.5px solid rgba(0, 240, 255, 0.4);
+  border-radius: 16px;
+  padding: 14px 24px;
+  text-decoration: none;
+  color: #ffffff;
+  position: relative;
+  overflow: hidden;
+  box-shadow: 0 4px 20px rgba(0, 240, 255, 0.12);
+  transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.horizontal-ad-banner:hover {
+  border-color: #00f0ff;
+  box-shadow: 0 6px 28px rgba(0, 240, 255, 0.25);
+  transform: translateY(-2px);
+}
+
+.ad-tag {
+  position: absolute;
+  top: 8px;
+  right: 12px;
+  font-size: 9px;
+  font-weight: 800;
+  letter-spacing: 1px;
+  color: #94a3b8;
+  background: rgba(255, 255, 255, 0.08);
+  padding: 2px 8px;
+  border-radius: 4px;
+}
+
+.ad-body {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+.ad-icon {
+  font-size: 32px;
+  filter: drop-shadow(0 0 8px rgba(0, 240, 255, 0.6));
+}
+
+.ad-text-box {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+}
+
+.ad-heading {
+  font-size: 15px;
+  font-weight: 800;
+  color: #38bdf8;
+  letter-spacing: 0.5px;
+}
+
+.ad-subtext {
+  font-size: 13px;
+  color: #cbd5e1;
+}
+
+.ad-cta-btn {
+  background: linear-gradient(135deg, #0284c7, #6366f1);
+  color: #ffffff;
+  padding: 10px 20px;
+  border-radius: 999px;
+  font-size: 13px;
+  font-weight: 800;
+  letter-spacing: 0.5px;
+  white-space: nowrap;
+  box-shadow: 0 4px 14px rgba(2, 132, 199, 0.4);
+  transition: all 0.2s ease;
+}
+
+.horizontal-ad-banner:hover .ad-cta-btn {
+  background: linear-gradient(135deg, #0ea5e9, #818cf8);
+  box-shadow: 0 4px 20px rgba(14, 165, 233, 0.6);
+}
+
+@media (max-width: 768px) {
+  .top-ad-banner-container {
+    padding: 0 16px;
+    margin-bottom: 16px;
+  }
+  .horizontal-ad-banner {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 12px;
+    padding: 14px 16px;
+  }
+  .ad-cta-btn {
+    align-self: flex-end;
+    padding: 8px 16px;
+    font-size: 12px;
+  }
+  .ad-heading {
+    font-size: 14px;
+  }
+  .ad-subtext {
+    font-size: 12px;
+  }
+}

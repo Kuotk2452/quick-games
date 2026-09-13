@@ -25,6 +25,23 @@
     <p class="subtitle" data-i18n="subtitle">Zero-install, high-retention browser games ready for global players, web portals, and mobile.</p>
   </header>
 
+  <!-- Top Horizontal Sponsor Display Banner -->
+  <div class="top-ad-banner-container">
+    <a href="https://omg10.com/4/11795439" target="_blank" rel="noopener noreferrer" class="horizontal-ad-banner">
+      <div class="ad-tag">SPONSORED</div>
+      <div class="ad-body">
+        <span class="ad-icon">💎</span>
+        <div class="ad-text-box">
+          <div class="ad-heading" data-i18n="adHeadline">🔥 PLAY &amp; UNLOCK EXCLUSIVE GAMER REWARDS</div>
+          <div class="ad-subtext" data-i18n="adDesc">Claim bonus loot codes, powerups &amp; daily partner perks · Tap to Open</div>
+        </div>
+      </div>
+      <div class="ad-cta-btn" data-i18n="adCta">
+        CLAIM PERKS <span>&rarr;</span>
+      </div>
+    </a>
+  </div>
+
   <main>
     <div class="game-grid">
 
@@ -220,9 +237,15 @@
     <p>© 2026 Quick Games Studio · Handcrafted with pure Web Standards for Global Web & Mobile.</p>
   </footer>
 
-  <script type="module" src="js/portal_i18n.js"></script>
-  <script src="js/mock-reward-sdk.js?v=3.0"></script>
-  <!-- Monetag MultiTag Network (Passive monetization: OnClick, Vignette Banner, In-Page Push) -->
-  <script src="https://quge5.com/88/tag.min.js" data-zone="280186" async data-cfasync="false"></script>
+  <script type="module" src="js/portal_i18n.js?v=12.0"></script>
+  <script src="js/mock-reward-sdk.js?v=12.0"></script>
+  <script>
+    // Ensure any legacy service workers or stale caches are evicted
+    if ('serviceWorker' in navigator) {
+      navigator.serviceWorker.getRegistrations().then(function(regs) {
+        for (let r of regs) { r.unregister(); }
+      });
+    }
+  </script>
 </body>
 </html>

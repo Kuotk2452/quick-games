@@ -1,10 +1,13 @@
-﻿const TRANSLATIONS = {
+const TRANSLATIONS = {
   en: {
     badge: '⚡ QUICK GAMES STUDIO',
     title: 'Indie Game Arcade',
     subtitle: 'Zero-install, high-retention browser games ready for global players, web portals, and mobile.',
     play: 'Play Game',
     langs: 'EN / ZH / ES / JA',
+    adHeadline: '🔥 PLAY & UNLOCK EXCLUSIVE GAMER REWARDS',
+    adDesc: 'Claim bonus loot codes, powerups & daily partner perks · Tap to Open',
+    adCta: 'CLAIM PERKS →',
     
     g1_title: 'Emoji Craft: Infinite Fusion',
     g1_genre: 'Endless Alchemy &times; Daily Quests',
@@ -48,6 +51,9 @@
     subtitle: '免安装、高留存的网页小游戏，完美适配全球玩家、门户网站与移动端。',
     play: '开始游戏',
     langs: '英文 / 中文 / 西语 / 日语',
+    adHeadline: '🔥 探索专属玩家福利与限时礼包',
+    adDesc: '领取免费礼包码、每日特权与精选赞助福利 · 点击即可前往',
+    adCta: '立即领取 →',
     
     g1_title: 'Emoji Craft: 无限合成',
     g1_genre: '无尽炼金 &times; 每日任务',

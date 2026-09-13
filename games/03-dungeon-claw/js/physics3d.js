@@ -165,7 +165,7 @@ export class PhysicsWorld3D {
 
   performGraspDetection() {
     this.claw.grabbedItems = [];
-    const grabRadius = 1.9 * this.claw.gripStrength; // Generous arcade grasp
+    const grabRadius = 2.2 * this.claw.gripStrength; // Generous arcade grasp
     const candidates = [];
 
     for (const item of this.items) {
@@ -181,19 +181,17 @@ export class PhysicsWorld3D {
     // Grab up to 3 items comfortably within the 3-prong articulation
     const toGrab = candidates.slice(0, 3);
 
-    // Fallback: If nothing was within strict bounds, scoop the single closest item if within 2.8 units
+    // 100% Guaranteed Magnetic Scoop: Never let a drop return empty!
+    // If nothing fell within direct contact radius, magnetically pull the closest 1~2 items from anywhere in the pit
     if (toGrab.length === 0 && this.items.length > 0) {
-      let closest = null;
-      let minDist = 2.8;
-      for (const item of this.items) {
-        const d = Math.hypot(item.pos.x - this.claw.x, item.pos.z - this.claw.z);
-        if (d < minDist) {
-          minDist = d;
-          closest = item;
-        }
-      }
-      if (closest) {
-        toGrab.push({ item: closest, distXZ: minDist });
+      const sorted = [...this.items].sort((a, b) => {
+        const da = Math.hypot(a.pos.x - this.claw.x, a.pos.z - this.claw.z);
+        const db = Math.hypot(b.pos.x - this.claw.x, b.pos.z - this.claw.z);
+        return da - db;
+      });
+      const count = Math.min(sorted.length, Math.random() < 0.6 ? 2 : 1);
+      for (let i = 0; i < count; i++) {
+        toGrab.push({ item: sorted[i], distXZ: Math.hypot(sorted[i].pos.x - this.claw.x, sorted[i].pos.z - this.claw.z) });
       }
     }
 

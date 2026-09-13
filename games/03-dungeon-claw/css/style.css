@@ -169,65 +169,66 @@ body, html {
 /* Bottom Player Dashboard */
 .bottom-dock {
   width: 100%;
-  max-width: 600px;
+  max-width: 540px;
   align-self: center;
   display: flex;
   flex-direction: column;
-  gap: 12px;
+  gap: 4px;
   pointer-events: auto;
-  margin-bottom: 8px;
+  margin-bottom: 2px;
 }
 
 .player-stats-row {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  background: var(--panel-bg);
-  backdrop-filter: blur(16px);
-  padding: 8px 20px;
+  background: rgba(15, 23, 42, 0.65);
+  backdrop-filter: blur(12px);
+  padding: 4px 14px;
   border-radius: 999px;
-  border: 1px solid rgba(255, 255, 255, 0.15);
+  border: 1px solid rgba(255, 255, 255, 0.12);
 }
 
 .stat-pill {
   display: flex;
   align-items: center;
-  gap: 6px;
-  font-size: 14px;
+  gap: 4px;
+  font-size: 12px;
   font-weight: 800;
 }
 
 .stat-pill .val {
   color: var(--accent-cyan);
   font-family: monospace;
-  font-size: 16px;
+  font-size: 13px;
 }
 
 .action-buttons-group {
   display: flex;
-  gap: 12px;
+  align-items: center;
+  gap: 6px;
+  width: 100%;
 }
 
 .dpad-cluster {
   display: flex;
-  flex-direction: column;
+  flex-direction: row;
   align-items: center;
-  gap: 4px;
-}
-
-.dpad-middle-row {
-  display: flex;
-  gap: 4px;
+  gap: 3px;
+  background: rgba(15, 23, 42, 0.6);
+  padding: 3px 5px;
+  border-radius: 12px;
+  border: 1px solid rgba(56, 189, 248, 0.3);
 }
 
 .dpad-btn {
-  background: rgba(30, 41, 59, 0.95);
+  background: rgba(30, 41, 59, 0.9);
   color: #38bdf8;
   border: 1px solid rgba(56, 189, 248, 0.5);
-  width: 44px;
-  height: 38px;
-  border-radius: 12px;
-  font-size: 16px;
+  width: 34px;
+  height: 34px;
+  border-radius: 8px;
+  font-size: 14px;
   font-weight: 900;
   cursor: pointer;
   display: flex;
@@ -235,15 +236,14 @@ body, html {
   justify-content: center;
   user-select: none;
   touch-action: none;
-  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.4);
   transition: all 0.1s ease;
 }
 
 .dpad-btn:hover:not(:disabled) {
   background: rgba(56, 189, 248, 0.3);
   border-color: #38bdf8;
-  transform: translateY(-2px);
-  box-shadow: 0 0 12px rgba(56, 189, 248, 0.5);
+  transform: translateY(-1px);
 }
 
 .dpad-btn:active:not(:disabled) {
@@ -257,23 +257,25 @@ body, html {
 }
 
 .drop-claw-btn {
-  flex: 2;
+  flex: 1;
   background: linear-gradient(135deg, #0284c7, #6366f1);
   color: #ffffff;
   border: none;
-  padding: 16px 20px;
-  border-radius: 18px;
-  font-size: 16px;
+  height: 42px;
+  padding: 0 12px;
+  border-radius: 12px;
+  font-size: 13px;
   font-weight: 900;
   cursor: pointer;
   letter-spacing: 0.5px;
-  box-shadow: 0 0 24px rgba(2, 132, 199, 0.6);
-  transition: all 0.2s ease;
+  box-shadow: 0 0 16px rgba(2, 132, 199, 0.5);
+  transition: all 0.15s ease;
+  white-space: nowrap;
 }
 
 .drop-claw-btn:hover:not(:disabled) {
-  transform: translateY(-3px);
-  box-shadow: 0 0 32px rgba(2, 132, 199, 0.9);
+  transform: translateY(-2px);
+  box-shadow: 0 0 24px rgba(2, 132, 199, 0.8);
 }
 
 .drop-claw-btn:disabled {
@@ -286,11 +288,13 @@ body, html {
   background: rgba(255, 255, 255, 0.1);
   border: 1px solid rgba(255, 255, 255, 0.2);
   color: #ffffff;
-  padding: 14px 16px;
-  border-radius: 18px;
-  font-size: 13px;
+  height: 42px;
+  padding: 0 10px;
+  border-radius: 12px;
+  font-size: 11px;
   font-weight: 800;
   cursor: pointer;
+  white-space: nowrap;
 }
 
 /* ==========================================
@@ -490,4 +494,43 @@ body, html {
 .arcade-boot-screen.flash::after {
   content: ''; position: absolute; top: 0; left: 0; width: 100%; height: 100%;
   background: #fff; z-index: 10005; pointer-events: none;
+}
+
+@media (max-width: 600px) {
+  #hudLayer {
+    padding: 8px 6px;
+  }
+  .top-monster-card {
+    padding: 6px 12px;
+    border-radius: 12px;
+  }
+  .monster-name {
+    font-size: 14px;
+  }
+  .bottom-dock {
+    margin-bottom: 0px;
+    gap: 2px;
+  }
+  .player-stats-row {
+    padding: 2px 10px;
+  }
+  .stat-pill {
+    font-size: 11px;
+  }
+  .dpad-btn {
+    width: 28px;
+    height: 28px;
+    font-size: 11px;
+    border-radius: 6px;
+  }
+  .drop-claw-btn {
+    height: 34px;
+    font-size: 11px;
+    padding: 0 8px;
+  }
+  .view-btn {
+    height: 34px;
+    font-size: 10px;
+    padding: 0 6px;
+  }
 }

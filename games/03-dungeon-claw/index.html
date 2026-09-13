@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
   <title>Dungeon Claw 3D: Roguelike (3D抓娃娃地牢)</title>
   <meta name="description" content="A 3D Physics Crane Claw Machine meets Dungeon Deckbuilder Roguelike. Grab swords, chain combos, defeat dungeon bosses and upgrade your crane!">
-  <link rel="stylesheet" href="css/style.css?v=8.0">
+  <link rel="stylesheet" href="css/style.css?v=12.0">
 </head>
 <body>
 
@@ -79,19 +79,17 @@
         </div>
       </div>
 
-      <!-- Action Buttons with 4-Way Arcade D-Pad & Drop Trigger -->
+      <!-- Action Buttons with Compact Horizontal D-Pad & Drop Trigger -->
       <div class="action-buttons-group">
         <div class="dpad-cluster">
+          <button id="btnMoveLeft" class="dpad-btn" title="Move Claw Left (◀)">◀</button>
+          <button id="btnMoveRight" class="dpad-btn" title="Move Claw Right (▶)">▶</button>
           <button id="btnMoveUp" class="dpad-btn" title="Move Claw Forward (▲)">▲</button>
-          <div class="dpad-middle-row">
-            <button id="btnMoveLeft" class="dpad-btn" title="Move Claw Left (◀)">◀</button>
-            <button id="btnMoveDown" class="dpad-btn" title="Move Claw Backward (▼)">▼</button>
-            <button id="btnMoveRight" class="dpad-btn" title="Move Claw Right (▶)">▶</button>
-          </div>
+          <button id="btnMoveDown" class="dpad-btn" title="Move Claw Backward (▼)">▼</button>
         </div>
 
         <button id="btnDropClaw" class="drop-claw-btn" data-i18n="dropClaw">
-          ⬇️ DROP CLAW (SPACE / ⬇️)
+          ⬇️ DROP CLAW
         </button>
 
         <button id="btnToggleView" class="view-btn" data-i18n="viewToggleFront">
@@ -172,7 +170,7 @@
 
   <script type="module" src="js/arcade_boot.js?v=1.3"></script>
   <!-- Main Game Entry -->
-  <script type="module" src="js/game.js?v=11.0"></script>
+  <script type="module" src="js/game.js?v=12.0"></script>
   <script src="../../js/mock-reward-sdk.js?v=3.0"></script>
 </body>
 </html>
