@@ -29,6 +29,10 @@ export const TRANSLATIONS = {
     defeatTitle: '💥 CHASSIS CRITICALLY BREACHED',
     defeatDesc: 'Your mecha suffered catastrophic hull failure in the arena.',
     nextMatchBtn: '⚔️ Next Challenger',
+    retryMatchBtn: '🔄 Retry Battle',
+    championTitle: '👑 TOURNAMENT CHAMPION!',
+    championDesc: 'You vanquished the Apex Juggernaut and conquered the Cyber Arena!',
+    newTournamentBtn: '🏆 New Championship Run',
     repairReturnBtn: '🛠️ Return to Workshop',
     shareScore: '📋 Share Mecha Build',
     copiedAlert: 'Mecha battle build copied to clipboard!'
@@ -58,6 +62,10 @@ export const TRANSLATIONS = {
     defeatTitle: '💥 机体核心被彻底击穿',
     defeatDesc: '你的机甲在角斗场中承受了灾难性结构损坏。',
     nextMatchBtn: '⚔️ 迎战下一位选手',
+    retryMatchBtn: '🔄 再次挑战本关',
+    championTitle: '👑 荣登锦标赛巅峰总冠军！',
+    championDesc: '你成功击毁了深渊主宰巨兽，成为了赛博角斗场唯一的机甲霸主！',
+    newTournamentBtn: '🏆 开启新一轮锦标赛',
     repairReturnBtn: '🛠️ 返回工坊维修改装',
     shareScore: '📋 分享机甲配置卡',
     copiedAlert: '机甲战报与配置已复制到剪贴板！'
@@ -87,6 +95,10 @@ export const TRANSLATIONS = {
     defeatTitle: '💥 CHASIS CRÍTICAMENTE DAÑADO',
     defeatDesc: 'Tu mecha sufrió un fallo catastrófico en la arena.',
     nextMatchBtn: '⚔️ Siguiente Rival',
+    retryMatchBtn: '🔄 Reintentar Combate',
+    championTitle: '👑 ¡CAMPEÓN DEL TORNEO!',
+    championDesc: '¡Has derrotado al Behemoth Apex y dominado la Cyber Arena!',
+    newTournamentBtn: '🏆 Nuevo Torneo',
     repairReturnBtn: '🛠️ Volver al Taller',
     shareScore: '📋 Compartir Configuración',
     copiedAlert: '¡Informe copiado al portapapeles!'
@@ -116,6 +128,10 @@ export const TRANSLATIONS = {
     defeatTitle: '💥 機体コア大破・作戦失敗',
     defeatDesc: 'アリーナ内で装甲が限界を迎え大破しました。',
     nextMatchBtn: '⚔️ 次の挑戦者と対戦',
+    retryMatchBtn: '🔄 再挑戦する',
+    championTitle: '👑 トーナメント完全制覇！',
+    championDesc: '頂点獣エイペックスを撃破し、サイバーアリーナの頂点に君臨した！',
+    newTournamentBtn: '🏆 新たなトーナメントへ',
     repairReturnBtn: '🛠️ 工房に戻り修理・強化',
     shareScore: '📋 機体構成を共有',
     copiedAlert: '機体スペックをクリップボードにコピーしました！'

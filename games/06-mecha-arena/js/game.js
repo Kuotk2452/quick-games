@@ -78,6 +78,11 @@ export class MechaArenaGame {
     this.isMouseDown = false;
     this.joystickX = 0;
     this.joystickY = 0;
+    this.joystickTouchId = null;
+    this.aimTouchId = null;
+
+    this.joystick = typeof document !== 'undefined' ? document.getElementById('virtualJoystick') : null;
+    this.joystickKnob = typeof document !== 'undefined' ? document.getElementById('joystickKnob') : null;
 
     this.bullets = [];
     this.mines = [];
@@ -97,6 +102,18 @@ export class MechaArenaGame {
     requestAnimationFrame(this.loop);
   }
 
+  resetControls() {
+    this.keys = {};
+    this.joystickX = 0;
+    this.joystickY = 0;
+    this.isMouseDown = false;
+    this.joystickTouchId = null;
+    this.aimTouchId = null;
+    if (this.joystickKnob) {
+      this.joystickKnob.style.transform = 'translate(-50%, -50%)';
+    }
+  }
+
   initDOM() {
     this.ui = {
       mechBootScreen: document.getElementById('mechBootScreen'),
@@ -110,6 +127,7 @@ export class MechaArenaGame {
       btnAdScrap: document.getElementById('btnAdScrap'),
       btnAdRevive: document.getElementById('btnAdRevive'),
       btnReturnWorkshop: document.getElementById('btnReturnWorkshop'),
+      btnModalWorkshop: document.getElementById('btnModalWorkshop'),
       partsContainer: document.getElementById('partsContainer'),
       tabChassisBtn: document.getElementById('tabChassisBtn'),
       tabWeaponBtn: document.getElementById('tabWeaponBtn'),
@@ -193,9 +211,18 @@ export class MechaArenaGame {
       this.ui.btnReturnWorkshop.addEventListener('click', () => this.returnToWorkshop());
     }
 
+    if (this.ui.btnModalWorkshop) {
+      this.ui.btnModalWorkshop.addEventListener('click', () => this.returnToWorkshop());
+    }
+
     if (this.ui.btnNextMatch) {
       this.ui.btnNextMatch.addEventListener('click', () => {
         if (this.ui.endModal) this.ui.endModal.style.display = 'none';
+        if (this.ui.btnNextMatch.dataset.action === 'reset_tourney') {
+          this.currentTournamentTier = 1;
+          localStorage.setItem('ma_tier', 1);
+        }
+        this.resetControls();
         this.startArenaMatch();
       });
     }
@@ -239,17 +266,12 @@ export class MechaArenaGame {
       });
       window.addEventListener('mouseup', () => {
         this.isMouseDown = false;
-        // Never reset joystickX / joystickY on mouseup - mobile browsers fire synthetic mouseup!
       });
     }
 
     // 2. Multi-Touch Tracking (Tablets, iPads, Phones)
-    let joystickTouchId = null;
-    let aimTouchId = null;
-
-    // Virtual Joystick logic
-    const joystick = document.getElementById('virtualJoystick');
-    const joystickKnob = document.getElementById('joystickKnob');
+    const joystick = this.joystick;
+    const joystickKnob = this.joystickKnob;
 
     if (joystick && joystickKnob) {
       let jRect = null;
@@ -274,7 +296,7 @@ export class MechaArenaGame {
       };
 
       const resetJoystick = () => {
-        joystickTouchId = null;
+        this.joystickTouchId = null;
         this.joystickX = 0;
         this.joystickY = 0;
         if (joystickKnob) {
@@ -285,9 +307,22 @@ export class MechaArenaGame {
       joystick.addEventListener('touchstart', (e) => {
         e.preventDefault();
         e.stopPropagation();
-        if (joystickTouchId === null && e.changedTouches.length > 0) {
+
+        // Safety: verify if previous joystick touch still exists in active touches
+        if (this.joystickTouchId !== null) {
+          let exists = false;
+          for (let i = 0; i < e.touches.length; i++) {
+            if (e.touches[i].identifier === this.joystickTouchId) {
+              exists = true;
+              break;
+            }
+          }
+          if (!exists) this.joystickTouchId = null;
+        }
+
+        if (this.joystickTouchId === null && e.changedTouches.length > 0) {
           const touch = e.changedTouches[0];
-          joystickTouchId = touch.identifier;
+          this.joystickTouchId = touch.identifier;
           jRect = joystick.getBoundingClientRect();
           jCenterX = jRect.left + jRect.width / 2;
           jCenterY = jRect.top + jRect.height / 2;
@@ -295,11 +330,11 @@ export class MechaArenaGame {
         }
       }, { passive: false });
 
-      // Window-level touchmove so dragging thumb outside the 124px circle keeps steering
+      // Window-level touchmove so dragging thumb outside the circle keeps steering
       window.addEventListener('touchmove', (e) => {
-        if (joystickTouchId !== null) {
+        if (this.joystickTouchId !== null) {
           for (let i = 0; i < e.touches.length; i++) {
-            if (e.touches[i].identifier === joystickTouchId) {
+            if (e.touches[i].identifier === this.joystickTouchId) {
               handleJoystickMove(e.touches[i].clientX, e.touches[i].clientY);
               break;
             }
@@ -308,9 +343,13 @@ export class MechaArenaGame {
       }, { passive: false });
 
       const onJoystickTouchEnd = (e) => {
-        if (joystickTouchId !== null) {
+        if (e.touches.length === 0) {
+          resetJoystick();
+          return;
+        }
+        if (this.joystickTouchId !== null) {
           for (let i = 0; i < e.changedTouches.length; i++) {
-            if (e.changedTouches[i].identifier === joystickTouchId) {
+            if (e.changedTouches[i].identifier === this.joystickTouchId) {
               resetJoystick();
               break;
             }
@@ -327,8 +366,8 @@ export class MechaArenaGame {
       this.canvas.addEventListener('touchstart', (e) => {
         for (let i = 0; i < e.changedTouches.length; i++) {
           const touch = e.changedTouches[i];
-          if (touch.identifier !== joystickTouchId) {
-            aimTouchId = touch.identifier;
+          if (touch.identifier !== this.joystickTouchId) {
+            this.aimTouchId = touch.identifier;
             this.isMouseDown = true;
             updateMousePos(touch.clientX, touch.clientY);
             break;
@@ -337,9 +376,9 @@ export class MechaArenaGame {
       }, { passive: true });
 
       this.canvas.addEventListener('touchmove', (e) => {
-        if (aimTouchId !== null) {
+        if (this.aimTouchId !== null) {
           for (let i = 0; i < e.touches.length; i++) {
-            if (e.touches[i].identifier === aimTouchId) {
+            if (e.touches[i].identifier === this.aimTouchId) {
               updateMousePos(e.touches[i].clientX, e.touches[i].clientY);
               break;
             }
@@ -348,10 +387,15 @@ export class MechaArenaGame {
       }, { passive: true });
 
       const onAimTouchEnd = (e) => {
-        if (aimTouchId !== null) {
+        if (e.touches.length === 0) {
+          this.aimTouchId = null;
+          this.isMouseDown = false;
+          return;
+        }
+        if (this.aimTouchId !== null) {
           for (let i = 0; i < e.changedTouches.length; i++) {
-            if (e.changedTouches[i].identifier === aimTouchId) {
-              aimTouchId = null;
+            if (e.changedTouches[i].identifier === this.aimTouchId) {
+              this.aimTouchId = null;
               this.isMouseDown = false;
               break;
             }
@@ -362,6 +406,12 @@ export class MechaArenaGame {
       window.addEventListener('touchend', onAimTouchEnd, { passive: true });
       window.addEventListener('touchcancel', onAimTouchEnd, { passive: true });
     }
+
+    // Global Safety Unlatchers (on tab switch, blur, or when all touches lift)
+    window.addEventListener('blur', () => this.resetControls());
+    document.addEventListener('visibilitychange', () => {
+      if (document.hidden) this.resetControls();
+    });
 
     // 4. On-Screen Tactical Module Action Button (Shield / Space)
     if (this.ui.btnModuleAction) {
@@ -411,16 +461,22 @@ Play Free in Browser:
 
   
   revivePlayer() {
-    this.player = new CombatantBot('PLAYER', this.playerChassisId, this.playerWeaponId, this.playerModuleId, 120, this.height / 2, false);
+    this.player = new RobotEntity(true, this.playerChassisId, this.playerWeaponId, this.playerModuleId);
+    this.player.pos = { x: 140, y: this.height / 2 };
+    this.player.vel = { x: 0, y: 0 };
     this.player.isDead = false;
     this.player.hp = this.player.maxHp;
-    this.player.shieldTimer = 3.5; // 3.5s shield bubble on revive
+    this.player.shieldActive = true;
+    this.player.shieldTimer = 4.0; // 4s invulnerability bubble on revive
+    this.resetControls();
+    if (this.ui.playerHpFill) this.ui.playerHpFill.style.width = '100%';
     this.particles.spawnExplosion(this.player.pos.x, this.player.pos.y, 50);
     mechaAudio.playHydraulicPowerUp();
   }
 
   returnToWorkshop() {
     this.state = 'WORKSHOP';
+    this.resetControls();
     if (this.ui.arenaView) this.ui.arenaView.style.display = 'none';
     if (this.ui.workshopView) this.ui.workshopView.style.display = 'flex';
     if (this.ui.endModal) this.ui.endModal.style.display = 'none';
@@ -435,24 +491,55 @@ Play Free in Browser:
     if (this.ui.arenaView) this.ui.arenaView.style.display = 'flex';
     if (this.ui.endModal) this.ui.endModal.style.display = 'none';
 
-    // Spawn Player
+    // 1. Comprehensive input and control reset
+    this.resetControls();
+
+    // 2. Clear all projectile and deployed entity arrays
+    this.bullets = [];
+    this.mines = [];
+    this.drones = [];
+    this.particles = new MechaParticleEngine(this.canvas);
+    this.arena = new ArenaStage(this.width, this.height);
+
+    // 3. Spawn Fresh Player
     this.player = new RobotEntity(true, this.playerChassisId, this.playerWeaponId, this.playerModuleId);
     this.player.pos = { x: 140, y: this.height / 2 };
+    this.player.vel = { x: 0, y: 0 };
+    this.player.angle = 0;
+    this.player.turretAngle = 0;
+    this.player.isDead = false;
+    this.player.hp = this.player.maxHp;
 
-    // Spawn Tournament Opponent
-    const tourneyTier = TOURNAMENT_TIERS[Math.min(this.currentTournamentTier - 1, TOURNAMENT_TIERS.length - 1)];
+    // 4. Spawn Tournament Opponent
+    const tierIndex = Math.min(this.currentTournamentTier - 1, TOURNAMENT_TIERS.length - 1);
+    const tourneyTier = TOURNAMENT_TIERS[tierIndex];
     this.enemy = new RobotEntity(false, tourneyTier.chassisId, tourneyTier.weaponId, tourneyTier.moduleId);
     this.enemy.pos = { x: this.width - 140, y: this.height / 2 };
+    this.enemy.vel = { x: 0, y: 0 };
+    this.enemy.angle = Math.PI;
+    this.enemy.turretAngle = Math.PI;
+    this.enemy.isDead = false;
+    this.enemy.hp = this.enemy.maxHp;
 
+    // 5. Update All Top HUD and In-Match HUD elements immediately
     const lang = i18n.currentLang;
     if (this.ui.enemyNameDisplay) {
       this.ui.enemyNameDisplay.innerText = tourneyTier.name[lang] || tourneyTier.name.en;
     }
+    if (this.ui.leagueDisplay) {
+      this.ui.leagueDisplay.innerText = `Tier ${this.currentTournamentTier}/4`;
+    }
+    if (this.ui.scrapCashDisplay) {
+      this.ui.scrapCashDisplay.innerText = this.scrapCash;
+    }
+    if (this.ui.playerHpFill) {
+      this.ui.playerHpFill.style.width = '100%';
+    }
+    if (this.ui.enemyHpFill) {
+      this.ui.enemyHpFill.style.width = '100%';
+    }
 
-    this.bullets = [];
-    this.arena = new ArenaStage(this.width, this.height);
-
-    // Initialize On-Screen Tactical Power Button (Shield / Space)
+    // 6. Initialize On-Screen Tactical Power Button (Shield / Space)
     const moduleInfo = {
       SHIELD: { icon: '🛡️', name: 'SHIELD' },
       NITRO: { icon: '⚡', name: 'NITRO' },
@@ -770,11 +857,14 @@ Play Free in Browser:
     // 8. Match Result Conditions
     if (this.enemy.isDead && !this.player.isDead) {
       // Victory!
-      const tourney = TOURNAMENT_TIERS[Math.min(this.currentTournamentTier - 1, TOURNAMENT_TIERS.length - 1)];
+      this.resetControls();
+      const tierIndex = Math.min(this.currentTournamentTier - 1, TOURNAMENT_TIERS.length - 1);
+      const tourney = TOURNAMENT_TIERS[tierIndex];
       this.scrapCash += tourney.reward;
       localStorage.setItem('ma_scrap', this.scrapCash);
 
-      if (this.currentTournamentTier < TOURNAMENT_TIERS.length) {
+      const isFinalBoss = this.currentTournamentTier >= TOURNAMENT_TIERS.length;
+      if (!isFinalBoss) {
         this.currentTournamentTier++;
         localStorage.setItem('ma_tier', this.currentTournamentTier);
       }
@@ -782,16 +872,39 @@ Play Free in Browser:
       mechaAudio.playVictory();
       this.particles.spawnExplosion(this.enemy.pos.x, this.enemy.pos.y, 40);
 
-      if (this.ui.endTitle) this.ui.endTitle.innerText = i18n.t('victoryTitle');
-      if (this.ui.endDesc) this.ui.endDesc.innerText = `Reward: +$${tourney.reward} Scrap Cash!`;
-            if (this.ui.endModal) this.ui.endModal.style.display = 'flex';
+      if (this.ui.endTitle) {
+        this.ui.endTitle.innerText = isFinalBoss ? i18n.t('championTitle') : i18n.t('victoryTitle');
+      }
+      if (this.ui.endDesc) {
+        this.ui.endDesc.innerText = isFinalBoss 
+          ? `${i18n.t('championDesc')} +$${tourney.reward} SC!` 
+          : `${i18n.t('victoryDesc')} +$${tourney.reward} Scrap Cash!`;
+      }
+      if (this.ui.btnNextMatch) {
+        this.ui.btnNextMatch.innerText = isFinalBoss 
+          ? i18n.t('newTournamentBtn') 
+          : `${i18n.t('nextMatchBtn')} (Tier ${this.currentTournamentTier}/4)`;
+        this.ui.btnNextMatch.dataset.action = isFinalBoss ? 'reset_tourney' : 'next_match';
+      }
+      if (this.ui.leagueDisplay) {
+        this.ui.leagueDisplay.innerText = `Tier ${this.currentTournamentTier}/4`;
+      }
+      if (this.ui.scrapCashDisplay) {
+        this.ui.scrapCashDisplay.innerText = this.scrapCash;
+      }
+      if (this.ui.endModal) this.ui.endModal.style.display = 'flex';
       if (this.ui.btnAdRevive) this.ui.btnAdRevive.style.display = 'none';
       this.enemy = null;
     } else if (this.player.isDead) {
       // Defeat
+      this.resetControls();
       if (this.ui.endTitle) this.ui.endTitle.innerText = i18n.t('defeatTitle');
       if (this.ui.endDesc) this.ui.endDesc.innerText = i18n.t('defeatDesc');
-            if (this.ui.endModal) this.ui.endModal.style.display = 'flex';
+      if (this.ui.btnNextMatch) {
+        this.ui.btnNextMatch.innerText = `${i18n.t('retryMatchBtn')} (Tier ${this.currentTournamentTier}/4)`;
+        this.ui.btnNextMatch.dataset.action = 'retry_match';
+      }
+      if (this.ui.endModal) this.ui.endModal.style.display = 'flex';
       if (this.ui.btnAdRevive) this.ui.btnAdRevive.style.display = 'block';
       this.player = null;
     }
