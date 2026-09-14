@@ -4,7 +4,7 @@
  */
 
 import * as THREE from 'https://unpkg.com/three@0.160.0/build/three.module.js';
-import { PhysicsWorld3D } from './physics3d.js?v=12.0';
+import { PhysicsWorld3D } from './physics3d.js?v=13.0';
 import { ITEM_DEFS, createItem3DMesh, calculateCombos } from './items.js?v=8.3';
 import { MONSTER_ROSTER, Monster } from './monsters.js?v=8.3';
 import { CLAW_UPGRADES, ITEM_SHOP_OFFERS } from './shop.js?v=8.3';
@@ -369,11 +369,21 @@ export class DungeonClawGame {
 
     const attachSteer = (btn, dx, dz) => {
       if (!btn) return;
-      btn.addEventListener('pointerdown', (e) => { e.preventDefault(); startSteer(dx, dz); });
+      const startHandler = (e) => {
+        if (e && e.cancelable) e.preventDefault();
+        startSteer(dx, dz);
+      };
+      btn.addEventListener('touchstart', startHandler, { passive: false });
+      btn.addEventListener('pointerdown', startHandler);
       btn.addEventListener('pointerup', stopSteer);
       btn.addEventListener('pointerleave', stopSteer);
       btn.addEventListener('pointercancel', stopSteer);
-      btn.addEventListener('click', (e) => { e.preventDefault(); this.physics.moveClaw(dx * 0.8, dz * 0.8, 0.1); });
+      btn.addEventListener('touchend', stopSteer);
+      btn.addEventListener('touchcancel', stopSteer);
+      btn.addEventListener('click', (e) => {
+        if (e && e.cancelable) e.preventDefault();
+        this.physics.moveClaw(dx * 0.8, dz * 0.8, 0.1);
+      });
     };
 
     attachSteer(this.ui.btnMoveLeft, -1, 0);
@@ -384,14 +394,16 @@ export class DungeonClawGame {
     // UI Buttons
     if (this.ui.btnStart) this.ui.btnStart.addEventListener('click', () => this.startGame());
     if (this.ui.btnDropClaw) {
-      this.ui.btnDropClaw.addEventListener('pointerdown', (e) => {
-        e.preventDefault();
+      const handleDrop = (e) => {
+        if (e) {
+          if (e.cancelable) e.preventDefault();
+          e.stopPropagation();
+        }
         this.triggerDrop();
-      });
-      this.ui.btnDropClaw.addEventListener('click', (e) => {
-        e.preventDefault();
-        this.triggerDrop();
-      });
+      };
+      this.ui.btnDropClaw.addEventListener('touchstart', handleDrop, { passive: false });
+      this.ui.btnDropClaw.addEventListener('pointerdown', handleDrop);
+      this.ui.btnDropClaw.addEventListener('click', handleDrop);
     }
     if (this.ui.btnEndTurn) this.ui.btnEndTurn.addEventListener('click', () => this.executeMonsterTurn());
 
@@ -561,11 +573,14 @@ Play free on web:
       this.gameState = 'CLAW_ACTIVE';
       this.updateHUD();
 
-      // Watchdog safety timer: force recover after 3.2s if claw ever gets stuck
+      // Watchdog safety timer: force recover after 8.0s if claw ever gets stuck
       if (this.clawSafetyTimer) clearTimeout(this.clawSafetyTimer);
       this.clawSafetyTimer = setTimeout(() => {
         if (this.gameState === 'CLAW_ACTIVE') {
           console.warn('Safety watchdog: recovering claw state');
+          if (this.physics.claw.grabbedItems.length === 0) {
+            this.physics.performGraspDetection();
+          }
           const delivered = [...this.physics.claw.grabbedItems];
           this.physics.claw.grabbedItems = [];
           this.physics.claw.state = 'IDLE';
@@ -573,7 +588,7 @@ Play free on web:
           this.physics.claw.targetAngle = this.physics.claw.openAngle;
           this.handleDeliveredLoot(delivered);
         }
-      }, 3200);
+      }, 8000);
     }
   }
 
@@ -585,7 +600,17 @@ Play free on web:
     this.physics.claw.state = 'IDLE';
     this.physics.claw.y = this.physics.claw.baseY;
 
-    if (deliveredItems.length === 0) {
+    // Fail-safe: If deliveredItems is empty (e.g. edge case timing or dropped items), immediately scoop 2-3 items!
+    if (!deliveredItems || deliveredItems.length === 0) {
+      console.warn('Empty delivery detected, triggering automatic failsafe scoop');
+      const emergencyGrab = this.physics.performGraspDetection();
+      if (emergencyGrab && emergencyGrab.length > 0) {
+        deliveredItems = [...emergencyGrab];
+        this.physics.claw.grabbedItems = [];
+      }
+    }
+
+    if (!deliveredItems || deliveredItems.length === 0) {
       this.showComboBanner('💨 Missed! No items grabbed');
       this.checkTurnEnd();
       return;
@@ -871,7 +896,9 @@ Play free on web:
 
   animate(time) {
     try {
-      const dt = 0.016; // Stable 60fps delta
+      const now = (typeof performance !== 'undefined' && performance.now) ? performance.now() : Date.now();
+      const dt = this.lastTime ? Math.min(0.045, Math.max(0.005, (now - this.lastTime) / 1000)) : 0.016;
+      this.lastTime = now;
 
       this.handleKeyboard(dt);
       this.physics.update(dt);

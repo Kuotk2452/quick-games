@@ -24,9 +24,9 @@ export class PhysicsWorld3D {
       targetY: 2.2,
       baseY: 2.2,
       minY: -1.90, // Lowest drop reach directly onto floor
-      speed: 5.5,
-      dropSpeed: 5.5,
-      liftSpeed: 4.5,
+      speed: 6.0,
+      dropSpeed: 7.5,
+      liftSpeed: 6.5,
       state: 'IDLE', // 'IDLE' | 'MOVING' | 'DROPPING' | 'GRABBING' | 'LIFTING' | 'DELIVERING'
       openAngle: 0.70, // Prongs open wide
       currentAngle: 0.70,
@@ -107,7 +107,7 @@ export class PhysicsWorld3D {
         this.claw.state = 'GRABBING';
         this.claw.targetAngle = 0.05; // Close prongs tightly
         soundEngine.playClawGrab();
-        this.grabTimer = 0.45;
+        this.grabTimer = 0.35;
       }
     } else if (this.claw.state === 'GRABBING') {
       this.grabTimer -= dt;
@@ -118,7 +118,7 @@ export class PhysicsWorld3D {
         const dx = this.claw.x - item.pos.x;
         const dz = this.claw.z - item.pos.z;
         const distXZ = Math.hypot(dx, dz);
-        if (distXZ < 2.2) {
+        if (distXZ < 2.5) {
           item.vel.x = dx * 1.5;
           item.vel.z = dz * 1.5;
         }
@@ -145,7 +145,7 @@ export class PhysicsWorld3D {
       if (this.claw.y >= this.claw.baseY) {
         this.claw.y = this.claw.baseY;
         this.claw.state = 'DELIVERING';
-        this.deliverTimer = 0.4;
+        this.deliverTimer = 0.30;
       }
     } else if (this.claw.state === 'DELIVERING') {
       this.deliverTimer -= dt;
@@ -165,7 +165,7 @@ export class PhysicsWorld3D {
 
   performGraspDetection() {
     this.claw.grabbedItems = [];
-    const grabRadius = 2.2 * this.claw.gripStrength; // Generous arcade grasp
+    const grabRadius = 2.6 * this.claw.gripStrength; // Ultra-generous arcade grasp
     const candidates = [];
 
     for (const item of this.items) {
@@ -182,16 +182,18 @@ export class PhysicsWorld3D {
     const toGrab = candidates.slice(0, 3);
 
     // 100% Guaranteed Magnetic Scoop: Never let a drop return empty!
-    // If nothing fell within direct contact radius, magnetically pull the closest 1~2 items from anywhere in the pit
-    if (toGrab.length === 0 && this.items.length > 0) {
-      const sorted = [...this.items].sort((a, b) => {
+    // If fewer than 2 items were within reach, pull the closest items from anywhere in the pit to guarantee 2-3 items every drop!
+    if (toGrab.length < 2 && this.items.length > 0) {
+      const alreadyGrabbed = new Set(toGrab.map(t => t.item));
+      const remaining = this.items.filter(item => !alreadyGrabbed.has(item));
+      remaining.sort((a, b) => {
         const da = Math.hypot(a.pos.x - this.claw.x, a.pos.z - this.claw.z);
         const db = Math.hypot(b.pos.x - this.claw.x, b.pos.z - this.claw.z);
         return da - db;
       });
-      const count = Math.min(sorted.length, Math.random() < 0.6 ? 2 : 1);
-      for (let i = 0; i < count; i++) {
-        toGrab.push({ item: sorted[i], distXZ: Math.hypot(sorted[i].pos.x - this.claw.x, sorted[i].pos.z - this.claw.z) });
+      const needed = Math.min(remaining.length, 3 - toGrab.length);
+      for (let i = 0; i < needed; i++) {
+        toGrab.push({ item: remaining[i], distXZ: Math.hypot(remaining[i].pos.x - this.claw.x, remaining[i].pos.z - this.claw.z) });
       }
     }
 
@@ -206,6 +208,8 @@ export class PhysicsWorld3D {
       };
       this.claw.grabbedItems.push(item);
     });
+
+    return this.claw.grabbedItems;
   }
 
   updateItemPhysics(dt) {
